@@ -129,7 +129,7 @@ SETUP_CHUNKS = [
         "</ul>"
     )),
     ("# Each tuple is one row", [], (
-        "<p>A list of <dfn>tuples</dfn>, which are fixed groups of values, one tuple per row. They follow the column order of the <code>INSERT</code> statement below. "
+        "<p>A list of <dfn>tuples</dfn>, which are fixed groups of values, one tuple per row. They follow the column order of the <code>INSERT</code> statement below, which adds one row to the table. "
         "The Oat Biscuits start with zero stock on purpose, so that you can see a sold-out slot without buying everything first.</p>"
     )),
     ("# closing() makes sure", [6, 7], (
@@ -160,7 +160,7 @@ SERVER_CHUNKS = [
     )),
     ("# --- Errors", [], (
         "<p>The program expects three kinds of trouble, and each gets its own exception class. The classes have no body, because only their names matter.</p>"
-        "<p>The data layer never mentions HTTP. When something goes wrong it raises an exception named in the vocabulary of the vending machine, and one place near the end of the file turns those names into status codes. "
+        "<p>The data layer never mentions HTTP. When something goes wrong it raises an exception named after what went wrong in the machine, such as <code>SoldOut</code>, and one place near the end of the file turns those names into status codes. "
         "So we could reuse the data functions in a program that has no web server at all.</p>"
     )),
     ("# --- Data layer", [6], (
@@ -185,15 +185,15 @@ SERVER_CHUNKS = [
         "<p>This is the most important function in the file.</p>"
         "<ul>"
         "<li>We could read the stock, test it in Python and write the new value. That leaves a gap in which two buyers could both see a stock of 1 and both take the last item.</li>"
-        "<li>One <code>UPDATE</code> statement leaves no gap, because the database runs it as a single indivisible step. The section on design choices compares the two plans in a diagram.</li>"
+        "<li>One <code>UPDATE</code> statement, which changes a row that is already in the table, leaves no gap, because the database runs it as a single indivisible step. The section on design choices compares the two plans in a diagram.</li>"
         "<li><code>update_result.rowcount</code> says how many rows changed. Zero means the slot does not exist or its stock was already zero, and <code>slot</code> tells us which.</li>"
         "<li>We read the slot inside the same transaction, so the stock we report matches the change we made.</li>"
         "<li>After the transaction closes we decide what happened: no row means <code>NoSuchSlot</code>, zero changes means <code>SoldOut</code>, anything else is a purchase.</li>"
         "</ul>"
     )),
     ("# --- Route layer", [5], (
-        "<p>Everything that comes from the URL is untrusted text. <code>validate_slot_id</code> tidies that text, checks that the whole text has the expected shape, and raises <code>BadRequest</code> if not.</p>"
-        "<p>The queries are already safe from injection because they use parameters. This check is a second layer that gives a clear error early and keeps odd text out of our logs.</p>"
+        "<p>Everything that comes from the URL is untrusted text. <code>validate_slot_id</code> cleans up that text (turning <code>a1</code> into <code>A1</code>), checks that the whole text has the expected shape, and raises <code>BadRequest</code> if not.</p>"
+        "<p>The queries are already safe from SQL injection because they use parameters. This check is a second layer that gives a clear error early and keeps odd text out of our logs.</p>"
     )),
     ("def handle_list_slots", [4], (
         "<p>The three handlers are thin. Each connects a URL to a data function and validates the input on the way.</p>"
@@ -263,7 +263,7 @@ INDEX_CHUNKS = [
 CSS_CHUNKS = [
     ("", [], (
         "<p>The <code>:root</code> block defines <dfn>custom properties</dfn>, named values such as <code>--accent</code> that the rest of the stylesheet reads with <code>var(--accent)</code>. Changing a colour means editing one line.</p>"
-        "<p>The body is a <code>flex</code> container, which here centres the machine horizontally.</p>"
+        "<p>The body is a <code>flex</code> container, a layout mode that lines up its children in a row or a column. Here it centres the machine horizontally.</p>"
     )),
     ("/* min() means", [], (
         "<p><code>width: min(100%, 480px)</code> means as wide as 480 pixels but never wider than the screen, so the machine fits on a phone.</p>"
@@ -288,11 +288,11 @@ JS_CHUNKS = [
     ("// Send a request to our API", [2, 10], (
         "<p>This function wraps every API call, so the rest of the script never repeats the checks.</p>"
         "<ul>"
-        "<li>Inside an <code>async</code> function, <code>await</code> pauses that function, and only that one, until a promise settles. The browser stays responsive meanwhile.</li>"
+        "<li>Inside an <code>async</code> function, <code>await</code> pauses that function, and only that one, until a <dfn>promise</dfn>, an object standing for a value that has not arrived yet, settles. The browser stays responsive meanwhile.</li>"
         "<li><code>fetch</code> sends the request at Station 2, and its reply arrives at Station 10.</li>"
         "<li>If no response arrives at all, <code>fetch</code> rejects, and we turn that into a friendlier message.</li>"
         "<li>If a response arrives with a bad status such as 404 or 409, <code>fetch</code> still counts it as success, so we check <code>response.ok</code> ourselves and pass on the server's own message.</li>"
-        "<li><code>response.json()</code> returns a promise too, so it needs its own <code>await</code>.</li>"
+        "<li><code>response.json()</code> returns a promise too (a value that has not arrived yet), so it needs its own <code>await</code>.</li>"
         "</ul>"
     )),
     ("// Build one card for one slot", [11], (
@@ -314,7 +314,7 @@ JS_CHUNKS = [
         "<p>We attach one listener to the container and not one to each button, because the buttons do not exist yet when this line runs. A click on a button <dfn>bubbles</dfn> up through its parents, so the container hears it. This is <dfn>event delegation</dfn>.</p>"
         "<ul>"
         "<li>This function is Station 1.</li>"
-        "<li>The function reads the slot id from <code>slotCard.dataset.slot</code>, sends a <code>POST</code>, and swaps in a new card built from the server's reply.</li>"
+        "<li>The function reads the slot id from <code>slotCard.dataset.slot</code>, which is the <code>data-slot</code> attribute that the card carries, sends a <code>POST</code>, and swaps in a new card built from the server's reply.</li>"
         "<li>We draw what the server said and not what we guess, so if someone bought the last item a moment earlier, the card tells the truth.</li>"
         "</ul>"
     )),
@@ -332,7 +332,7 @@ FASTAPI_CHUNKS = [
         "<p><code>FastAPI(...)</code> creates the application. <code>SlotId</code> is a type that says a slot id must match a pattern, and the framework checks it for us. That type replaces our <code>validate_slot_id</code>.</p>"
     )),
     ("# Each decorator adds", [4], (
-        "<p>The decorators <code>@app.get(...)</code> and <code>@app.post(...)</code> add rows to a route table that the framework keeps. These are the same three rows as our <code>ROUTES</code>, and each function shrinks to one line.</p>"
+        "<p>The <dfn>decorators</dfn> <code>@app.get(...)</code> and <code>@app.post(...)</code> (lines that begin with <code>@</code> and attach the function below them to something) add rows to a route table that the framework keeps. These are the same three rows as our <code>ROUTES</code>, and each function shrinks to one line.</p>"
         "<p>The framework converts the returned dictionary to JSON, sets the headers, and turns the <code>{slot_id}</code> part of the path into an argument.</p>"
     )),
     ("# These handlers turn exceptions", [8, 9], (
@@ -423,6 +423,7 @@ def sec_build_server():
         "<li>The <strong>route layer</strong> connects URLs to data functions and checks input.</li>"
         "<li>The <strong>HTTP layer</strong> reads requests and writes responses, and the last lines start the server.</li>"
         "<li>Each layer uses only the one beneath it, so you can change one without disturbing the others. The file lists the layers in this order.</li>"
+        "<li>The diagram below names the functions that you will write in each layer.</li>"
         "</ul></div>"
     )
     body += layers_figure(E["layer_names"], E["slug"])
@@ -559,7 +560,8 @@ def sec_try_first():
             "<li>The page's own script, <code>app.js</code>, is the file you will write in Step 5, with no changes.</li>"
             "<li>A <dfn>service worker</dfn>, a script that sits between a page and the network, catches each request whose address starts with <code>/api/</code> and hands it to Python.</li>"
             "</ul>"
-            "<p>The simulated part is the wire. No bytes travel between two programs, so Stations 3 and 9 are imitated, and the HTTP layer of the server is replaced by the short file below. That replacement is possible because the layers were kept apart.</p>"
+            "<p>The simulated part is the wire. No bytes travel between two programs, so Stations 3 and 9 of the journey in Step 1 are imitated, and the HTTP layer of the server is replaced by the short file below. That replacement is possible because the layers were kept apart.</p>"
+            + "<p>The Station badges beside the code point to the journey that Step 1 introduces.</p>"
             + file_block(W / "demo-src", "py/adapter.py", ADAPTER_CHUNKS, "python", "the replacement for the HTTP layer")
             + "<p>The real server's headers include <code>Server</code> and <code>Date</code>. This reply has neither, because no real server wrote it.</p>",
         )

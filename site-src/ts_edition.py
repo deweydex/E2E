@@ -132,7 +132,7 @@ PACKAGE_CHUNKS = [
     ("", [], (
         "<ul>"
         "<li><code>package.json</code> is the identity card of a Node project.</li>"
-        "<li><code>private</code> stops you from publishing the project to the public npm registry by accident.</li>"
+        "<li><code>private</code> stops you from publishing the project to the public npm registry (the shared online store of packages) by accident.</li>"
         "<li><code>\"type\": \"module\"</code> tells Node that our files use <code>import</code> and <code>export</code>, the modern module system.</li>"
         "</ul>"
     )),
@@ -148,7 +148,7 @@ PACKAGE_CHUNKS = [
         "<li>These packages are needed only while you develop. There is no <code>dependencies</code> list, because the running server uses only what Node already contains.</li>"
         "<li><code>typescript</code> is the compiler.</li>"
         "<li><code>@types/node</code> describes Node's built-in modules as types, so the compiler knows what <code>node:http</code> and <code>node:sqlite</code> offer.</li>"
-        "<li>The caret in <code>^7.0.2</code> allows newer versions with the same major number.</li>"
+        "<li>The caret in <code>^7.0.2</code> allows newer versions with the same first (major) number, so 7.1 is allowed and 8.0 is not.</li>"
         "</ul>"
     )),
 ]
@@ -159,7 +159,7 @@ SETUP_CHUNKS = [
         "<ul>"
         "<li>Modules named <code>node:...</code> are built into Node, so nothing needs installing.</li>"
         "<li><code>path</code> builds file locations. <code>DatabaseSync</code> is Node's driver for SQLite, a library that knows how to talk to one kind of database.</li>"
-        "<li><em>Sync</em> means its calls wait for the database and return the answer directly, with no <code>await</code>.</li>"
+        "<li><em>Sync</em> means its calls wait for the database and return the answer directly, with no <code>await</code>. (<code>await</code> is how JavaScript waits for something slow. Step 5 explains it.)</li>"
         "<li>The database is one file, <code>vending.db</code>. <code>import.meta.dirname</code> is the folder that holds this script, so the file lands in the project folder wherever you run the command from.</li>"
         "</ul>"
     )),
@@ -212,13 +212,13 @@ SERVER_CHUNKS = [
         "<li>Names in capitals are constants, a convention for values that never change while the program runs.</li>"
         "<li><code>HOST</code> decides who may connect. <code>127.0.0.1</code> allows only your own computer, which is the safe choice while you develop.</li>"
         "<li><code>PORT</code> decides which program receives the request.</li>"
-        "<li><code>STATIC_FILES</code> is a <code>Map</code> of the only files the server will send. If the server sent whatever file the URL named, a visitor could ask for <code>/../src/server.ts</code> and download our code and our database. That attack is <dfn>path traversal</dfn>.</li>"
+        "<li><code>STATIC_FILES</code> is a <code>Map</code> (a collection of key and value pairs) of the only files the server will send. If the server sent whatever file the URL named, a visitor could ask for <code>/../src/server.ts</code> and download our code and our database. That attack is <dfn>path traversal</dfn>.</li>"
         "<li><code>SLOT_ID_PATTERN</code> is a <dfn>regular expression</dfn>, a compact pattern for text. This one means one capital letter followed by one digit.</li>"
         "</ul>"
     )),
     ("// --- Errors", [], (
         "<p>The program expects three kinds of trouble, and each gets its own error class. The classes have no body, because only their names matter.</p>"
-        "<p>The data layer never mentions HTTP. When something goes wrong it throws an error named in the vocabulary of the vending machine, and one place near the end of the file turns those names into status codes. "
+        "<p>The data layer never mentions HTTP. When something goes wrong it throws an error named after what went wrong in the machine, such as <code>SoldOut</code>, and one place near the end of the file turns those names into status codes. "
         "So we could reuse the data functions in a program that has no web server at all.</p>"
     )),
     ("// --- Data layer", [6], (
@@ -247,7 +247,7 @@ SERVER_CHUNKS = [
     ("function getAllSlots", [6], (
         "<p>Two functions read data.</p>"
         "<ul>"
-        "<li>The database cannot tell the compiler what its rows look like, so <code>as Slot[]</code> is our promise: <em>these rows have the shape of a Slot</em>. The compiler accepts that promise without checking.</li>"
+        "<li>The database cannot tell the compiler what its rows look like, so <code>as Slot[]</code> is our claim: <em>these rows have the shape of a Slot</em>. The compiler accepts that claim without checking.</li>"
         "<li><code>get</code> returns a row or <code>undefined</code>, so the type is <code>Slot | undefined</code>. After the <code>=== undefined</code> test and the <code>throw</code>, the compiler knows <code>slot</code> is a real slot. TypeScript calls this <dfn>narrowing</dfn>, and it removes a whole family of <em>cannot read property of undefined</em> errors.</li>"
         "</ul>"
     )),
@@ -259,8 +259,8 @@ SERVER_CHUNKS = [
         "</ul>"
     )),
     ("// --- Route layer", [5], (
-        "<p>Everything that comes from the URL is untrusted text. <code>validateSlotId</code> tidies that text, checks that the whole text has the expected shape, and throws <code>BadRequest</code> if not.</p>"
-        "<p>The queries are already safe from injection because they use parameters. This check is a second layer that gives a clear error early and keeps odd text out of our logs.</p>"
+        "<p>Everything that comes from the URL is untrusted text. <code>validateSlotId</code> cleans up that text (turning <code>a1</code> into <code>A1</code>), checks that the whole text has the expected shape, and throws <code>BadRequest</code> if not.</p>"
+        "<p>The queries are already safe from SQL injection because they use parameters. This check is a second layer that gives a clear error early and keeps odd text out of our logs.</p>"
     )),
     ("function handleListSlots", [4], (
         "<p>The three handlers are thin. Each connects a URL to a data function and validates the input on the way.</p>"
@@ -281,7 +281,7 @@ SERVER_CHUNKS = [
     )),
     ("// Node calls this function once", [4, 8, 9], (
         "<ul>"
-        "<li>Node calls this function once for every request. The function reads the method and takes the path out of <code>request.url</code> with the <code>URL</code> class, which also drops any query string.</li>"
+        "<li>Node calls this function once for every request. The function reads the method and takes the path out of <code>request.url</code> with the <code>URL</code> class, which also separates the path from any query string (the <code>?name=value</code> part).</li>"
         "<li><code>??</code> supplies a default when the left side is missing. A listener on <code>finish</code> prints one log line after the response has gone out.</li>"
         "<li>The function first checks whether the visitor asked for one of our three files. If not, the function walks through <code>ROUTES</code>, and the first row whose method and pattern both match wins.</li>"
         "<li><code>route.handler(...pathMatch.slice(1))</code> drops the whole match, keeps the captured text such as <code>\"A1\"</code>, and spreads it into arguments. Whatever the handler returns goes out as JSON with status 200.</li>"
@@ -312,7 +312,7 @@ SRC_TSCONFIG_CHUNKS = [
     ('    "noEmit"', [], (
         "<ul>"
         "<li><code>noEmit</code> means the compiler only checks and writes no files, because Node runs the TypeScript directly by stripping out the types.</li>"
-        "<li><code>erasableSyntaxOnly</code> forbids the few TypeScript features that need real translation, such as <code>enum</code>, so deleting the types always leaves valid JavaScript.</li>"
+        "<li><code>erasableSyntaxOnly</code> forbids the few TypeScript features that need real translation, such as <code>enum</code> (a named set of constants), so deleting the types always leaves valid JavaScript.</li>"
         "<li><code>verbatimModuleSyntax</code> asks us to write <code>import type</code> for imports that exist only as types.</li>"
         "</ul>"
     )),
@@ -337,7 +337,7 @@ CLIENT_TSCONFIG_CHUNKS = [
 
 APP_CHUNKS = [
     ("", [], (
-        "<p>The two types describe the JSON the server sends. They are promises and not checks: the compiler uses them to help us write the rest of the script, and nothing compares them with the real reply while the page runs.</p>"
+        "<p>The two types describe the JSON the server sends. They are claims and not checks: the compiler uses them to help us write the rest of the script, and nothing compares them with the real reply while the page runs.</p>"
         "<p>If the server renamed <code>stock</code>, this file would still compile and the page would show <em>undefined left</em>. That is why the contract between page and server needs to be written down, as in Step 3.</p>"
     )),
     ("// Find an element by its id", [11], (
@@ -354,11 +354,11 @@ APP_CHUNKS = [
     ("// Send a request to our API", [2, 10], (
         "<p>This function wraps every API call, so the rest of the script never repeats the checks.</p>"
         "<ul>"
-        "<li>Inside an <code>async</code> function, <code>await</code> pauses that function, and only that one, until a promise settles. The browser stays responsive meanwhile.</li>"
+        "<li>Inside an <code>async</code> function, <code>await</code> pauses that function, and only that one, until a <dfn>promise</dfn>, an object standing for a value that has not arrived yet, settles. The browser stays responsive meanwhile.</li>"
         "<li><code>fetch</code> sends the request at Station 2, and its reply arrives at Station 10.</li>"
         "<li>If no response arrives at all, <code>fetch</code> rejects, and we turn that into a friendlier message.</li>"
         "<li>If a response arrives with a bad status such as 404 or 409, <code>fetch</code> still counts it as success, so we check <code>response.ok</code> ourselves and pass on the server's own message.</li>"
-        "<li><code>&lt;T&gt;</code> lets each caller say what it expects, as in <code>requestJson&lt;Slot[]&gt;(...)</code>. The parsed JSON is typed <code>unknown</code>, the accurate type for data from outside, and the final <code>as T</code> is our promise that the server keeps its side of the contract.</li>"
+        "<li><code>&lt;T&gt;</code> lets each caller say what it expects, as in <code>requestJson&lt;Slot[]&gt;(...)</code>. The parsed JSON is typed <code>unknown</code>, the accurate type for data from outside, and the final <code>as T</code> is our claim that the server keeps its side of the contract.</li>"
         "</ul>"
     )),
     ("// Build one card for one slot", [11], (
@@ -380,7 +380,7 @@ APP_CHUNKS = [
         "<p>We attach one listener to the container and not one to each button, because the buttons do not exist yet when this line runs. A click on a button <dfn>bubbles</dfn> up through its parents, so the container hears it. This is <dfn>event delegation</dfn>, and <code>closest</code> climbs from the clicked element to the nearest Buy button, or returns <code>null</code> when the click landed elsewhere.</p>"
         "<ul>"
         "<li>This function is Station 1.</li>"
-        "<li>The function reads the slot id from <code>slotCard.dataset.slot</code>, sends a <code>POST</code>, and swaps in a new card built from the server's reply.</li>"
+        "<li>The function reads the slot id from <code>slotCard.dataset.slot</code>, which is the <code>data-slot</code> attribute that the card carries, sends a <code>POST</code>, and swaps in a new card built from the server's reply.</li>"
         "<li>We draw what the server said and not what we guess, so if someone bought the last item a moment earlier, the card tells the truth.</li>"
         "</ul>"
     )),
@@ -473,6 +473,7 @@ def sec_build_server():
         "<li>The <strong>route layer</strong> connects URLs to data functions and checks input.</li>"
         "<li>The <strong>HTTP layer</strong> reads requests and writes responses, and the last lines start the server.</li>"
         "<li>Each layer uses only the one beneath it, so you can change one without disturbing the others. The file lists the layers in this order.</li>"
+        "<li>The diagram below names the functions that you will write in each layer.</li>"
         "</ul></div>"
     )
     body += layers_figure(E["layer_names"], E["slug"])
@@ -596,11 +597,11 @@ SHIM_CHUNKS = [
         "<p>The map keeps each database in memory under a file name. Opening the same name twice returns the same database, which is how the setup script and the server share one machine, as they share <code>vending.db</code> on disk.</p>"
     )),
     ("class StatementSync", [6], (
-        "<p>A statement object holds one piece of SQL. The constructor prepares the SQL at once, so a mistake in the SQL fails when the server starts and not on the first click, as with the real module.</p>"
+        "<p>A statement object holds one piece of SQL. The <em>constructor</em>, the function that runs when a statement object is created, prepares the SQL at once, so a mistake in the SQL fails when the server starts and not on the first click, as with the real module.</p>"
     )),
     ("  // Return every matching row", [6], (
         "<p><code>all</code> runs the statement with the values the caller passes and collects the rows into an array of objects. The values travel separately from the SQL, so placeholders protect this demo from injection as they do the real server. "
-        "The <code>finally</code> block frees the statement even if something goes wrong, because sql.js keeps statements in memory until we release them. <code>get</code> is <code>all</code> with only the first row kept.</p>"
+        "The <code>finally</code> block (code that runs whether or not an error happened) frees the statement even if something goes wrong, because sql.js keeps statements in memory until we release them. <code>get</code> is <code>all</code> with only the first row kept.</p>"
     )),
     ("  // Run a statement that changes data", [7], (
         "<p><code>run</code> executes a statement that changes data. SQLite counts the rows changed, and we return that count as <code>changes</code>, the name that <code>buySlot</code> in <code>server.ts</code> reads to find out whether the purchase worked.</p>"
@@ -653,7 +654,8 @@ def sec_try_first():
             "<li>The page's own script, compiled from <code>client/app.ts</code>, is the file you will write in Step 5.</li>"
             "<li>A <dfn>service worker</dfn>, a script that sits between a page and the network, catches each request whose address starts with <code>/api/</code> and hands it to the code above.</li>"
             "</ul>"
-            "<p>The simulated part is the wire. No bytes travel between two programs, so Stations 3 and 9 are imitated. Two small files stand in for what a browser lacks: a wrapper that gives sql.js the interface of Node's SQLite module, and a replacement for the HTTP layer. The second is possible because the layers were kept apart.</p>"
+            "<p>The simulated part is the wire. No bytes travel between two programs, so Stations 3 and 9 of the journey in Step 1 are imitated. Two small files stand in for what a browser lacks: a wrapper, a small layer of code around another tool, that gives sql.js the interface of Node's SQLite module, and a replacement for the HTTP layer. The second is possible because the layers were kept apart.</p>"
+            + "<p>The Station badges beside the code point to the journey that Step 1 introduces.</p>"
             + file_block(W / "demo-src", "ts/node-sqlite-shim.js", SHIM_CHUNKS, "javascript", "the stand-in for node:sqlite")
             + file_block(W / "demo-src", "ts/adapter.ts", ADAPTER_CHUNKS, "typescript", "the replacement for the HTTP layer")
             + "<p>The real server's headers include <code>Date</code> and <code>Connection</code>. This reply has neither, because no real server wrote it.</p>",

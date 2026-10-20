@@ -92,7 +92,7 @@ def sec_journey(E):
             ],
             "In this step you will",
         )
-        + '<div class="prose"><p>Press Buy on slot A1. The screen changes after a few milliseconds, and those milliseconds hold twelve stations. Ten words appear on the diagram, so here they are first, in plain terms. Each one gets a fuller explanation in the step that builds it.</p>'
+        + '<div class="prose"><p>Press Buy on slot A1. The screen changes after a few milliseconds, and those milliseconds hold twelve stops, which this tutorial calls stations. Ten words appear on the diagram, so here they are first, in plain terms. Each one gets a fuller explanation in the step that builds it.</p>'
         + terms.intro_list(["request", "response", "fetch", "route table", "handler", "SQL", "connection", "transaction", "JSON", "DOM"])
         + '<p>Use the buttons under the diagram to step through the stations. In the diagram and in the text, a dotted underline marks a key word, and hovering over it shows what it means.</p></div>'
         + stepper_html(E, journey_svg(E["server_label"]))
@@ -174,7 +174,7 @@ def concept_server(E):
 <li>A <dfn>client</dfn> starts a conversation. Your browser is the client.</li>
 <li>A <dfn>server</dfn> waits for conversations to start. Your @@name@@ program is the server.</li>
 <li>The client needs an address. The <dfn>host</dfn> says which computer, and the <dfn>port</dfn> says which program on that computer. We use host <code>127.0.0.1</code>, which always means <em>this computer</em>, and port <code>8000</code>.</li>
-<li>Host, port and <dfn>path</dfn> together make a <dfn>URL</dfn>, such as <code>http://127.0.0.1:8000/api/slots/A1/buy</code>. The server reads the path to decide what to do.</li>
+<li>Host, port and <dfn>path</dfn> together make a <dfn>URL</dfn>, such as <code>http://127.0.0.1:8000/api/slots/A1/buy</code>. The server compares the path with its <dfn>route table</dfn>, a list with one row for each kind of request. The matching row names the <dfn>handler</dfn>, the function that does the work.</li>
 </ul>
 </div>
 @@url_figure@@
@@ -262,7 +262,7 @@ def concept_shapes(E):
 <ul>
 <li>Only the third shape can cross the network, because a network carries text and bytes.</li>
 <li><dfn>Serialising</dfn> turns a structure into text. <dfn>Parsing</dfn> turns text back into a structure.</li>
-<li>Every arrow is a place where something can go wrong: a key can be missing, a number can arrive as text, or a value can be empty.</li>
+<li>Every arrow is a place where something can go wrong: a field can be missing, a number can arrive as text, or a value can be empty.</li>
 </ul>
 </div>
 """.replace("@@parts@@", "".join(parts)).replace("@@shapes_fig@@", shapes_figure(E)),

@@ -40,7 +40,7 @@ def sec_run(E):
 <li>Press F12 to open the developer tools (Ctrl+Shift+I on Windows and Linux, Option+Command+I on a Mac).</li>
 <li>Choose the <strong>Network</strong> tab and reload the page. Each row is one message the browser sent: the page, <code>style.css</code>, <code>app.js</code> and <code>slots</code>, which is the API request.</li>
 <li>Click the <code>slots</code> row. <strong>Headers</strong> shows the request and the response, and <strong>Response</strong> shows the JSON.</li>
-<li>Press Buy. A new row appears, this time a <code>POST</code>. The Status column shows the status code, and the Time column shows the length of the round trip.</li>
+<li>Press Buy. A new row appears, this time a <code>POST</code>. The Status column shows the status code, and the Time column shows how long the round trip took, from sending the request to receiving the reply.</li>
 </ol>
 <h3>Watch the traffic in the terminal</h3>
 <p>The server prints one line for each request it answers. Put the terminal beside the browser and press Buy a few times.</p>
@@ -64,7 +64,7 @@ def sec_run(E):
 <ul>
 <li><code>-i</code> shows the response headers.</li>
 <li><code>-X POST</code> chooses the method.</li>
-<li>In older versions of Windows PowerShell, <code>curl</code> is an alias for another command, so type <code>curl.exe</code> instead.</li>
+<li>In older versions of Windows PowerShell, <code>curl</code> is an alias (a second name) for another command, so type <code>curl.exe</code> instead.</li>
 </ul>
 </div>
 """
@@ -147,7 +147,7 @@ def sec_http(E):
 <div class="prose">
 <h3>Methods</h3>
 <ul>
-<li><code>GET</code> reads something and promises to change nothing. A method like that is <dfn>safe</dfn>.</li>
+<li><code>GET</code> reads something and is expected to change nothing. A method like that is <dfn>safe</dfn>.</li>
 <li><code>POST</code> asks the server to do something, and it may change data.</li>
 <li>Browsers, link previews in chat apps and search engine crawlers send <code>GET</code> requests freely and may repeat them. If buying were a <code>GET</code>, a chat app that previews a link could buy a snack.</li>
 <li>Buying is also not <dfn>idempotent</dfn>, because doing it twice does not leave the same result as doing it once. Reading is idempotent, so you can refresh a page as often as you like.</li>
@@ -226,7 +226,7 @@ def sec_experiments(E):
         "<p>The page says <em>Cannot reach the server. Is it running?</em>, yet the server is running. Check the console and the server's terminal before you read on.</p>",
         "<ul><li>The console reports a <strong>CORS policy</strong> block. The server's terminal shows that it received the request and answered normally.</li>"
         "<li>The browser delivered the request and then refused to let the script read the answer.</li>"
-        "<li>The reason is the <dfn>same-origin policy</dfn>. An <dfn>origin</dfn> is scheme, host and port together, and port 9000 is a different origin from port 8000.</li>"
+        "<li>The reason is the <dfn>same-origin policy</dfn>. An <dfn>origin</dfn> is scheme (http or https), host and port together, and port 9000 is a different origin from port 8000.</li>"
         "<li>By default a script may read responses only from its own origin. That stops a malicious page from reading your private data out of another site you are signed in to.</li>"
         "<li>A server can opt in with a header. The policy that the server opts in to is <dfn>CORS</dfn> (Cross-Origin Resource Sharing).</li></ul>"
         f"<p>To fix it, add one header to every response: {E['cors_snippet']} Restart the server and reload, and the page works.</p>"
@@ -269,7 +269,7 @@ def sec_choices(E):
          "When a page must work without scripts, the server can send finished HTML, and a form with a full page reload replaces the script."),
         ("Prices stored as whole cents",
          "Whole numbers are exact, so sums never drift.",
-         "Some databases have an exact decimal type, which is also fine. A floating point column for money is never a good choice."),
+         "Some databases have an exact decimal type, which is also fine. A floating point column (numbers that carry tiny rounding errors) is never a good choice for money."),
         ("POST for buying",
          "Buying changes data and is not idempotent, so a link preview must not be able to trigger that action.",
          "Other changes use other methods: PUT to replace something, PATCH to adjust part of it, DELETE to remove it."),
@@ -322,11 +322,11 @@ def sec_extensions(E):
         ("A restock route.",
          f"Add <code>POST /api/slots/A1/restock</code> with a JSON body such as <code>{{\"amount\": 5}}</code>. Reject a missing body, invalid JSON and an amount that is not a whole number from 1 to 100, each with a 400. {E['body_hint']}"),
         ("A sales log in the same transaction.",
-         "Create a <code>sales</code> table with an id, a slot id that references <code>inventory</code>, a timestamp and the price paid. Make a purchase insert a sale and decrement the stock inside one transaction. Why should the sale store the price again? Then prove the transaction works: raise an error between the two statements and check that the stock did not change."),
+         "Create a <code>sales</code> table with an id, a slot id that points to a row in <code>inventory</code> (a <dfn>foreign key</dfn>), a timestamp and the price paid. Make a purchase insert a sale and decrement the stock inside one transaction. Why should the sale store the price again? Then prove the transaction works: raise an error between the two statements and check that the stock did not change."),
         ("A summary route.",
-         "Add <code>GET /api/sales/summary</code> that returns, for each item, how many were sold and how much money they earned. This needs a <code>JOIN</code> and a <code>GROUP BY</code>, and the result has to arrive as clean JSON."),
+         "Add <code>GET /api/sales/summary</code> that returns, for each item, how many were sold and how much money they earned. This needs a <code>JOIN</code>, which combines rows from two tables that share a value, and a <code>GROUP BY</code>, which gathers rows that share a value so that you can count or add them. The result has to arrive as clean JSON."),
         ("Automatic refresh.",
-         "Make the page ask for the slots every five seconds with <code>setInterval</code>, and open it in two windows. When you buy in one, how long until the other notices? Server-sent events and WebSockets let the server push changes instead."),
+         "Make the page ask for the slots every five seconds with <code>setInterval</code>, a browser function that repeats another function at a fixed interval, and open it in two windows. When you buy in one, how long until the other notices? Server-sent events and WebSockets let the server push changes instead."),
         ("Separate hosting.",
          "Serve the page from its own port and make it work with CORS, as in Experiment 5. Then think about hosting only the page on GitHub Pages. You would need an absolute API address, a CORS header for your Pages origin, and an API reachable over HTTPS, because a page served over HTTPS may not call an insecure address."),
     ]
