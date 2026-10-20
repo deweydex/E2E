@@ -66,8 +66,8 @@ E = {
         "note",
         "A warning you will see",
         "<p>Node prints <code>ExperimentalWarning: SQLite is an experimental feature</code> when a program loads <code>node:sqlite</code>. "
-        "It means that the Node team may still change the details of that module, and it does not mean that something is broken. "
-        "We use the built-in module because it needs no installation, and the SQL you learn here is the same SQL that every other SQLite driver accepts.</p>",
+        "The warning means that the Node team may still change the details of that module. It does not mean that something is broken. "
+        "We use the built-in module because that module needs no installation, and the SQL you learn here is the same SQL that every other SQLite driver accepts.</p>",
     ),
     "log_sample": (
         "GET / 200\n"
@@ -112,7 +112,7 @@ E = {
     "extra_extension": (
         "One type, shared.",
         "The <code>Slot</code> type is written twice, once in the server and once in the page script. "
-        "Move it into a file that both can import, and discover what makes that harder than it sounds. Think about which program reads each import, and what a browser needs an import path to look like.",
+        "Move the type into a file that both can import, and discover what makes that harder than it sounds. Think about which program reads each import, and what a browser needs an import path to look like.",
     ),
     "sql_extra": "Node does not ship a SQLite shell, so these tools are the easiest route.",
     "static_server": "<code>npx http-server public -p 9000</code>",
@@ -203,8 +203,8 @@ SERVER_CHUNKS = [
         "<ul>"
         "<li>The imports bring in only what Node already contains: <code>readFileSync</code> reads a file, <code>createServer</code> builds a web server, and <code>DatabaseSync</code> talks to SQLite.</li>"
         "<li><code>import type</code> brings in two names that exist only as types, and makes that visible.</li>"
-        "<li>The <code>Slot</code> type describes one slot. It matches one row of the table and the JSON we send.</li>"
-        "<li>A type exists only while you write and check the program, and Node removes it before it runs. So a type protects you from your own typing mistakes and does nothing about data that arrives from outside.</li>"
+        "<li>The <code>Slot</code> type describes one slot. The type matches one row of the table and the JSON we send.</li>"
+        "<li>A type exists only while you write and check the program, and Node removes the type before the program runs. So a type protects you from your own typing mistakes and does nothing about data that arrives from outside.</li>"
         "</ul>"
     )),
     ("// --- Settings", [3], (
@@ -212,7 +212,7 @@ SERVER_CHUNKS = [
         "<li>Names in capitals are constants, a convention for values that never change while the program runs.</li>"
         "<li><code>HOST</code> decides who may connect. <code>127.0.0.1</code> allows only your own computer, which is the safe choice while you develop.</li>"
         "<li><code>PORT</code> decides which program receives the request.</li>"
-        "<li><code>STATIC_FILES</code> is a <code>Map</code> of the only files the server will send. If it sent whatever file the URL named, a visitor could ask for <code>/../src/server.ts</code> and download our code and our database. That attack is <dfn>path traversal</dfn>.</li>"
+        "<li><code>STATIC_FILES</code> is a <code>Map</code> of the only files the server will send. If the server sent whatever file the URL named, a visitor could ask for <code>/../src/server.ts</code> and download our code and our database. That attack is <dfn>path traversal</dfn>.</li>"
         "<li><code>SLOT_ID_PATTERN</code> is a <dfn>regular expression</dfn>, a compact pattern for text. This one means one capital letter followed by one digit.</li>"
         "</ul>"
     )),
@@ -223,7 +223,7 @@ SERVER_CHUNKS = [
     )),
     ("// --- Data layer", [6], (
         "<ul>"
-        "<li>We open one connection for the whole program. Node runs our code on a single thread, so only one request touches it at a time. (The Python edition opens one per request because its server uses several threads.)</li>"
+        "<li>We open one connection for the whole program. Node runs our code on a single thread, so only one request touches the connection at a time. (The Python edition opens one per request because its server uses several threads.)</li>"
         "<li>Every call on <code>database</code> is <dfn>synchronous</dfn>: the program waits for the answer and moves on.</li>"
         "<li>That would be a poor idea with a database on another computer, because the whole server would stall during each network trip. SQLite lives inside our own process and answers in microseconds, so waiting costs almost nothing.</li>"
         "</ul>"
@@ -247,7 +247,7 @@ SERVER_CHUNKS = [
     ("function getAllSlots", [6], (
         "<p>Two functions read data.</p>"
         "<ul>"
-        "<li>The database cannot tell the compiler what its rows look like, so <code>as Slot[]</code> is our promise: <em>these rows have the shape of a Slot</em>. The compiler accepts it without checking.</li>"
+        "<li>The database cannot tell the compiler what its rows look like, so <code>as Slot[]</code> is our promise: <em>these rows have the shape of a Slot</em>. The compiler accepts that promise without checking.</li>"
         "<li><code>get</code> returns a row or <code>undefined</code>, so the type is <code>Slot | undefined</code>. After the <code>=== undefined</code> test and the <code>throw</code>, the compiler knows <code>slot</code> is a real slot. TypeScript calls this <dfn>narrowing</dfn>, and it removes a whole family of <em>cannot read property of undefined</em> errors.</li>"
         "</ul>"
     )),
@@ -259,7 +259,7 @@ SERVER_CHUNKS = [
         "</ul>"
     )),
     ("// --- Route layer", [5], (
-        "<p>Everything that comes from the URL is untrusted text. <code>validateSlotId</code> tidies it, checks that the whole text has the expected shape, and throws <code>BadRequest</code> if not.</p>"
+        "<p>Everything that comes from the URL is untrusted text. <code>validateSlotId</code> tidies that text, checks that the whole text has the expected shape, and throws <code>BadRequest</code> if not.</p>"
         "<p>The queries are already safe from injection because they use parameters. This check is a second layer that gives a clear error early and keeps odd text out of our logs.</p>"
     )),
     ("function handleListSlots", [4], (
@@ -275,18 +275,18 @@ SERVER_CHUNKS = [
         "<ul>"
         "<li><code>sendBody</code> writes the response in the order HTTP demands: the status line and headers (<code>writeHead</code> writes both), a blank line, and the body (<code>end</code>).</li>"
         "<li><code>Content-Length</code> counts bytes, and some characters take more than one, so we measure with <code>Buffer.byteLength</code> and not <code>.length</code>.</li>"
-        "<li><code>sendJson</code> turns the data into text with <code>JSON.stringify</code> and hands it to <code>sendBody</code>.</li>"
+        "<li><code>sendJson</code> turns the data into text with <code>JSON.stringify</code> and hands the text to <code>sendBody</code>.</li>"
         "<li>The type <code>unknown</code> for <code>data</code> means we accept any value without making claims about it.</li>"
         "</ul>"
     )),
     ("// Node calls this function once", [4, 8, 9], (
         "<ul>"
-        "<li>Node calls this function once for every request. It reads the method and takes the path out of <code>request.url</code> with the <code>URL</code> class, which also drops any query string.</li>"
+        "<li>Node calls this function once for every request. The function reads the method and takes the path out of <code>request.url</code> with the <code>URL</code> class, which also drops any query string.</li>"
         "<li><code>??</code> supplies a default when the left side is missing. A listener on <code>finish</code> prints one log line after the response has gone out.</li>"
-        "<li>The function first checks whether the visitor asked for one of our three files. If not, it walks through <code>ROUTES</code>, and the first row whose method and pattern both match wins.</li>"
+        "<li>The function first checks whether the visitor asked for one of our three files. If not, the function walks through <code>ROUTES</code>, and the first row whose method and pattern both match wins.</li>"
         "<li><code>route.handler(...pathMatch.slice(1))</code> drops the whole match, keeps the captured text such as <code>\"A1\"</code>, and spreads it into arguments. Whatever the handler returns goes out as JSON with status 200.</li>"
         "<li>The <code>catch</code> is the one place where errors become status codes: 400, 404 and 409.</li>"
-        "<li>Any other error is our own bug. We print it for the developer and send a vague 500, because error details help attackers more than visitors.</li>"
+        "<li>Any other error is our own bug. We print the error for the developer and send a vague 500, because error details help attackers more than visitors.</li>"
         "</ul>"
     )),
     ("// Create the server and tell", [3], (
@@ -306,7 +306,7 @@ SRC_TSCONFIG_CHUNKS = [
         "</ul>"
     )),
     ('    "strict"', [], (
-        "<p><code>strict</code> switches on the checks that catch the most mistakes. Use it in every new project.</p>"
+        "<p><code>strict</code> switches on the checks that catch the most mistakes. Use that setting in every new project.</p>"
         "<p><code>noUncheckedIndexedAccess</code> adds one more: reading <code>list[3]</code> gives a value that might be <code>undefined</code>, because the list might be shorter than you think.</p>"
     )),
     ('    "noEmit"', [], (
@@ -346,8 +346,8 @@ APP_CHUNKS = [
     ("// Find the elements that we need", [11], (
         "<ul>"
         "<li>The three constants look up elements by <code>id</code> and keep them in variables, so we search the page once and not on every click.</li>"
-        "<li><code>as HTMLTemplateElement</code> tells the compiler a fact about our own page that it cannot see.</li>"
-        "<li><code>Intl.NumberFormat</code> is a formatter the browser provides. With the locale <code>en-IE</code> and the currency <code>EUR</code> it writes 1.75 as <code>€1.75</code>.</li>"
+        "<li><code>as HTMLTemplateElement</code> tells the compiler a fact about our own page that the compiler cannot see.</li>"
+        "<li><code>Intl.NumberFormat</code> is a formatter the browser provides. With the locale <code>en-IE</code> and the currency <code>EUR</code> the formatter writes 1.75 as <code>€1.75</code>.</li>"
         "<li>Writing <code>\"€\" + (cents / 100).toFixed(2)</code> works until you meet a place with different conventions, so we let the formatter decide.</li>"
         "</ul>"
     )),
@@ -380,7 +380,7 @@ APP_CHUNKS = [
         "<p>We attach one listener to the container and not one to each button, because the buttons do not exist yet when this line runs. A click on a button <dfn>bubbles</dfn> up through its parents, so the container hears it. This is <dfn>event delegation</dfn>, and <code>closest</code> climbs from the clicked element to the nearest Buy button, or returns <code>null</code> when the click landed elsewhere.</p>"
         "<ul>"
         "<li>This function is Station 1.</li>"
-        "<li>It reads the slot id from <code>slotCard.dataset.slot</code>, sends a <code>POST</code>, and swaps in a new card built from the server's reply.</li>"
+        "<li>The function reads the slot id from <code>slotCard.dataset.slot</code>, sends a <code>POST</code>, and swaps in a new card built from the server's reply.</li>"
         "<li>We draw what the server said and not what we guess, so if someone bought the last item a moment earlier, the card tells the truth.</li>"
         "</ul>"
     )),
@@ -412,7 +412,7 @@ def sec_build_db():
     body = goal(
         [
             "Create the vending machine's database as a file.",
-            "Run a script that fills it with four slots.",
+            "Run a script that fills the database with four slots.",
             "See the stored rows printed back.",
         ]
     )
@@ -480,8 +480,8 @@ def sec_build_server():
         [
             "In <code>src</code>, create <code>server.ts</code> and type or paste the first code block below.",
             "In <code>src</code>, create <code>tsconfig.json</code> with the second code block.",
-            "Run <code>npm run check</code>. It prints nothing when the type checker finds no problem.",
-            "Run <code>npm start</code>. It stays running, and that is correct.",
+            "Run <code>npm run check</code>. The command prints nothing when the type checker finds no problem.",
+            "Run <code>npm start</code>. The server stays running, and that is correct.",
             "Visit <code>http://127.0.0.1:8000/api/slots</code> in a browser.",
         ]
     )
@@ -517,7 +517,7 @@ def sec_build_page():
     body += make_steps(
         [
             "In <code>vending-ts</code>, create a folder called <code>public</code>.",
-            "In it, create <code>index.html</code> and <code>style.css</code> with the code below.",
+            "In that folder, create <code>index.html</code> and <code>style.css</code> with the code below.",
             "With the server still running, open <code>http://127.0.0.1:8000</code>.",
         ]
     )
@@ -537,7 +537,7 @@ def sec_build_script():
     body = goal(
         [
             "Write the script that asks the server for the slots.",
-            "Compile it to JavaScript for the browser.",
+            "Compile the script to JavaScript for the browser.",
             "Make the Buy button work, so the whole journey from Step 1 happens.",
         ]
     )
@@ -596,7 +596,7 @@ SHIM_CHUNKS = [
         "<p>The map keeps each database in memory under a file name. Opening the same name twice returns the same database, which is how the setup script and the server share one machine, as they share <code>vending.db</code> on disk.</p>"
     )),
     ("class StatementSync", [6], (
-        "<p>A statement object holds one piece of SQL. The constructor prepares it at once, so a mistake in the SQL fails when the server starts and not on the first click, as with the real module.</p>"
+        "<p>A statement object holds one piece of SQL. The constructor prepares the SQL at once, so a mistake in the SQL fails when the server starts and not on the first click, as with the real module.</p>"
     )),
     ("  // Return every matching row", [6], (
         "<p><code>all</code> runs the statement with the values the caller passes and collects the rows into an array of objects. The values travel separately from the SQL, so placeholders protect this demo from injection as they do the real server. "
@@ -619,10 +619,10 @@ ADAPTER_CHUNKS = [
         "<p>The function receives the machine and returns an <code>answer</code> function, which takes a method and a path and returns a status and a body. That is the whole job of an HTTP layer, once the network part is removed.</p>"
     )),
     ("      // The same route table", [4, 8], (
-        "<p>The loop is the one from the real <code>answerRequest</code>. It walks the real <code>ROUTES</code> table, and the first matching row calls the real handler. The data layer then runs real SQL on a real SQLite database, which here lives in the page's memory.</p>"
+        "<p>The loop is the one from the real <code>answerRequest</code>. The loop walks the real <code>ROUTES</code> table, and the first matching row calls the real handler. The data layer then runs real SQL on a real SQLite database, which here lives in the page's memory.</p>"
     )),
     ("      // The same translation", [9], (
-        "<p>These lines repeat the translation from errors to status codes, because it belonged to the layer we replaced. A request for <code>B2</code>, which has no stock, ends here as a 409 with the same message the real server sends.</p>"
+        "<p>These lines repeat the translation from errors to status codes, because that translation belonged to the layer we replaced. A request for <code>B2</code>, which has no stock, ends here as a 409 with the same message the real server sends.</p>"
     )),
 ]
 

@@ -9,6 +9,7 @@ from lib import (
     section,
     snippet,
 )
+import terms
 from diagrams import dl_link, journey_svg, shapes_figure, stations_data, stepper_html, trust_svg, url_figure
 
 
@@ -91,16 +92,20 @@ def sec_journey(E):
             ],
             "In this step you will",
         )
-        + '<div class="prose"><p>Press Buy on slot A1. The screen changes after a few milliseconds, and those milliseconds hold twelve stations. Use the buttons under the diagram to step through them.</p></div>'
+        + '<div class="prose"><p>Press Buy on slot A1. The screen changes after a few milliseconds, and those milliseconds hold twelve stations. Ten words appear on the diagram, so here they are first, in plain terms. Each one gets a fuller explanation in the step that builds it.</p>'
+        + terms.intro_list(["request", "response", "fetch", "route table", "handler", "SQL", "connection", "transaction", "JSON", "DOM"])
+        + '<p>Use the buttons under the diagram to step through the stations. In the diagram and in the text, a dotted underline marks a key word, and hovering over it shows what it means.</p></div>'
         + stepper_html(E, journey_svg(E["server_label"]))
         + deeper("The twelve stations as a list", f'<ol class="stations">{items}</ol>', "Reference")
         + check(
             [
                 "The browser and the server are two separate programs. They work together by sending messages.",
+                "A click becomes a request, the server answers with a response, and the script uses that response to change the page.",
+                "The server holds the rules, and the browser is never trusted to follow them.",
                 "The database sits behind the server and never in front of it.",
                 "Each of the next steps builds one part of this picture.",
             ],
-            "Keep these three ideas",
+            "Keep these ideas",
         )
     )
     return section("journey", "Step 1", "Follow one click", body)
@@ -121,7 +126,7 @@ def concept_database(E):
 <li><strong>Persistence.</strong> The data survives when the programs stop.</li>
 <li><strong>Structure.</strong> A <dfn>schema</dfn> declares the tables, the columns and the type of each column.</li>
 <li><strong>Queries.</strong> SQL asks for exactly the rows you want, and the database finds them quickly.</li>
-<li><strong>Safe changes.</strong> A transaction makes a group of changes all-or-nothing, and it keeps simultaneous users from spoiling each other's work.</li>
+<li><strong>Safe changes.</strong> A transaction makes a group of changes all-or-nothing, and keeps simultaneous users from spoiling each other's work.</li>
 <li><strong>Rules.</strong> A <dfn>constraint</dfn> such as <code>CHECK (stock &gt;= 0)</code> makes the database refuse bad data, even when a bug in your code tries to write it.</li>
 </ul>
 <p>The machine needs one table. Its <dfn>primary key</dfn>, <code>slot_id</code>, is a column whose value differs in every row, so it identifies exactly one row.</p>
@@ -144,7 +149,7 @@ def concept_database(E):
         )
         + deeper(
             "Where SQLite fits",
-            "<p>SQLite is a database that lives inside a library that your program loads. It keeps everything in one ordinary file, and it needs no installation and no separate server. Larger systems such as PostgreSQL and MySQL run as their own server programs. All of them speak SQL, so what you learn here carries over. SQLite is a quiet car park for a first driving lesson: it removes everything that is not the lesson.</p>",
+            "<p>SQLite is a database that lives inside a library that your program loads. SQLite keeps everything in one ordinary file and needs no installation and no separate server. Larger systems such as PostgreSQL and MySQL run as their own server programs. All of them speak SQL, so what you learn here carries over. SQLite suits a first lesson the way a quiet car park suits a first driving lesson: nothing gets in the way.</p>",
         ),
         E,
     )
@@ -182,7 +187,7 @@ def concept_server(E):
 </div><figcaption>The browser is outside your control, so the server treats every request as untrusted. The database is reachable only through the server.@@trust_dl@@</figcaption>
 </figure>
 <div class="prose">
-<p>Look at how Buy is designed. The browser names a slot and nothing else. It does not say what the price is or which SQL to run. Those decisions belong to the server.</p>
+<p>Look at how Buy is designed. The browser names a slot and nothing else. The browser does not say what the price is or which SQL to run. Those decisions belong to the server.</p>
 </div>
 """,
         E,
@@ -194,9 +199,9 @@ def concept_server(E):
         """
 <div class="prose">
 <h3>Design the API before you write it</h3>
-<p>An <dfn>API</dfn> (Application Programming Interface) is the part of a program that other programs may use. A web API offers it over HTTP, and usually replies in JSON. Designing one means four decisions:</p>
+<p>An <dfn>API</dfn> (Application Programming Interface) is the part of a program that other programs may use. A web API makes that part available over HTTP, and usually replies in JSON. Designing one means four decisions:</p>
 <ul>
-<li><strong>Which things does it offer?</strong> Each thing gets a URL, called an <dfn>endpoint</dfn>. Ours are all the slots and each single slot.</li>
+<li><strong>Which things does the API offer?</strong> Each thing gets a URL, called an <dfn>endpoint</dfn>. Ours are all the slots and each single slot.</li>
 <li><strong>Which actions are allowed?</strong> The <dfn>method</dfn> names the action. <code>GET</code> reads, and <code>POST</code> changes something.</li>
 <li><strong>What shape does the data have?</strong> The <dfn>contract</dfn> lists the fields and their types.</li>
 <li><strong>How are outcomes reported?</strong> A <dfn>status code</dfn> gives the category, and a JSON message gives the detail. 200 means success, 400 means the client asked badly, 404 means nothing is there, and 409 means the request clashes with the current state.</li>

@@ -154,7 +154,7 @@ SERVER_CHUNKS = [
         "<li>Names in capitals are constants, a convention for values that never change while the program runs.</li>"
         "<li><code>HOST</code> decides who may connect. <code>127.0.0.1</code> allows only your own computer, which is the safe choice while you develop.</li>"
         "<li><code>PORT</code> decides which program receives the request.</li>"
-        "<li><code>STATIC_FILES</code> lists the only files the server will send. If it sent whatever file the URL named, a visitor could ask for <code>/../server.py</code> and download our code and our database. That attack is <dfn>path traversal</dfn>.</li>"
+        "<li><code>STATIC_FILES</code> lists the only files the server will send. If the server sent whatever file the URL named, a visitor could ask for <code>/../server.py</code> and download our code and our database. That attack is <dfn>path traversal</dfn>.</li>"
         "<li><code>SLOT_ID_PATTERN</code> is a <dfn>regular expression</dfn>, a compact pattern for text. This one means one capital letter followed by one digit.</li>"
         "</ul>"
     )),
@@ -192,7 +192,7 @@ SERVER_CHUNKS = [
         "</ul>"
     )),
     ("# --- Route layer", [5], (
-        "<p>Everything that comes from the URL is untrusted text. <code>validate_slot_id</code> tidies it, checks that the whole text has the expected shape, and raises <code>BadRequest</code> if not.</p>"
+        "<p>Everything that comes from the URL is untrusted text. <code>validate_slot_id</code> tidies that text, checks that the whole text has the expected shape, and raises <code>BadRequest</code> if not.</p>"
         "<p>The queries are already safe from injection because they use parameters. This check is a second layer that gives a clear error early and keeps odd text out of our logs.</p>"
     )),
     ("def handle_list_slots", [4], (
@@ -205,16 +205,16 @@ SERVER_CHUNKS = [
         "</ul>"
     )),
     ("# --- HTTP layer", [4], (
-        "<p><code>BaseHTTPRequestHandler</code> is a standard library class that reads the raw request for us. It calls the method whose name matches the HTTP method, so a GET calls <code>do_GET</code>. "
+        "<p><code>BaseHTTPRequestHandler</code> is a standard library class that reads the raw request for us. The class calls the method whose name matches the HTTP method, so a GET calls <code>do_GET</code>. "
         "We send both methods to one method of our own, <code>answer_request</code>, and pass the method's name along.</p>"
     )),
     ("    def answer_request", [4, 8, 9], (
         "<ul>"
         "<li>First the method checks whether the visitor asked for one of our three files.</li>"
-        "<li>If not, it walks through <code>ROUTES</code>. <code>fullmatch</code> requires the pattern to match the whole path.</li>"
+        "<li>If not, the method walks through <code>ROUTES</code>. <code>fullmatch</code> requires the pattern to match the whole path.</li>"
         "<li><code>handler(*path_match.groups())</code> spreads the captured text into arguments, and whatever the handler returns goes out as JSON with status 200.</li>"
         "<li>The <code>except</code> lines are the one place where exceptions become status codes: 400, 404 and 409.</li>"
-        "<li>Any other exception is our own bug. We print it for the developer and send a vague 500 to the client, because Python's error details help attackers more than visitors.</li>"
+        "<li>Any other exception is our own bug. We print the error for the developer and send a vague 500 to the client, because Python's error details help attackers more than visitors.</li>"
         "</ul>"
     )),
     ("    def send_static_file", [9], (
@@ -224,7 +224,7 @@ SERVER_CHUNKS = [
     )),
     ("# This block runs only", [3], (
         "<ul>"
-        "<li><code>ThreadingHTTPServer((HOST, PORT), VendingRequestHandler)</code> asks the operating system to listen on that address. It creates a <code>VendingRequestHandler</code> for each request, in a new thread each time.</li>"
+        "<li><code>ThreadingHTTPServer((HOST, PORT), VendingRequestHandler)</code> asks the operating system to listen on that address. The server creates a <code>VendingRequestHandler</code> for each request, in a new thread each time.</li>"
         "<li><code>serve_forever</code> loops and waits.</li>"
         "<li><code>if __name__ == \"__main__\"</code> means the block runs only when you start this file directly. The optional FastAPI file imports our data functions without starting a second server.</li>"
         "</ul>"
@@ -244,11 +244,11 @@ INDEX_CHUNKS = [
         "<p>The browser reads this file and builds the <dfn>DOM</dfn>, a tree with one object per element. What you see is a drawing of that tree, and the script will change the tree later.</p>"
         "<ul>"
         "<li>The <code>id</code> attributes are names the script uses to find elements.</li>"
-        "<li><code>#slots</code> starts empty. The script fills it with one card per row in the database.</li>"
+        "<li><code>#slots</code> starts empty. The script fills <code>#slots</code> with one card per row in the database.</li>"
         "</ul>"
     )),
     ("  <!-- A template", [11], (
-        "<p>A <code>&lt;template&gt;</code> holds HTML that the browser reads but neither shows nor runs. The script copies it once per slot and fills in the copy.</p>"
+        "<p>A <code>&lt;template&gt;</code> holds HTML that the browser reads but neither shows nor runs. The script copies the template once per slot and fills in the copy.</p>"
         "<ul>"
         "<li>HTML is the clearest way to describe structure.</li>"
         "<li>Pieces of HTML joined together inside script strings are hard to read and easy to get wrong.</li>"
@@ -256,7 +256,7 @@ INDEX_CHUNKS = [
         "</ul>"
     )),
     ("  <!-- The script comes last", [], (
-        "<p>The script comes last, so every element it looks for already exists when it runs. <code>type=\"module\"</code> opts in to the modern script mode, in which the names inside the file stay private to the file.</p>"
+        "<p>The script comes last, so every element that the script looks for already exists when the script runs. <code>type=\"module\"</code> opts in to the modern script mode, in which the names inside the file stay private to the file.</p>"
     )),
 ]
 
@@ -272,7 +272,7 @@ CSS_CHUNKS = [
         "<p>The slots form a grid of two equal columns, and each card is a slightly lighter box. Nothing here depends on the data, so the same styles work for one slot or twenty.</p>"
     )),
     ("/* The script only adds", [11, 12], (
-        "<p>The script never sets colours. When a slot has no stock, it adds the class <code>sold-out</code> and sets the button's <code>disabled</code> property. This stylesheet decides what those states look like.</p>"
+        "<p>The script never sets colours. When a slot has no stock, the script adds the class <code>sold-out</code> and sets the button's <code>disabled</code> property. This stylesheet decides what those states look like.</p>"
         "<p>The script says what state the card is in, and the stylesheet says how that state looks. A designer can change the appearance without touching the logic.</p>"
     )),
 ]
@@ -281,7 +281,7 @@ JS_CHUNKS = [
     ("", [11], (
         "<ul>"
         "<li>The first three constants look up elements by <code>id</code> and keep them in variables, so we search the page once and not on every click.</li>"
-        "<li><code>Intl.NumberFormat</code> is a formatter the browser provides. With the locale <code>en-IE</code> and the currency <code>EUR</code> it writes 1.75 as <code>€1.75</code>.</li>"
+        "<li><code>Intl.NumberFormat</code> is a formatter the browser provides. With the locale <code>en-IE</code> and the currency <code>EUR</code> the formatter writes 1.75 as <code>€1.75</code>.</li>"
         "<li>Writing <code>\"€\" + (cents / 100).toFixed(2)</code> works until you meet a place with different conventions, so we let the formatter decide.</li>"
         "</ul>"
     )),
@@ -314,7 +314,7 @@ JS_CHUNKS = [
         "<p>We attach one listener to the container and not one to each button, because the buttons do not exist yet when this line runs. A click on a button <dfn>bubbles</dfn> up through its parents, so the container hears it. This is <dfn>event delegation</dfn>.</p>"
         "<ul>"
         "<li>This function is Station 1.</li>"
-        "<li>It reads the slot id from <code>slotCard.dataset.slot</code>, sends a <code>POST</code>, and swaps in a new card built from the server's reply.</li>"
+        "<li>The function reads the slot id from <code>slotCard.dataset.slot</code>, sends a <code>POST</code>, and swaps in a new card built from the server's reply.</li>"
         "<li>We draw what the server said and not what we guess, so if someone bought the last item a moment earlier, the card tells the truth.</li>"
         "</ul>"
     )),
@@ -329,7 +329,7 @@ FASTAPI_CHUNKS = [
         "FastAPI is a third-party framework, so you install it with pip.</p>"
     )),
     ("app = FastAPI", [], (
-        "<p><code>FastAPI(...)</code> creates the application. <code>SlotId</code> is a type that says a slot id must match a pattern, and the framework checks it for us. It replaces our <code>validate_slot_id</code>.</p>"
+        "<p><code>FastAPI(...)</code> creates the application. <code>SlotId</code> is a type that says a slot id must match a pattern, and the framework checks it for us. That type replaces our <code>validate_slot_id</code>.</p>"
     )),
     ("# Each decorator adds", [4], (
         "<p>The decorators <code>@app.get(...)</code> and <code>@app.post(...)</code> add rows to a route table that the framework keeps. These are the same three rows as our <code>ROUTES</code>, and each function shrinks to one line.</p>"
@@ -340,7 +340,7 @@ FASTAPI_CHUNKS = [
         "<p>Without them the framework answers with <code>{\"detail\": ...}</code> and status 422 for a malformed id. Frameworks come with defaults, and keeping your API's contract is still your job.</p>"
     )),
     ("# Serve the page files", [], (
-        "<p>The last line serves the <code>public</code> folder. It must come last, because the routes above are checked first.</p>"
+        "<p>The last line serves the <code>public</code> folder. That line must come last, because the routes above are checked first.</p>"
     )),
 ]
 
@@ -353,13 +353,13 @@ def fw_html():
         "<ul>"
         "<li>Real projects rarely write server plumbing by hand. A <dfn>framework</dfn> provides routing, validation, safe static files, error handling and a production server.</li>"
         "<li>We wrote the plumbing ourselves so that each mechanism is visible once.</li>"
-        "<li>Below is the same API in FastAPI, a popular Python framework. It is optional, and it is in the download as <code>server_fastapi.py</code>.</li>"
+        "<li>Below is the same API in FastAPI, a popular Python framework. This file is optional, and it is in the download as <code>server_fastapi.py</code>.</li>"
         "</ul></div>"
     )
     block = file_block(PROJECT, "server_fastapi.py", FASTAPI_CHUNKS, "python", "in vending-py/ (optional)")
     outro = (
         '<div class="prose"><ul>'
-        "<li>Run it with <code>pip install fastapi uvicorn</code> and then <code>uvicorn server_fastapi:app --port 8000</code>.</li>"
+        "<li>Run the file with <code>pip install fastapi uvicorn</code> and then <code>uvicorn server_fastapi:app --port 8000</code>.</li>"
         "<li>FastAPI writes documentation for your API automatically. Visit <code>http://127.0.0.1:8000/docs</code> to see the endpoints from Step 3 in a standard format called OpenAPI.</li>"
         "</ul></div>"
     )
@@ -373,7 +373,7 @@ def sec_build_db():
     body = goal(
         [
             "Create the vending machine's database as a file.",
-            "Run a script that fills it with four slots.",
+            "Run a script that fills the database with four slots.",
             "See the stored rows printed back.",
         ]
     )
@@ -429,7 +429,7 @@ def sec_build_server():
     body += make_steps(
         [
             "In <code>vending-py</code>, create a file called <code>server.py</code> and type or paste the code below.",
-            "Run <code>python server.py</code>. It stays running, and that is correct.",
+            "Run <code>python server.py</code>. The server stays running, and that is correct.",
             "Visit <code>http://127.0.0.1:8000/api/slots</code> in a browser.",
         ]
     )
@@ -464,7 +464,7 @@ def sec_build_page():
     body += make_steps(
         [
             "In <code>vending-py</code>, create a folder called <code>public</code>.",
-            "In it, create <code>index.html</code> and <code>style.css</code> with the code below.",
+            "In that folder, create <code>index.html</code> and <code>style.css</code> with the code below.",
             "With the server still running, open <code>http://127.0.0.1:8000</code>.",
         ]
     )
@@ -490,7 +490,7 @@ def sec_build_script():
     )
     body += (
         '<div class="prose"><p>The script has one job: ask the server for data and change the page to match the reply. '
-        "A browser can run only JavaScript, so this part is JavaScript, and it stays short on purpose. Everything with rules in it, such as the stock count and the validation, lives in the Python server.</p></div>"
+        "A browser can run only JavaScript, so this part is JavaScript, and the script stays short on purpose. Everything with rules in it, such as the stock count and the validation, lives in the Python server.</p></div>"
     )
     body += concept_shapes(E)
     body += make_steps(
@@ -519,18 +519,18 @@ def sec_build_script():
 ADAPTER_CHUNKS = [
     ("", [], (
         "<p>This file is all of the new code. A browser cannot open a network port, so the bottom layer of our server, the one that reads from sockets, has no place to run. "
-        "The two layers above it never needed sockets, so they run unchanged, and we write only a replacement for the top.</p>"
-        "<p><code>import server</code> loads the real <code>server.py</code>. Because of the <code>__main__</code> guard, importing it does not start a server.</p>"
+        "The two layers above that one never needed sockets, so they run unchanged, and we write only a replacement for the top.</p>"
+        "<p><code>import server</code> loads the real <code>server.py</code>. Because of the <code>__main__</code> guard, importing <code>server.py</code> does not start a server.</p>"
     )),
     ("def answer", [4, 5, 8], (
         "<p>The function takes the method and path as the browser sent them and returns a status code and body text.</p>"
         "<ul>"
-        "<li>The loop is the one from the real <code>answer_request</code>. It walks the real <code>ROUTES</code> table, and the first matching row calls the real handler.</li>"
+        "<li>The loop is the one from the real <code>answer_request</code>. The loop walks the real <code>ROUTES</code> table, and the first matching row calls the real handler.</li>"
         "<li>The data layer then runs real SQL on a real SQLite database, which here lives in the page's memory.</li>"
         "</ul>"
     )),
     ("    # The same translation", [9], (
-        "<p>These lines repeat the translation from exceptions to status codes, because it belonged to the HTTP layer we replaced. A request for <code>B2</code>, which has no stock, ends here as a 409 with the same message the real server sends.</p>"
+        "<p>These lines repeat the translation from exceptions to status codes, because that translation belonged to the HTTP layer we replaced. A request for <code>B2</code>, which has no stock, ends here as a 409 with the same message the real server sends.</p>"
     )),
 ]
 

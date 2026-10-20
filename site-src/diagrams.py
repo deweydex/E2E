@@ -25,16 +25,16 @@ def stations_data(E):
     json_text = json_text.replace(": ", E["json_colon"]).replace(", ", E["json_comma"])
     rows = [
         ("The browser notices the click.",
-         "The page has a script that listens for clicks. It wakes up when you press Buy. A click is one kind of <dfn>event</dfn>, a message the browser creates whenever something happens on the page.",
+         "The page has a script that listens for clicks. The script wakes up when you press Buy. A click is one kind of <dfn>event</dfn>, a message the browser creates whenever something happens on the page.",
          '<button class="buy"> clicked inside <article data-slot="A1">'),
         ("The script builds a request.",
-         "The script sends a message to the server, called a <dfn>request</dfn>. Here it says <em>please buy one item from slot A1</em>. It does this with <code>fetch</code>, a function that the browser provides.",
+         "The script sends a message to the server, called a <dfn>request</dfn>. Here the request says <em>please buy one item from slot A1</em>. The script sends it with <code>fetch</code>, a function that the browser provides.",
          "POST /api/slots/A1/buy HTTP/1.1\nHost: 127.0.0.1:8000"),
         ("The request travels.",
          "The message goes to an address with two parts: the <dfn>host</dfn>, which is the computer, and the <dfn>port</dfn>, which is the program on that computer. Here both are on your own machine.",
          "host 127.0.0.1   (this computer)\nport 8000        (the server program)"),
         ("The server chooses a handler.",
-         "The <dfn>server</dfn> is a program that waits for requests. It reads the method and the path of the request, and picks the function that deals with it. That function is called the <dfn>handler</dfn>.",
+         "The <dfn>server</dfn> is a program that waits for requests. The server reads the method and the path of the request, and picks the function that deals with that request. That function is called the <dfn>handler</dfn>.",
          E["route_row_flight"]),
         ("The handler checks the input.",
          "The handler checks that the slot id looks right, such as A1. Anything else is turned away with a message. Checking input like this is called <dfn>validation</dfn>.",
@@ -43,7 +43,7 @@ def stations_data(E):
          "<dfn>SQL</dfn> is the language for asking a database to find or change rows. The handler sends one SQL statement through a <dfn>connection</dfn>, which is an open line between the program and the database.",
          'UPDATE inventory SET stock = stock - 1\n WHERE slot_id = ? AND stock > 0\n-- the value "A1" travels separately'),
         ("The database changes the row.",
-         "The database takes one away from the stock and says how many rows it changed. It does this as a <dfn>transaction</dfn>, which means the change either happens completely or not at all.",
+         "The database takes one away from the stock and says how many rows it changed. The database does this as a <dfn>transaction</dfn>, which means the change either happens completely or not at all.",
          "rows changed: 1\nstock of A1: 8 becomes 7"),
         ("The handler packages the result.",
          "The result becomes <dfn>JSON</dfn>, a text format that other programs can read. Only bytes can cross a network, so structured data has to become text first. This step is called serialising.",
@@ -58,7 +58,7 @@ def stations_data(E):
          "The <dfn>DOM</dfn> is the browser's live tree of the elements on the page. The script edits that tree: new text, or a button that becomes disabled.",
          '<p class="stock">8 left</p>\nbecomes\n<p class="stock">7 left</p>'),
         ("The browser repaints the screen.",
-         "The browser notices that the tree has changed and redraws. You write no code for this step, and it is why the screen updates.",
+         "The browser notices that the tree has changed and redraws. You write no code for this step, and that is why the screen updates.",
          "The browser lays out the changed card\nand draws it on the screen."),
     ]
     return [{"title": t, "text": fill(x, E), "flight": f} for t, x, f in rows]
@@ -93,7 +93,7 @@ def stepper_html(E, svg):
 
 def journey_svg(server_label):
     bx, sx, dx = 160, 560, 930
-    width, height = 1080, 800
+    width, height = 1080, 850
 
     def badge(n, x, y):
         return (
@@ -142,7 +142,7 @@ def journey_svg(server_label):
     parts.append(group("9", arrow(sx, bx, 655, "200 OK with a JSON body", back=True) + badge(9, sx - 40, 681) + f'<text class="t-muted" x="{sx - 62}" y="686" font-size="13.5" text-anchor="end">status, headers and body</text>'))
     parts.append(group("10", badge(10, bx, 715) + selfnote(bx, 715, 330, "fetch hands the reply to our script")))
     parts.append(group("11", badge(11, bx, 760) + selfnote(bx, 760, 330, "The script changes the DOM")))
-    parts.append(group("12", badge(12, sx + 120, 760) + f'<text x="{sx + 146}" y="765" font-size="15">The screen is repainted</text>'))
+    parts.append(group("12", badge(12, bx, 805) + selfnote(bx, 805, 330, "The browser repaints the screen")))
     parts.append("</svg>")
     return "".join(parts)
 
@@ -161,9 +161,9 @@ def trust_svg():
         (30, 300, "zone-bad", "The visitor's browser", "Not under our control",
          ["The visitor can edit the page,", "run any script in the console,", "or send requests by hand."]),
         (390, 300, "zone-good", "Our server", "Under our control",
-         ["It checks every request,", "owns every SQL statement,", "and decides what is allowed."]),
+         ["The server checks every request,", "owns every SQL statement,", "and decides what is allowed."]),
         (750, 300, "zone-db", "The database", "Reachable only from the server",
-         ["It holds the data and the rules", "(constraints) that protect it,", "and it never faces the visitor."]),
+         ["The database holds the data and the rules", "(constraints) that protect it,", "and never faces the visitor."]),
     ]
     for x, w, cls, title, sub, lines in boxes:
         parts.append(f'<rect class="{cls}" x="{x}" y="120" width="{w}" height="220" rx="12"/>')
@@ -175,8 +175,8 @@ def trust_svg():
     parts.append('<path class="arrow" d="M 690 215 L 748 215" marker-end="url(#ah)"/>')
     parts.append('<text x="360" y="203" text-anchor="middle" font-size="13">requests</text>')
     parts.append('<text x="720" y="203" text-anchor="middle" font-size="13">our SQL</text>')
-    parts.append('<path class="arrow bad" d="M 180 118 C 180 40, 900 40, 900 116" marker-end="url(#ahb)"/>')
-    parts.append('<text class="strong" x="540" y="62" text-anchor="middle" font-size="16" style="fill: var(--bad)">No direct route from the browser to the database</text>')
+    parts.append('<path class="arrow bad" d="M 180 118 C 180 66, 900 66, 900 116" marker-end="url(#ahb)"/>')
+    parts.append('<text class="strong" x="540" y="34" text-anchor="middle" font-size="16" style="fill: var(--bad)">No direct route from the browser to the database</text>')
     parts.append("</svg>")
     return "".join(parts)
 

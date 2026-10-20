@@ -58,6 +58,7 @@
   --seg4: #1f5133;
   }
 }
+svg text.term-svg { text-decoration: underline dotted; text-underline-offset: 4px; cursor: help; }
 svg text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: var(--text); }
 svg .t-muted { fill: var(--muted); }
 svg .t-on { fill: var(--on-accent); font-weight: 700; }

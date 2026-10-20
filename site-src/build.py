@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 import diagrams  # noqa: F401,E402  (extends lib.CSS and lib.JS)
 import lib  # noqa: E402
+import terms  # noqa: E402
 import theme  # noqa: E402
 
 theme.apply()
@@ -72,7 +73,7 @@ def build_edition(E, edition, filename, sibling_href, sibling_label, title):
     nav = toc_html(sections, sibling_href, sibling_label)
     body = (
         '<div class="shell">' + nav + "<main>"
-        f"<header><h1>{title}</h1></header>" + "".join(sections) + "</main></div>"
+        f"<header><h1>{title}</h1></header>" + terms.mark("".join(sections)) + "</main></div>"
     )
     page = lib.shell(
         f"{title} ({E['name']} edition)",

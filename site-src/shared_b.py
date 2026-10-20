@@ -14,7 +14,7 @@ from diagrams import cors_figure, race_figure
 def sec_run(E):
     body = goal(
         [
-            "Start the project and open it in your browser.",
+            "Start the project and open the page in your browser.",
             "Watch each request arrive, both in the browser and in the terminal.",
             "Call the API without the page, to see that the page is only one client.",
         ]
@@ -49,7 +49,7 @@ def sec_run(E):
     body += snippet(E["log_sample"], "text", "What the terminal shows", copy=False)
     body += """
 <div class="prose">
-<p>The browser may also ask for <code>/favicon.ico</code>, the tab's little icon, without being told to. The server has no route for it and answers 404, which is harmless and shows that browsers send requests you never wrote.</p>
+<p>The browser may also ask for <code>/favicon.ico</code>, the tab's little icon, without being told to. The server has no route for that file and answers 404, which is harmless and shows that browsers send requests you never wrote.</p>
 <h3>Call the API without the page</h3>
 <p>The address bar is a client too. Visit <code>http://127.0.0.1:8000/api/slots</code> and you see the raw JSON. A command line tool called <code>curl</code> is a third client:</p>
 </div>
@@ -93,7 +93,7 @@ def sec_http(E):
         ),
         (
             "",
-            "<p>A blank line ends the headers. A <code>POST</code> may carry a <dfn>body</dfn> after it, such as a form or a JSON document. This one has none, because the path already says everything the server needs.</p>",
+            "<p>A blank line ends the headers. A <code>POST</code> may carry a <dfn>body</dfn> after that line, such as a form or a JSON document. This one has none, because the path already says everything the server needs.</p>",
             [2],
         ),
     ]
@@ -101,7 +101,7 @@ def sec_http(E):
         (E["http_status_line"], E["http_status_note"], [9]),
         (
             E["http_headers"],
-            "<p>The response headers describe the body.</p><ul><li><code>Content-Type</code> says how to read it: JSON in UTF-8, the standard way of turning characters into bytes.</li><li><code>Content-Length</code> says how many bytes of body follow.</li><li><code>Cache-Control: no-store</code> asks the browser never to reuse an old copy, so an edit shows up on the next reload.</li></ul>"
+            "<p>The response headers describe the body.</p><ul><li><code>Content-Type</code> says how to read the body: JSON in UTF-8, the standard way of turning characters into bytes.</li><li><code>Content-Length</code> says how many bytes of body follow.</li><li><code>Cache-Control: no-store</code> asks the browser never to reuse an old copy, so an edit shows up on the next reload.</li></ul>"
             + (f"<p>{E['http_headers_extra']}</p>" if E.get("http_headers_extra") else ""),
             [9],
         ),
@@ -121,7 +121,7 @@ def sec_http(E):
     rows = "".join(f"<tr><td><strong>{c}</strong></td><td>{n}</td><td>{d}</td></tr>" for c, n, d in status_rows)
     body = """
 <div class="prose">
-<p>You can build the whole project without reading this section. It is here for when you want to know exactly what the browser and the server say to each other.</p>
+<p>You can build the whole project without reading this section. This section is here for when you want to know exactly what the browser and the server say to each other.</p>
 <ul>
 <li>A <dfn>protocol</dfn> is an agreement about the order and shape of messages.</li>
 <li><dfn>HTTP</dfn> (HyperText Transfer Protocol) is the agreement that browsers and web servers use.</li>
@@ -135,7 +135,7 @@ def sec_http(E):
         """
 <div class="prose">
 <h3>Status codes</h3>
-<p>The status code is a three digit number that tells the client how things went before it reads the body. The first digit gives the family: 2 means success, 4 means the client made a mistake, and 5 means the server did.</p>
+<p>The status code is a three digit number that tells the client how things went before the client reads the body. The first digit gives the family: 2 means success, 4 means the client made a mistake, and 5 means the server did.</p>
 </div>
 <div class="tablewrap">
 <table class="tbl"><thead><tr><th>Code</th><th>Name</th><th>When we send it</th></tr></thead><tbody>
@@ -202,7 +202,7 @@ def sec_experiments(E):
     )
     body += _exp(
         "Experiment 3: joining strings versus passing parameters",
-        f"<p>Run <code>{E['injection_cmd']}</code>. It looks up a slot twice, once with a normal id and once with the text <code>x' OR '1'='1</code>, using two ways of building the query.</p>"
+        f"<p>Run <code>{E['injection_cmd']}</code>. The script looks up a slot twice, once with a normal id and once with the text <code>x' OR '1'='1</code>, using two ways of building the query.</p>"
         + snippet(E["injection_output"], "text", "Output", copy=False),
         "<ul><li>With joined strings, the typed text becomes part of the SQL. The condition <code>OR '1'='1'</code> is true for every row, so all four rows come back. This attack is <dfn>SQL injection</dfn>.</li>"
         "<li>With a parameter, the database receives the SQL and the value separately. The value can only be data, so it matches nothing.</li>"
@@ -228,7 +228,7 @@ def sec_experiments(E):
         "<li>The browser delivered the request and then refused to let the script read the answer.</li>"
         "<li>The reason is the <dfn>same-origin policy</dfn>. An <dfn>origin</dfn> is scheme, host and port together, and port 9000 is a different origin from port 8000.</li>"
         "<li>By default a script may read responses only from its own origin. That stops a malicious page from reading your private data out of another site you are signed in to.</li>"
-        "<li>A server can opt in with a header. The policy it opts in to is <dfn>CORS</dfn> (Cross-Origin Resource Sharing).</li></ul>"
+        "<li>A server can opt in with a header. The policy that the server opts in to is <dfn>CORS</dfn> (Cross-Origin Resource Sharing).</li></ul>"
         f"<p>To fix it, add one header to every response: {E['cors_snippet']} Restart the server and reload, and the page works.</p>"
         "<ul><li>Requests that carry a JSON body or custom headers trigger an extra preliminary <code>OPTIONS</code> request, which the server would also have to answer.</li>"
         "<li>We named the exact origin and not <code>*</code>, which means <em>any website</em>. The wildcard suits public data and is risky when the response depends on who is asking.</li></ul>",
@@ -271,7 +271,7 @@ def sec_choices(E):
          "Whole numbers are exact, so sums never drift.",
          "Some databases have an exact decimal type, which is also fine. A floating point column for money is never a good choice."),
         ("POST for buying",
-         "Buying changes data and is not idempotent, so a link preview must not be able to trigger it.",
+         "Buying changes data and is not idempotent, so a link preview must not be able to trigger that action.",
          "Other changes use other methods: PUT to replace something, PATCH to adjust part of it, DELETE to remove it."),
         ("Parameterised queries everywhere",
          "The database receives SQL and values separately, so a value can never turn into SQL.",
@@ -283,14 +283,14 @@ def sec_choices(E):
          "The page is a convenience, the server holds the rules and explains them, and the database is the last line of defence.",
          "You may drop the check in the page, because a visitor can skip it anyway. The server and database checks stay."),
         ("<code>textContent</code> rather than <code>innerHTML</code>",
-         "<code>textContent</code> treats a value as plain text. <code>innerHTML</code> parses it as markup, so an item name containing a script tag could run code in every visitor's browser. That attack is cross-site scripting (<dfn>XSS</dfn>).",
+         "<code>textContent</code> treats a value as plain text. <code>innerHTML</code> parses the value as markup, so an item name containing a script tag could run code in every visitor's browser. That attack is cross-site scripting (<dfn>XSS</dfn>).",
          "<code>innerHTML</code> is fine for markup you wrote yourself and never for data from elsewhere."),
         ("A <code>&lt;template&gt;</code> element for the card",
          "The structure of a card stays in HTML, where it is easy to read and restyle, and not inside strings in the script.",
          "Front end frameworks such as React and Svelte generate this part for you and become worthwhile as pages grow."),
         ("Redrawing the card from the server's reply",
          "The page shows what the server says, so it cannot drift from the truth. If somebody bought the last item a second ago, the reply says so.",
-         "An <em>optimistic</em> update shows the change first and corrects it if the server disagrees. It feels faster on a slow network and costs more code."),
+         "An <em>optimistic</em> update shows the change first and corrects it if the server disagrees. That style feels faster on a slow network and costs more code."),
         ("A fixed list of files that the server will send",
          "A server that sent whatever file the URL named could be asked for its own source code or the database file. That attack is <dfn>path traversal</dfn>.",
          "A framework's static file helper handles this safely, so use it instead of writing your own."),
@@ -380,10 +380,14 @@ GLOSSARY = [
     ("Response", "The message a server sends back, made of a status code, headers and a body."),
     ("REST", "Representational State Transfer. A style of web API in which URLs name things and methods choose the action."),
     ("Route", "A pairing of a method and a path pattern with the function that handles it."),
+    ("Placeholder", "A mark such as ? in SQL that shows where a value goes. The value travels separately from the SQL text."),
+    ("Prepared statement", "SQL that the database has read and checked once, so that it can be run many times."),
+    ("Route table", "A list that pairs each method and path pattern with the function that handles it."),
     ("Safe method", "A method that changes nothing on the server, such as GET."),
     ("Same-origin policy", "The browser rule that stops a page from reading responses that come from another origin."),
     ("Schema", "The declared structure of a database: its tables, columns and types."),
     ("Serialising", "Turning a structure in memory into text or bytes so that it can be stored or sent."),
+    ("Service worker", "A script that sits between a page and the network and can answer requests itself. The in-page demos use one to stand in for a server."),
     ("Server", "A program that waits for requests and answers them."),
     ("SQL", "Structured Query Language. The language for asking a relational database to find or change rows."),
     ("SQL injection", "An attack in which text typed by a user becomes part of an SQL statement."),
@@ -397,8 +401,9 @@ GLOSSARY = [
 
 REFERENCES = {
     "Step 1": ["Connection", "DOM", "Event", "Handler", "JSON", "Promise", "Request", "Response", "Route", "SQL", "Transaction", "Validation"],
-    "Step 2": ["Constraint", "Database management system", "Primary key", "Relational database", "Schema"],
-    "Step 3": ["API", "Client", "Contract", "Endpoint", "Host", "Path", "Port", "Server", "URL"],
+    "Try it first": ["Service worker"],
+    "Step 2": ["Placeholder", "Constraint", "Database management system", "Primary key", "Relational database", "Schema"],
+    "Step 3": ["Prepared statement", "Route table", "API", "Client", "Contract", "Endpoint", "Host", "Path", "Port", "Server", "URL"],
     "Step 5": ["Event delegation", "fetch", "Parsing", "Serialising"],
     "HTTP messages": ["Body", "Header", "HTTP", "Idempotent", "Method", "Protocol", "REST", "Safe method", "Stateless", "Status code"],
     "Break it on purpose": ["CORS", "Origin", "Parameterised query", "Same-origin policy", "SQL injection"],

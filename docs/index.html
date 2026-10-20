@@ -232,6 +232,15 @@ details.deeper[open] > summary { border-bottom: 1px solid var(--line); }
 details.deeper > .inner { padding: 4px 16px 6px; }
 details.deeper > .inner > :last-child { margin-bottom: 8px; }
 
+.term { border-bottom: 1.5px dotted var(--accent); cursor: help; position: relative; }
+.term::after {
+  content: attr(data-def); position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
+  width: max-content; max-width: min(280px, 78vw); padding: 8px 10px; border-radius: 8px;
+  background: var(--text); color: var(--bg); font-size: 0.85rem; line-height: 1.4; font-weight: 400; font-style: normal;
+  display: none; pointer-events: none; z-index: 20; text-align: left;
+}
+.term:hover::after, .term:focus::after { display: block; }
+svg text.term-svg { text-decoration: underline dotted; text-underline-offset: 4px; cursor: help; }
 dl.glossary .where { color: var(--muted); }
 .prose code, .box code, details.deeper code, ol.make code, td code { overflow-wrap: anywhere; }
 /* annotated code */
