@@ -700,6 +700,34 @@ function lineOf(fileName, text) {
   return 0;
 }
 
+// Find the first line of a file that contains this text, ignoring comment lines.
+function codeLine(file, text) {
+  if (!text) return 0;
+  const lines = (state.files[file] || "").split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+    if (trimmed.startsWith("//") || trimmed.startsWith("#") || trimmed.startsWith("--")) continue;
+    if (lines[i].replace(/\s+/g, " ").includes(text)) return i + 1;
+  }
+  return 0;
+}
+
+// Find the line of queries.sql where a statement starts, by comparing the text of the statement with the file. Returns 0 when it is not there.
+function sqlLine(sql) {
+  const lines = (state.files["queries.sql"] || "").split("\n");
+  const norm = (text) => text.replace(/\s+/g, " ").trim();
+  const want = norm(String(sql || "")).replace(/;$/, "");
+  if (!want) return 0;
+  const head = norm(String(sql).trim().split("\n")[0]);
+  for (let i = 0; i < lines.length; i++) {
+    if (!norm(lines[i]).startsWith(head)) continue;
+    let joined = "";
+    for (let j = i; j < lines.length && joined.length < want.length + 2; j++) joined = norm(joined + " " + lines[j]);
+    if (joined.startsWith(want)) return i + 1;
+  }
+  return 0;
+}
+
 // Show the file in the editor on its side and mark the line, when "Follow in the code" is ticked.
 function focusCode(file, line) {
   if (!state.follow || !file) return;
@@ -1139,10 +1167,24 @@ async function playStep(step) {
   // so these highlights stop quietly when a student replaces client.js with a script that does not contain that text.
   if (step.kind === "route") interaction.queryName = step.query || "";
   if (step.kind === "route" && step.find && !step.line) step.line = lineOf(step.file, step.find);
-  if (step.kind === "sql" && interaction.queryName) {
-    step.file = "queries.sql";
-    step.line = lineOf("queries.sql", "name: " + interaction.queryName);
+  if (step.kind === "route" && step.file && step.line) interaction.serverMark = { file: step.file, line: step.line };
+  if (step.kind === "sql") {
+    // Mark the statement itself in queries.sql. A step such as BEGIN or COMMIT has no line of its own, so it marks the name of the query.
+    const wording = String(step.sql || "").replace(/\s+/g, " ").trim();
+    let file = "queries.sql";
+    let line = 0;
+    if (state.level === "advanced") {
+      // A handler may write its SQL inside the handlers file, and BEGIN and COMMIT belong to the line that opens the transaction.
+      const handlers = handlerFileName();
+      const wrapper = /^(BEGIN|COMMIT|ROLLBACK)/i.test(wording);
+      line = codeLine(handlers, wrapper ? "db.transaction" : wording.slice(0, 30));
+      if (line) file = handlers;
+    }
+    if (!line) line = sqlLine(step.sql) || (interaction.queryName ? lineOf("queries.sql", "name: " + interaction.queryName) : 0);
+    if (line) { step.file = file; step.line = line; }
   }
+  // The answer is built by the code that the route chose, so the response step marks that code again.
+  if (step.kind === "response" && interaction.serverMark) { step.file = interaction.serverMark.file; step.line = interaction.serverMark.line; }
   if (step.kind === "request") { step.file = "client.js"; step.line = lineOf("client.js", step.method === "GET" ? "dataset.get" : "dataset.post"); }
   if (step.kind === "dom") { step.file = "client.js"; step.line = lineOf("client.js", "section.append") || lineOf("client.js", "textContent"); }
   if (step.kind === "click") { step.file = "client.js"; step.line = lineOf("client.js", step.viaSubmit ? 'addEventListener("submit"' : 'addEventListener("click"'); }
