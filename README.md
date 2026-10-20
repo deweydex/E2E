@@ -8,7 +8,9 @@ A tutorial site that shows how a click in a browser reaches a database and comes
 - The Python edition and the TypeScript edition build the same vending machine in two languages.
 - Every diagram is also available as a standalone SVG file with light and dark styles.
 - Two in-page demos run a small server inside the browser.
+- The workbench opens on a setup screen. The student chooses a mode, a level and a server language, can upload their own files, and reads a short tour of what each file is for before the workbench opens.
 - The workbench shows a front end on the left and a back end on the right, with a timeline below.
+- The timeline stops at every step. Start, Back, Forward and End move through the request, and each card names the tutorial station it belongs to, with the station before and after. Key words have the same hover explanations as the tutorials.
 - Two lab projects (Python and TypeScript) can be downloaded from the tutorial pages.
 
 ## How each tutorial is organised

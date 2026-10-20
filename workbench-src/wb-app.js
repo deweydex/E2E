@@ -11,7 +11,7 @@ const state = {
   mode: "explore",          // "explore" is the finished vending machine. "own" is the small starter project.
   level: "beginner",        // beginner, intermediate or advanced
   language: "ts",           // the server language: "ts" for TypeScript, "py" for Python
-  speed: "fast",            // how the timeline plays: fast, slow or step
+  stepping: true,           // whether the timeline stops after each step and waits for Forward
   follow: true,             // whether the editors jump to the line that the timeline is describing
   files: {},                // the student's current text for every project file, by file name
   baseline: {},             // the original text of each file, used by Revert and by "has the student edited anything?"
@@ -63,7 +63,7 @@ function saveSoon() {
   saveTimer = setTimeout(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        mode: state.mode, level: state.level, language: state.language, speed: state.speed,
+        mode: state.mode, level: state.level, language: state.language, stepping: state.stepping,
         follow: state.follow, files: state.files, baseline: state.baseline,
       }));
     } catch (error) { /* storage can be blocked, and the workbench still works */ }
@@ -75,13 +75,14 @@ function restore() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
     if (saved && saved.files && saved.baseline) {
-      Object.assign(state, { mode: saved.mode, level: saved.level, language: saved.language, speed: saved.speed, follow: saved.follow });
+      Object.assign(state, { mode: saved.mode, level: saved.level, language: saved.language, stepping: saved.stepping !== false, follow: saved.follow });
       state.files = saved.files;
       state.baseline = saved.baseline;
-      return;
+      return true;
     }
   } catch (error) { /* start fresh */ }
   loadBase(state.mode, state.level);
+  return false;
 }
 
 function loadBase(mode, level) {
@@ -301,7 +302,7 @@ async function uploadFiles(side, fileList) {
         target = handlerFileName();
         notice("right", "Loaded " + file.name + " as " + target + ".");
       }
-      if (target.startsWith("server.")) { notice("right", "The server file is read only. Upload your own handlers file instead."); continue; }
+      if (target.startsWith("server.")) { notice("right", target + " is the machine itself, so it is read only. At the Advanced level you write a handlers file next to it, and the machine calls your handlers. Upload that file instead."); continue; }
       if (!SERVER_ONLY.has(target)) { notice("right", target + " is not a file the server reads."); continue; }
       state.files[target] = text;
       state.panes.right = target;
@@ -431,7 +432,7 @@ function buildDocument(page, query, doc) {
 }
 
 // Show a page in the preview and add the load to the timeline.
-// Options: push (add to the history, default true), paced (follow the Slow and Step speeds), continuing (a link click began this interaction), reason (the text for the timeline).
+// Options: push (add to the history, default true), paced (stop at each step while stepping is on), continuing (a link click began this interaction), reason (the text for the timeline).
 function loadPage(name, query, options) {
   options = options || {};
   query = query || "";
@@ -447,7 +448,7 @@ function loadPage(name, query, options) {
   if (options.push !== false) state.history.push({ name, query });
   currentDoc += 1;
   const doc = currentDoc;
-  if (releaseNextStep && !options.continuing) releaseNextStep();
+  if (!options.continuing) releaseOldRequest();
   const built = buildDocument(name, query, doc);
   previewFrame.srcdoc = built.html;
   findElement("#address").textContent = "machine.local/" + name + (query ? (query.startsWith("?") ? query : "?" + query) : "");
@@ -465,7 +466,7 @@ function loadPage(name, query, options) {
   });
 }
 
-// A reload that the student asked for. It follows the chosen speed.
+// A reload that the student asked for. It stops at each step while stepping is on.
 function reloadPage(reason) { loadPage(state.page, state.query, { push: false, reason, paced: true }); }
 
 // Send a message into the preview frame. The bridge script inside it listens.
@@ -478,23 +479,31 @@ function postToPage(message) {
 
 /* Each step of a request has a kind. The chip says which station of the timeline it belongs to (-1 means none),
    and "why" is the short explanation shown on the card. */
+const STATIONS = [
+  "The browser notices the click", "The script builds a request", "The request travels", "The server chooses a handler",
+  "The handler checks the input", "The handler sends SQL to the database", "The database changes the row", "The handler packages the result",
+  "The server sends a response", "The reply reaches the script", "The script changes the DOM", "The browser repaints the screen",
+];
+
 const STEP_KINDS = {
-  click: { label: "Click", chip: 0, why: "The browser noticed an event. A script in the page was waiting for it." },
+  click: { stations: [1], label: "Click", chip: 0, why: "The browser noticed an event. A script in the page was waiting for it." },
   load: { label: "Page load", chip: 0, why: "The browser received the page and drew it. Scripts in the page can now ask the server for data." },
-  request: { label: "Request", chip: 1, why: "The script sends a message in the HTTP format. The message names a method, which says what to do, and a path, which says which thing to do it to." },
-  route: { label: "Route", chip: 2, why: "The server compares the method and the path with its list of routes, and picks the code that is responsible." },
-  sql: { label: "SQL", chip: 3, why: "The server asks the database a question in SQL. The values travel separately as parameters, so a visitor can never turn them into SQL commands." },
-  response: { label: "Response", chip: 4, why: "The server answers with a status code and a body. The body is JSON, which is text that JavaScript can turn back into objects." },
-  dom: { label: "Screen update", chip: 5, why: "The script used the JSON to build or change elements in the page. The browser redraws those elements, and this is the moment the screen changes." },
+  request: { stations: [2, 3], label: "Request", chip: 1, why: "The script sends a message in the HTTP format. The message names a method, which says what to do, and a path, which says which thing to do it to." },
+  route: { stations: [4], label: "Route", chip: 2, why: "The server compares the method and the path with its list of routes, and picks the code that is responsible. The next station, 5, is where that code checks its input. The workbench shows no card for it, and at the Advanced level you can read the check in your handler." },
+  sql: { stations: [6, 7], label: "SQL", chip: 3, why: "The server asks the database a question in SQL. The values travel separately as parameters, so a visitor can never turn them into SQL commands." },
+  response: { stations: [8, 9], label: "Response", chip: 4, why: "The server answers with a status code and a body. The body is JSON, which is text that JavaScript can turn back into objects." },
+  dom: { stations: [10, 11, 12], label: "Screen update", chip: 5, why: "The script used the JSON to build or change elements in the page. The browser redraws those elements, and this is the moment the screen changes." },
   error: { label: "Problem", chip: -1, why: "Something went wrong in the page itself. The browser console would show this message." },
 };
 
 const STATUS_NAMES = { 200: "OK", 400: "Bad Request", 404: "Not Found", 405: "Method Not Allowed", 409: "Conflict", 500: "Internal Server Error", 502: "Bad Gateway", 503: "Service Unavailable" };
 
-// The timeline plays one step at a time. Each new task is chained after the previous one, so steps never overlap.
+// The timeline records every step of a request. The student moves through the steps with Start, Back, Forward and End.
+// While stepping is on, the request waits after each step until the student presses Forward, so the page and the database change only when the student reaches that station.
 let playbackChain = Promise.resolve();
 let queuedTaskCount = 0;
 let skippingToEnd = false;
+let fastForwardOld = false;
 let interaction = null;
 let lastUserActionAt = 0;
 let interactionCounter = 0;
@@ -505,32 +514,88 @@ function enqueue(task) {
   queuedTaskCount += 1;
   playbackChain = playbackChain.then(task).catch((error) => console.error(error)).then(() => {
     queuedTaskCount -= 1;
-    if (queuedTaskCount === 0) { skippingToEnd = false; updateControls(); }
+    if (queuedTaskCount === 0) { skippingToEnd = false; if (interaction && interaction.steps.length) showAt(interaction.steps.length - 1); else updateControls(); }
   });
 }
 
 // Start a fresh set of cards and chips for a new interaction, such as one click and everything it causes.
 function beginInteraction() {
-  interaction = { id: ++interactionCounter, steps: [], reached: new Set(), queryName: "" };
+  fastForwardOld = false;
+  interaction = { id: ++interactionCounter, steps: [], cards: [], cursor: -1, queryName: "", terms: new Set() };
   findElement("#cards").innerHTML = "";
   findElements("#chips li").forEach((chip) => chip.classList.remove("active", "done", "bad"));
   clearBands();
-}
-
-// Wait between steps, as long as the chosen speed asks for.
-async function pause() {
-  // Page loads that the workbench caused, such as after an edit, always run at full speed.
-  if (skippingToEnd || state.speed === "fast" || (interaction && !interaction.paced)) { await sleep(0); return; }
-  if (state.speed === "slow") { await sleep(800); return; }
-  await new Promise((resolve) => { releaseNextStep = resolve; updateControls(); });
-  releaseNextStep = null;
   updateControls();
 }
 
+// After a step is shown, wait for the student to press Forward.
+// Page loads that the workbench caused, such as after an edit, always run straight through, and so does a request that the student has left behind.
+async function pause(step) {
+  if (step.kind === "dom" || step.kind === "error") return;
+  if (skippingToEnd || fastForwardOld || !state.stepping || !(interaction && interaction.paced)) { await sleep(0); return; }
+  await new Promise((resolve) => { releaseNextStep = resolve; updateControls(); });
+  releaseNextStep = null;
+  // The student has just acted, so what the page does next belongs to the same request.
+  lastUserActionAt = performance.now();
+  updateControls();
+}
+
+// Let the waiting request carry on, and run through everything that the old request still has to do.
+function releaseOldRequest() {
+  fastForwardOld = true;
+  if (releaseNextStep) releaseNextStep();
+}
+
+function stepForward() {
+  if (!interaction || !interaction.steps.length) return;
+  if (interaction.cursor < interaction.steps.length - 1) { showAt(interaction.cursor + 1); return; }
+  if (releaseNextStep) releaseNextStep();
+}
+function stepBack() { if (interaction && interaction.cursor > 0) showAt(interaction.cursor - 1); }
+function stepStart() { if (interaction && interaction.steps.length) showAt(0); }
+function stepEnd() {
+  if (!interaction || !interaction.steps.length) return;
+  if (releaseNextStep || queuedTaskCount > 0) { skippingToEnd = true; if (releaseNextStep) releaseNextStep(); }
+  showAt(interaction.steps.length - 1);
+}
+
 function updateControls() {
-  findElement("#next").disabled = !releaseNextStep;
-  findElement("#skip").disabled = queuedTaskCount === 0;
-  findElement("#tl-state").textContent = releaseNextStep ? "Press Next to continue." : queuedTaskCount > 0 && !skippingToEnd ? "The timeline is playing." : "";
+  const total = interaction ? interaction.steps.length : 0;
+  const at = interaction ? interaction.cursor : -1;
+  const waiting = Boolean(releaseNextStep);
+  const finished = queuedTaskCount === 0 && !waiting;
+  findElement("#step-start").disabled = total === 0 || at <= 0;
+  findElement("#step-back").disabled = total === 0 || at <= 0;
+  findElement("#step-forward").disabled = total === 0 || (at >= total - 1 && !waiting);
+  findElement("#step-end").disabled = total === 0 || (at >= total - 1 && finished);
+  findElement("#step-pos").textContent = total === 0 ? "No steps yet" : "Step " + (at + 1) + " of " + total + (finished ? "" : " so far");
+  const looking = total > 0 && at < total - 1;
+  findElement("#tl-state").textContent = looking
+    ? "You are looking at an earlier step. The page and the database keep their latest state."
+    : waiting ? "Press Forward to continue." : queuedTaskCount > 0 ? "The request is moving." : "";
+}
+
+// Show the step at this position: its card, its chips and its line of code. Cards after this step are hidden until the student gets there.
+function showAt(index) {
+  if (!interaction || !interaction.steps.length) { updateControls(); return; }
+  const steps = interaction.steps;
+  index = Math.max(0, Math.min(index, steps.length - 1));
+  interaction.cursor = index;
+  interaction.cards.forEach((card, i) => { card.hidden = i > index; card.classList.toggle("active", i === index); });
+  const reached = new Set();
+  for (let i = 0; i <= index; i++) { const kind = STEP_KINDS[steps[i].kind]; if (kind && kind.chip >= 0) reached.add(kind.chip); }
+  const step = steps[index];
+  const current = STEP_KINDS[step.kind];
+  findElements("#chips li").forEach((chip, i) => {
+    const here = Boolean(current) && current.chip === i;
+    chip.classList.toggle("active", here);
+    chip.classList.toggle("done", !here && reached.has(i));
+    chip.classList.toggle("bad", here && step.kind === "response" && step.status >= 400);
+  });
+  clearBands();
+  if (step.file && step.line) focusCode(step.file, step.line);
+  interaction.cards[index].scrollIntoView({ block: "nearest", inline: "nearest" });
+  updateControls();
 }
 
 function prettyJson(value) {
@@ -565,12 +630,27 @@ function stepBody(step) {
   return "";
 }
 
+// The words for the stations a step covers, such as "Stations 2 to 3", with the stations before and after it.
+function stationHtml(info) {
+  if (!info || !info.stations) return "";
+  const list = info.stations;
+  const first = list[0];
+  const last = list[list.length - 1];
+  const heading = list.length === 1 ? "Station " + first : "Stations " + first + " to " + last;
+  const titles = list.map((n, i) => (i === 0 ? STATIONS[n - 1] : STATIONS[n - 1][0].toLowerCase() + STATIONS[n - 1].slice(1))).join(", then ");
+  const before = first === 1 ? "the click has not happened yet" : "Station " + (first - 1) + ", " + STATIONS[first - 2];
+  const next = last === 12 ? "the journey is over" : "Station " + (last + 1) + ", " + STATIONS[last];
+  const page = state.language === "py" ? "python.html" : "typescript.html";
+  return '<p class="station"><b><a href="../' + page + '#journey" target="_blank" rel="noopener" title="Open the journey in the tutorial">' + heading + "</a></b> " + escapeHtml(titles) + "</p>" +
+    '<p class="trail"><span>&larr; Before: ' + escapeHtml(before) + "</span><span>Next: " + escapeHtml(next) + " &rarr;</span></p>";
+}
+
 function renderCard(step, index) {
   const info = STEP_KINDS[step.kind] || { label: "Note", why: "" };
   const card = document.createElement("article");
   card.className = "card kind-" + step.kind + (step.kind === "response" && step.status >= 400 ? " bad" : "");
-  card.innerHTML = '<header><span class="num">' + (index + 1) + "</span> " + escapeHtml(info.label) + "</header>" +
-    "<p>" + escapeHtml(step.text) + "</p>" + stepBody(step) + (info.why ? '<p class="why">' + escapeHtml(info.why) + "</p>" : "");
+  card.innerHTML = '<header><span class="num">' + (index + 1) + "</span> " + escapeHtml(info.label) + "</header>" + stationHtml(info) +
+    "<p>" + termHtml(step.text) + "</p>" + stepBody(step) + (info.why ? '<p class="why">' + termHtml(info.why) + "</p>" : "");
   return card;
 }
 
@@ -586,8 +666,6 @@ function appendLog(step) {
 
 async function playStep(step) {
   if (!interaction) beginInteraction();
-  const info = STEP_KINDS[step.kind];
-
   // Work out which line of code this step is about.
   // The steps from the server say where they come from. The steps from the page are matched against text in client.js,
   // so these highlights stop quietly when a student replaces client.js with a script that does not contain that text.
@@ -601,25 +679,14 @@ async function playStep(step) {
   if (step.kind === "dom") { step.file = "client.js"; step.line = lineOf("client.js", "section.append") || lineOf("client.js", "textContent"); }
   if (step.kind === "click") { step.file = "client.js"; step.line = lineOf("client.js", step.viaSubmit ? 'addEventListener("submit"' : 'addEventListener("click"'); }
 
+  lastUserActionAt = performance.now();
   interaction.steps.push(step);
-  const card = renderCard(step, interaction.steps.length - 1);
-  card.classList.add("active");
-  findElements("#cards .card.active").forEach((old) => old.classList.remove("active"));
-  findElement("#cards").append(card);
-  card.scrollIntoView({ block: "nearest", inline: "nearest" });
-
-  if (info && info.chip >= 0) {
-    interaction.reached.add(info.chip);
-    findElements("#chips li").forEach((chip, index) => {
-      chip.classList.toggle("active", index === info.chip);
-      chip.classList.toggle("done", index !== info.chip && interaction.reached.has(index));
-      if (index === info.chip) chip.classList.toggle("bad", step.kind === "response" && step.status >= 400);
-    });
-  }
+  interaction.cards.push(renderCard(step, interaction.steps.length - 1));
+  findElement("#cards").append(interaction.cards[interaction.cards.length - 1]);
+  showAt(interaction.steps.length - 1);
   appendLog(step);
-  if (step.file && step.line) focusCode(step.file, step.line);
   if (step.kind === "response") renderDatabase();
-  await pause();
+  await pause(step);
 }
 
 // Answer one request that the page made. This plays the request card, runs the server code,
@@ -674,9 +741,11 @@ window.addEventListener("message", (event) => {
   const now = performance.now();
   if (message.type === "click") {
     lastUserActionAt = now;
+    releaseOldRequest();
     enqueue(async () => { beginInteraction(); interaction.paced = true; await playStep({ kind: "click", viaSubmit: message.viaSubmit, text: message.viaSubmit ? "The page sent a form." : "You clicked " + message.label + "." }); });
   } else if (message.type === "navigate") {
     lastUserActionAt = now;
+    releaseOldRequest();
     const [name, ...rest] = message.href.split("?");
     enqueue(async () => { beginInteraction(); interaction.paced = true; await playStep({ kind: "click", text: "You followed the link " + message.label + "." }); });
     loadPage(name, rest.length ? "?" + rest.join("?") : "", { continuing: true, paced: true });
@@ -723,6 +792,7 @@ const THINGS_TO_TRY = {
 function renderIdeas() {
   const list = findElement("#try-list");
   list.innerHTML = "";
+  findElement(".try-panel p").textContent = "Suggestions for the " + state.level + " level. Pick one, then press Forward to move through the timeline and watch which step changes.";
   for (const idea of THINGS_TO_TRY[state.level]) {
     const item = document.createElement("li");
     item.textContent = idea;
@@ -739,15 +809,17 @@ function reflectControls() {
     for (const button of findElements("button", group)) button.setAttribute("aria-pressed", String(String(state[setting]) === button.dataset.value));
   }
   findElement("#follow").checked = state.follow;
+  findElement("#stepping").checked = state.stepping;
   renderIdeas();
-  findElement("#level-help").textContent = {
-    beginner: "Beginner: you write HTML, CSS and SQL, and the address names the query.",
-    intermediate: "Intermediate: you also write routes.txt, which maps addresses to queries.",
-    advanced: "Advanced: you write the handlers yourself, in " + (state.language === "ts" ? "TypeScript" : "Python") + ".",
-  }[state.level];
-  findElement("#mode-help").textContent = state.mode === "explore"
-    ? "Explore: a finished vending machine with four pages. Press Buy and watch the timeline."
-    : "Bring your own: upload your HTML and CSS on the left and your SQL on the right, or paste them in.";
+  const seen = new Set();
+  findElement("#level-help").innerHTML = termHtml({
+    beginner: "Beginner: you write HTML, CSS and SQL. The address names the query, for example /api/list_slots, so the server does the routing for you.",
+    intermediate: "Intermediate: you also write routes.txt. Each line maps a method and a path to a query.",
+    advanced: "Advanced: you write the handlers yourself, in " + (state.language === "ts" ? "TypeScript" : "Python") + ". A handler is the function that answers one route.",
+  }[state.level], seen);
+  findElement("#mode-help").innerHTML = termHtml(state.mode === "explore"
+    ? "Explore: a finished vending machine with four pages. Press Buy, then press Forward to move through the request one step at a time."
+    : "Bring your own: upload your HTML and CSS on the left and your SQL on the right, or paste them in.", seen);
 }
 
 // Change the level. Files the student has not edited take the new level's version.
@@ -845,12 +917,21 @@ function bindControls() {
       if (setting === "level") changeLevel(value);
       else if (setting === "language") changeLanguage(value);
       else if (setting === "mode") changeMode(value);
-      else if (setting === "speed") { state.speed = value; if (value !== "step" && releaseNextStep) releaseNextStep(); reflectControls(); saveSoon(); }
     });
   }
   findElement("#follow").addEventListener("change", (event) => { state.follow = event.target.checked; saveSoon(); });
-  findElement("#next").addEventListener("click", () => { if (releaseNextStep) releaseNextStep(); });
-  findElement("#skip").addEventListener("click", () => { skippingToEnd = true; if (releaseNextStep) releaseNextStep(); updateControls(); });
+  findElement("#step-start").addEventListener("click", stepStart);
+  findElement("#step-back").addEventListener("click", stepBack);
+  findElement("#step-forward").addEventListener("click", stepForward);
+  findElement("#step-end").addEventListener("click", stepEnd);
+  findElement("#stepping").addEventListener("change", (event) => { state.stepping = event.target.checked; if (!state.stepping && releaseNextStep) releaseNextStep(); saveSoon(); });
+  // With the cards focused, the arrow keys, Home and End move through the steps.
+  findElement("#cards").addEventListener("keydown", (event) => {
+    const keys = { ArrowRight: stepForward, ArrowLeft: stepBack, Home: stepStart, End: stepEnd };
+    if (!keys[event.key]) return;
+    event.preventDefault();
+    keys[event.key]();
+  });
   findElement("#clear-log").addEventListener("click", () => { findElement("#log").textContent = ""; });
   findElement("#start-over").addEventListener("click", async () => {
     if (hasEdits() && !window.confirm("Start over replaces the files you changed with the originals. Do you want to continue?")) return;
@@ -922,16 +1003,221 @@ function bindControls() {
   });
 }
 
+/* ---------- Hover terms ----------
+   A word with a dotted underline explains itself on hover, on keyboard focus and on touch.
+   The texts come from the same list as the tutorial, so a word means the same thing in both places.
+   One floating box shows the text, so a card that scrolls can never cut it off. */
+
+let termPattern = null;
+const termInfo = {};
+
+function buildTerms() {
+  const names = Object.keys(DATA.terms).sort((a, b) => b.length - a.length);
+  for (const name of names) {
+    // Acronyms such as SQL and JSON match only in capitals, so an ordinary word is never marked by mistake.
+    const exact = name !== name.toLowerCase() && name !== name[0].toUpperCase() + name.slice(1).toLowerCase();
+    termInfo[name.toLowerCase()] = { name, def: DATA.terms[name], exact };
+  }
+  termPattern = new RegExp("(?<![\\w-])(" + names.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")(s?)(?![\\w-])", "gi");
+}
+
+// Turn plain text into HTML in which the first use of each key word (once per set) carries its explanation.
+function termHtml(text, seen) {
+  text = String(text);
+  seen = seen || (interaction ? interaction.terms : new Set());
+  let out = "";
+  let last = 0;
+  for (const match of text.matchAll(termPattern)) {
+    const key = match[1].toLowerCase();
+    const info = termInfo[key];
+    if (!info || seen.has(key) || (info.exact && match[1] !== info.name)) continue;
+    seen.add(key);
+    out += escapeHtml(text.slice(last, match.index)) + '<span class="term" tabindex="0" data-def="' + escapeHtml(info.def).replace(/"/g, "&quot;") + '">' + escapeHtml(match[0]) + "</span>";
+    last = match.index + match[0].length;
+  }
+  return out + escapeHtml(text.slice(last));
+}
+
+function setupTips() {
+  const tip = findElement("#tip");
+  const show = (term) => {
+    tip.textContent = term.dataset.def;
+    tip.hidden = false;
+    const box = term.getBoundingClientRect();
+    const size = tip.getBoundingClientRect();
+    const left = Math.max(8, Math.min(window.innerWidth - size.width - 8, box.left + box.width / 2 - size.width / 2));
+    const top = box.top - size.height - 8 >= 8 ? box.top - size.height - 8 : box.bottom + 8;
+    tip.style.left = left + "px";
+    tip.style.top = top + "px";
+  };
+  const hide = () => { tip.hidden = true; };
+  document.addEventListener("mouseover", (event) => { const term = event.target.closest && event.target.closest(".term"); if (term) show(term); });
+  document.addEventListener("mouseout", (event) => { if (event.target.closest && event.target.closest(".term")) hide(); });
+  document.addEventListener("focusin", (event) => { const term = event.target.closest && event.target.closest(".term"); if (term) show(term); });
+  document.addEventListener("focusout", hide);
+  document.addEventListener("scroll", hide, true);
+}
+
+/* ---------- The setup screen ----------
+   The student chooses a mode, a level and a server language (and may upload files),
+   reads a short tour of the files and how they connect, and then opens the workbench. */
+
+let hadSavedWork = false;
+let workbenchStarted = false;
+const staged = [];   // files chosen on the setup screen, as { name, text }
+
+const PAGE_FILE = /\.(html?|css|js)$/i;
+
+// What each file is for, in one or two sentences. The key is the file name, with the language filled in for the server files.
+function fileNote(name) {
+  if (name === "style.css") return "How the pages look: colours, sizes and layout. A change here never changes what a page does.";
+  if (name === "client.js") return "The only JavaScript. It reads the data- attributes in the HTML, sends the request and fills the page in with the answer. You can read it, and you rarely need to change it.";
+  if (name === "item.html") return "The page for one slot. The slot comes from the address, for example item.html?slot=A1, and the page asks the server for that slot.";
+  if (name === "restock.html") return "A page with a form that adds stock to a slot. Sending the form is a POST request.";
+  if (name === "sales.html") return "A page that lists the sales that the database has recorded.";
+  if (/\.html?$/i.test(name)) return name === "index.html"
+    ? "The first page. It holds the structure: headings, buttons and empty places to fill. A data-get attribute tells client.js which address to ask for data."
+    : "Another page. It is built the same way as index.html, and links connect the pages.";
+  if (name === "schema.sql") return "The tables and the rows they start with. Reset database runs this file again.";
+  if (name === "queries.sql") return "Every question the server may ask the database. Each query starts with a comment of the form -- name: something, and a word such as :slot is a parameter.";
+  if (name === "routes.txt") return "One route per line: the method, the path, the name of the query and the shape of the answer.";
+  if (/^handlers\./.test(name)) return "Your handlers. Each call to route(method, pattern, handler) says what to do when that request arrives.";
+  if (/^server\./.test(name)) return "The machine itself. It listens for requests, finds the route, runs the query and sends the answer. It is read only, and you can read it to see how a server works.";
+  return "A file you added.";
+}
+
+// Which server file an uploaded file will become. This follows the same rules as the editors.
+function uploadTarget(entry, language) {
+  const name = entry.name;
+  if (PAGE_FILE.test(name)) return name;
+  if (/\.sql$/i.test(name) && name !== "schema.sql" && name !== "queries.sql") return /-- name:/i.test(entry.text) ? "queries.sql" : /create\s+table/i.test(entry.text) ? "schema.sql" : "queries.sql";
+  if (/\.txt$/i.test(name)) return "routes.txt";
+  if (/\.(ts|py)$/i.test(name) && !name.startsWith("server.")) return "handlers." + language;
+  return name;
+}
+
+function chosen(name) { const input = findElement('input[name="intro-' + name + '"]:checked'); return input ? input.value : ""; }
+
+function showIntro() {
+  document.body.classList.add("setup");
+  for (const [group, value] of [["mode", state.mode], ["level", state.level], ["language", state.language]]) {
+    const input = findElement('input[name="intro-' + group + '"][value="' + value + '"]');
+    if (input) input.checked = true;
+  }
+  findElement("#intro-upload").hidden = chosen("mode") !== "own";
+  findElement("#intro-saved").hidden = !(hadSavedWork || workbenchStarted);
+  findElement("#intro-continue").textContent = workbenchStarted ? "Go back to my project" : "Continue with my saved project";
+  findElement("#intro-choose").hidden = false;
+  findElement("#intro-files-view").hidden = true;
+  window.scrollTo(0, 0);
+}
+
+function renderGuide() {
+  const mode = chosen("mode");
+  const level = chosen("level");
+  const language = chosen("language");
+  const sample = DATA.samples[mode][level];
+  const uploads = {};
+  for (const entry of staged) uploads[uploadTarget(entry, language)] = entry.name;
+  const rank = (n) => (n === "index.html" ? 0 : n.endsWith(".html") ? 1 : n.endsWith(".css") ? 2 : 3);
+  const pages = Array.from(new Set([...Object.keys(sample).filter((n) => !SERVER_ONLY.has(n)), ...Object.keys(uploads).filter((n) => PAGE_FILE.test(n))])).sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+  const server = [];
+  if (level === "advanced") server.push("handlers." + language);
+  if (level === "intermediate") server.push("routes.txt");
+  server.push("queries.sql", "schema.sql", "server." + language);
+  const group = (title, names, intro) => {
+    const items = names.map((n) => "<li><span><code>" + escapeHtml(n) + "</code>" + (uploads[n] ? '<span class="tag">from ' + escapeHtml(uploads[n]) + "</span>" : "") + "</span><span>" + termHtml(fileNote(n), seen) + "</span></li>").join("");
+    return '<div class="guide-group"><h3>' + escapeHtml(title) + "</h3>" + (intro ? '<p class="quiet">' + termHtml(intro, seen) + "</p>" : "") + "<ul>" + items + "</ul></div>";
+  };
+  const seen = new Set();
+  const label = { explore: "Explore", own: "Bring your own", beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced", ts: "TypeScript", py: "Python" };
+  findElement("#intro-summary").textContent = label[mode] + ", " + label[level] + " level, " + label[language] + " server. Files on the left of the workbench run in the browser. Files on the right run in the server.";
+  findElement("#intro-guide").innerHTML =
+    group("Front end: runs in the browser", pages, "These files make the page. The browser loads them first.") +
+    group("Back end: runs in the server and the database", server, level === "beginner" ? "You write queries.sql and schema.sql. The server file does the rest." : level === "intermediate" ? "You write routes.txt, queries.sql and schema.sql." : "You write the handlers file, queries.sql and schema.sql.");
+  const choose = {
+    beginner: "The server reads the address, which names a query, for example /api/list_slots runs the query list_slots (Station 4).",
+    intermediate: "The server looks the method and the path up in routes.txt, which names the query to run (Station 4).",
+    advanced: "The server finds the route that your handlers file registered and calls your handler, which checks the input (Stations 4 and 5).",
+  }[level];
+  const second = level === "advanced" ? "Your handler picks a query from queries.sql and runs it against the tables that schema.sql created (Stations 6 and 7)." : "The query in queries.sql runs against the tables that schema.sql created (Stations 6 and 7).";
+  const flow = [
+    "You press a button in a page. The browser notices the click (Station 1), and client.js builds and sends a request (Stations 2 and 3).",
+    choose,
+    second,
+    "The server answers with a status code and JSON (Stations 8 and 9). client.js receives the answer and changes the page, and the browser repaints it (Stations 10 to 12).",
+  ];
+  findElement("#intro-flow").innerHTML = flow.map((line) => "<li>" + termHtml(line, seen) + "</li>").join("");
+}
+
+async function openFromSetup() {
+  if (hasEdits() && !window.confirm("A new setup replaces the files you changed. Do you want to continue?")) return;
+  state.mode = chosen("mode");
+  state.level = chosen("level");
+  state.language = chosen("language");
+  loadBase(state.mode, state.level);
+  state.panes.left = "index.html";
+  state.panes.right = defaultServerTab();
+  document.body.classList.remove("setup");
+  await startWorkbench();
+  // Files from the setup screen go in after the project is running, so each one is checked and shown as if it had been uploaded in an editor.
+  const asFiles = (list) => list.map((entry) => ({ name: entry.name, text: async () => entry.text }));
+  const pages = staged.filter((entry) => PAGE_FILE.test(entry.name));
+  const others = staged.filter((entry) => !PAGE_FILE.test(entry.name));
+  if (pages.length) await uploadFiles("left", asFiles(pages));
+  if (others.length) await uploadFiles("right", asFiles(others));
+  staged.length = 0;
+  findElement("#intro-staged").textContent = "";
+}
+
+function bindIntro() {
+  const modeInputs = findElements('input[name="intro-mode"]');
+  modeInputs.forEach((input) => input.addEventListener("change", () => { findElement("#intro-upload").hidden = chosen("mode") !== "own"; }));
+  findElement("#intro-files").addEventListener("change", async (event) => {
+    for (const file of Array.from(event.target.files)) {
+      if (!/\.(html?|css|js|sql|txt|ts|py)$/i.test(file.name)) continue;
+      const entry = { name: file.name, text: await file.text() };
+      const at = staged.findIndex((other) => other.name === entry.name);
+      if (at >= 0) staged[at] = entry; else staged.push(entry);
+    }
+    event.target.value = "";
+    findElement("#intro-staged").textContent = staged.length ? "Ready to add: " + staged.map((entry) => entry.name).join(", ") + "." : "";
+  });
+  findElement("#intro-next").addEventListener("click", () => {
+    renderGuide();
+    findElement("#intro-choose").hidden = true;
+    findElement("#intro-files-view").hidden = false;
+    window.scrollTo(0, 0);
+  });
+  findElement("#intro-back").addEventListener("click", () => { findElement("#intro-choose").hidden = false; findElement("#intro-files-view").hidden = true; });
+  findElement("#intro-open").addEventListener("click", openFromSetup);
+  findElement("#intro-continue").addEventListener("click", async () => {
+    document.body.classList.remove("setup");
+    if (!workbenchStarted) await startWorkbench();
+  });
+  findElement("#open-setup").addEventListener("click", showIntro);
+}
+
 /* ---------- Start ---------- */
 
-// Open the workbench: restore saved work, set up both editors, and show the first page.
+// Get the editors and controls ready, then show the setup screen. Nothing runs until the student chooses.
 async function boot() {
-  restore();
+  hadSavedWork = restore();
+  buildTerms();
+  setupTips();
   setupPane("left");
   setupPane("right");
   bindControls();
+  bindIntro();
   state.panes.left = browserFileList().includes(state.panes.left) ? state.panes.left : "index.html";
   state.panes.right = serverFileList().includes(state.panes.right) ? state.panes.right : defaultServerTab();
+  reflectControls();
+  showIntro();
+}
+
+// Start the server and load the first page, after the student has chosen a setup or asked to continue.
+async function startWorkbench() {
+  workbenchStarted = true;
   if (state.language === "py" && !engines.py) state.language = "ts";
   if (state.language === "py") {
     setBusy(true, "Python is loading. The first time, this downloads about 10 MB.");

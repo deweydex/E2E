@@ -171,7 +171,7 @@ button:focus-visible, .splitter:focus-visible, textarea:focus-visible, input:foc
 .try-panel p { margin: 0 0 6px; color: var(--muted); }
 .try-panel ol { margin: 0; padding-left: 20px; }
 .try-panel li { margin-bottom: 8px; }
-.helpline span + span::before { content: "  \00b7  "; white-space: pre; }
+.helpline p > span + span::before { content: "  \00b7  "; white-space: pre; }
 
 .viewtabs { display: none; }
 
@@ -333,3 +333,60 @@ tr.changed td { animation: flash 2.4s ease-out; }
 
 .helptools { display: flex; gap: 18px; align-items: center; }
 .linkish { border: none; background: none; color: var(--accent); text-decoration: underline; cursor: pointer; padding: 0; }
+
+/* ---------- Stepping controls ---------- */
+
+.stepper { display: inline-flex; align-items: center; gap: 6px; }
+#step-pos { min-width: 8.5em; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tl-controls button.plain.primary, .intro button.plain.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 700; }
+.tl-controls button.plain.primary:disabled { background: transparent; color: var(--text); border-color: var(--line); font-weight: 400; }
+.chips li b { font-variant-numeric: tabular-nums; margin-right: 2px; }
+.card[hidden] { display: none; }
+.card .station { margin: 0 0 2px; font-size: 0.92em; }
+.card .station a { color: var(--accent); }
+.card .trail { display: flex; flex-direction: column; gap: 0; margin: 0 0 6px; color: var(--muted); font-size: 0.82em; }
+.cards:empty::before { content: "Press a button in the page on the left. The request stops at every step. Press Forward to move to the next one, and Back to look at an earlier one."; }
+
+/* ---------- Hover terms ---------- */
+
+.term { border-bottom: 1.5px dotted var(--accent); cursor: help; }
+#tip { position: fixed; z-index: 80; max-width: min(300px, 86vw); padding: 8px 10px; border-radius: 8px; background: var(--text); color: var(--bg); font-size: 0.85rem; line-height: 1.4; pointer-events: none; }
+#tip[hidden] { display: none; }
+
+/* ---------- The setup screen ---------- */
+
+body.setup .wb-main, body.setup #timeline, body.setup .helpline, body.setup .viewtabs, body.setup .split-timeline, body.setup #split-timeline { visibility: hidden; }
+.intro { position: fixed; inset: 0; z-index: 70; overflow: auto; background: var(--bg); display: none; padding: 20px 16px 40px; }
+body.setup .intro { display: block; }
+.intro-card { max-width: 760px; margin: 0 auto; }
+.intro h1 { font-size: 1.5rem; margin-bottom: 4px; }
+.intro h2 { font-size: 1.05rem; margin: 22px 0 8px; }
+.intro-lead { color: var(--muted); margin: 0 0 14px; }
+.intro fieldset { border: 1px solid var(--line); border-radius: 10px; margin: 0 0 14px; padding: 8px 14px 12px; background: var(--surface); }
+.intro legend { font-weight: 700; padding: 0 6px; }
+.opt { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
+.opt:hover { background: var(--accent-soft); }
+.opt input { margin-top: 5px; }
+.opt b { display: block; }
+.upload-line { display: block; margin: 6px 10px 2px; font-weight: 700; }
+.upload-line input { display: block; margin-top: 4px; font-weight: 400; }
+.intro .quiet { color: var(--muted); margin: 4px 10px; font-size: 0.9em; }
+.intro-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 0; }
+.intro button.plain { border: 1px solid var(--line); background: var(--surface); color: var(--text); padding: 7px 16px; border-radius: 8px; cursor: pointer; }
+#intro-saved[hidden], #intro-upload[hidden], #intro-files-view[hidden], #intro-choose[hidden] { display: none; }
+.guide-group { border: 1px solid var(--line); border-radius: 10px; margin: 0 0 12px; background: var(--surface); }
+.guide-group > h3 { font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 8px 14px; border-bottom: 1px solid var(--line); }
+.guide-group ul { list-style: none; margin: 0; padding: 0; }
+.guide-group li { display: grid; grid-template-columns: minmax(9em, 12em) 1fr; gap: 4px 14px; padding: 8px 14px; border-bottom: 1px solid var(--line); }
+.guide-group li:last-child { border-bottom: none; }
+.guide-group code { font-weight: 700; word-break: break-word; }
+.guide-group .tag { display: inline-block; margin-left: 6px; padding: 0 7px; border-radius: 999px; background: var(--accent-soft); font-size: 0.78em; font-weight: 400; }
+.flow { margin: 0; padding-left: 22px; }
+.flow li { margin-bottom: 6px; }
+@media (max-width: 640px) { .guide-group li { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .tl-controls { margin-left: 0; max-width: 100%; }
+  .stepper { flex-wrap: wrap; justify-content: center; gap: 4px; max-width: 100%; }
+  .tl-controls button.plain { padding: 3px 8px; }
+  #step-pos { min-width: 0; flex-basis: 100%; order: -1; text-align: left; }
+}

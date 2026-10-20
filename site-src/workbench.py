@@ -111,6 +111,38 @@ def code_pane(side, accept, extra_tools="", extra_after=""):
 </div>"""
 
 
+# Words that get a hover explanation in the workbench. Most come from the tutorial, so the two sites explain a word in the same way.
+WB_TERMS = [
+    "route table", "handler", "service worker", "JSON", "DOM", "SQL injection", "SQL", "API", "endpoint", "status code",
+    "placeholder", "schema", "primary key", "constraint", "transaction", "HTTP", "request", "response", "server", "client",
+    "query", "row", "column", "HTML", "CSS", "JavaScript", "CORS", "prepared statement",
+]
+WB_EXTRA = {
+    "route": "One entry in the server's list: a method and a path, and the code or query that answers them.",
+    "method": "The kind of action a request asks for. GET reads, and POST changes something.",
+    "path": "The part of the address that says which thing the request is about, such as /api/slots.",
+    "body": "The data that travels with a request or a response, usually JSON.",
+    "event": "Something the browser notices, such as a click, that a script can react to.",
+    "script": "A piece of JavaScript that runs inside a page.",
+    "database": "The program that stores the tables and answers queries.",
+    "table": "Rows and columns of data with a name, such as slots.",
+    "parameter": "A value that travels separately from the SQL, such as :slot. The database can only treat it as data.",
+    "timeline": "The list of steps that one request goes through, from the click to the screen update.",
+    "station": "One stop on the journey of a request. The tutorial numbers them 1 to 12.",
+    "handler file": "The file in which you write your own handlers. The machine in server.ts calls them.",
+}
+
+
+def workbench_terms():
+    """The hover texts as { word: text }, for the script of the workbench."""
+    import terms
+
+    defs = terms.definitions()
+    result = {name: defs[name] for name in WB_TERMS}
+    result.update(WB_EXTRA)
+    return result
+
+
 def page_html():
     """The HTML of the whole workbench page."""
     settings = theme.SETTINGS_HTML
@@ -139,6 +171,7 @@ def page_html():
 <div class="ctl"><span class="ctl-label" id="l-mode">Mode</span><div class="seg" data-setting="mode" role="group" aria-labelledby="l-mode"><button type="button" data-value="explore">Explore</button><button type="button" data-value="own">Bring your own</button></div></div>
 <div class="ctl"><span class="ctl-label" id="l-level">Level</span><div class="seg" data-setting="level" role="group" aria-labelledby="l-level"><button type="button" data-value="beginner">Beginner</button><button type="button" data-value="intermediate">Intermediate</button><button type="button" data-value="advanced">Advanced</button></div></div>
 <div class="ctl"><span class="ctl-label" id="l-language">Server</span><div class="seg" data-setting="language" role="group" aria-labelledby="l-language"><button type="button" data-value="ts">TypeScript</button><button type="button" data-value="py">Python</button></div></div>
+<button type="button" class="plain" id="open-setup">Change setup</button>
 <a class="home" href="../index.html">Back to the tutorial</a>
 {settings}
 </div>
@@ -188,11 +221,16 @@ def page_html():
 <section id="timeline" aria-label="Timeline of the request">
 <div class="tl-bar">
 <h2>Timeline</h2>
-<ol id="chips" class="chips"><li>Click</li><li>Request</li><li>Route</li><li>SQL</li><li>Response</li><li>Screen</li></ol>
+<ol id="chips" class="chips"><li><b>1</b> Click</li><li><b>2&ndash;3</b> Request</li><li><b>4</b> Route</li><li><b>6&ndash;7</b> SQL</li><li><b>8&ndash;9</b> Response</li><li><b>10&ndash;12</b> Screen</li></ol>
 <div class="tl-controls">
-<span class="ctl-label" id="l-speed">Speed</span><div class="seg" data-setting="speed" role="group" aria-labelledby="l-speed"><button type="button" data-value="fast">Fast</button><button type="button" data-value="slow">Slow</button><button type="button" data-value="step">Step</button></div>
-<button type="button" class="plain" id="next" disabled>Next</button>
-<button type="button" class="plain" id="skip" disabled>Skip to end</button>
+<div class="stepper" role="group" aria-label="Step through the request">
+<button type="button" class="plain" id="step-start" title="Go to the first step" disabled>&laquo; Start</button>
+<button type="button" class="plain" id="step-back" title="Go back one step" disabled>&lsaquo; Back</button>
+<span id="step-pos" aria-live="polite">No steps yet</span>
+<button type="button" class="plain primary" id="step-forward" title="Go forward one step" disabled>Forward &rsaquo;</button>
+<button type="button" class="plain" id="step-end" title="Run to the last step" disabled>End &raquo;</button>
+</div>
+<label title="When this is ticked, a request stops after every step and waits for Forward"><input type="checkbox" id="stepping" checked> Stop at each step</label>
 <label><input type="checkbox" id="follow"> Follow in the code</label>
 <span id="tl-state" role="status"></span>
 <button type="button" class="plain" id="download-project">Download project</button>
@@ -201,7 +239,40 @@ def page_html():
 </div>
 <div id="cards" class="cards" tabindex="0" aria-label="Steps of the current request"></div>
 </section>
+<div id="intro" class="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title">
+<div class="intro-card">
+<section id="intro-choose">
+<h1 id="intro-title">Set up the workbench</h1>
+<p class="intro-lead">Choose how you want to work. You can change any of this later with <b>Change setup</b>.</p>
+<p id="intro-saved" hidden><button type="button" class="plain primary" id="intro-continue">Continue with my saved project</button> <span>or start a new one below.</span></p>
+<fieldset><legend>1. What do you want to start from?</legend>
+<label class="opt"><input type="radio" name="intro-mode" value="explore" checked><span><b>Explore</b> A finished vending machine with four pages. Press Buy and watch the request travel.</span></label>
+<label class="opt"><input type="radio" name="intro-mode" value="own"><span><b>Bring your own</b> A small page to build on. Upload your own HTML, CSS and SQL if you have them.</span></label>
+<div id="intro-upload" hidden><label class="upload-line">Upload your files (optional) <input type="file" id="intro-files" multiple accept=".html,.htm,.css,.js,.sql,.txt,.ts,.py"></label><p id="intro-staged" class="quiet"></p></div>
+</fieldset>
+<fieldset><legend>2. How much do you want to write?</legend>
+<label class="opt"><input type="radio" name="intro-level" value="beginner" checked><span><b>Beginner</b> You write HTML, CSS and SQL. The address names the query, so the server stays out of your way.</span></label>
+<label class="opt"><input type="radio" name="intro-level" value="intermediate"><span><b>Intermediate</b> You also write <code>routes.txt</code>, which maps each method and path to a query.</span></label>
+<label class="opt"><input type="radio" name="intro-level" value="advanced"><span><b>Advanced</b> You write the handlers yourself, in the server language you choose.</span></label>
+</fieldset>
+<fieldset><legend>3. Which language does the server use?</legend>
+<label class="opt"><input type="radio" name="intro-language" value="ts" checked><span><b>TypeScript</b> Runs at once.</span></label>
+<label class="opt"><input type="radio" name="intro-language" value="py"><span><b>Python</b> Downloads about 10 MB the first time.</span></label>
+</fieldset>
+<p class="intro-actions"><button type="button" class="plain primary" id="intro-next">Show me the project &rsaquo;</button></p>
+</section>
+<section id="intro-files-view" hidden>
+<h1>Your project</h1>
+<p class="intro-lead" id="intro-summary"></p>
+<div id="intro-guide"></div>
+<h2>How a request uses these files</h2>
+<ol id="intro-flow" class="flow"></ol>
+<p class="intro-actions"><button type="button" class="plain" id="intro-back">&lsaquo; Change my choices</button> <button type="button" class="plain primary" id="intro-open">Open the workbench &rsaquo;</button></p>
+</section>
+</div>
+</div>
 <div id="busy" role="status"></div>
+<div id="tip" role="tooltip" hidden></div>
 <script src="vendor/sql-wasm-data.js"></script>
 <script src="vendor/sql-wasm.js"></script>
 <script src="vendor/sucrase.js"></script>
@@ -227,6 +298,7 @@ def build():
         "samples": {mode: {level: sample_files(mode, level) for level in ADDRESSES} for mode in ["explore", "own"]},
         "engines": server_sources(),
         "bridge": read_text(SOURCE_DIR / "bridge.js"),
+        "terms": workbench_terms(),
     }
     (WORKBENCH_DIR / "data.js").write_text("window.WB_DATA = " + json.dumps(data) + ";\n")
 
