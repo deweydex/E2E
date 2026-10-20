@@ -1,0 +1,7 @@
+# routes.txt says which request runs which query.
+# Each line has four columns: the method, the path, the query name, and the shape of the answer.
+#   rows    the answer is a list of rows
+#   one     the answer is a single row, or 404 when nothing matches
+#   change  the answer says how many rows changed, or 409 when none did
+
+GET   /api/slots   list_slots   rows

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>My page</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>My page</h1>
+  </header>
+
+  <main>
+    <p class="message" data-message></p>
+
+    <!-- client.js fetches this address and repeats the template once for every row. -->
+    <section class="machine" data-get="@@LIST@@">
+      <template>
+        <article class="slot">
+          <h2 data-field="item_name"></h2>
+          <p class="price" data-field="price_cents" data-format="euros"></p>
+          <p class="stock"><span data-field="stock"></span> left</p>
+        </article>
+      </template>
+    </section>
+  </main>
+
+  <script src="client.js"></script>
+</body>
+</html>

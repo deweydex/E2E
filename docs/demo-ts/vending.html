@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Makes the page fit a phone screen instead of shrinking a desktop layout. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vending Machine</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #sim-banner { margin: 0 auto 12px; max-width: 480px; padding: 8px 12px; font: 13px/1.4 system-ui, sans-serif;
+      background: #fff3cd; color: #5c4400; border: 1px solid #e6c765; border-radius: 8px; }
+    #sim-banner.failed { background: #f8d7da; color: #58151c; border-color: #e4a2a8; }
+    body { padding-top: 12px; flex-direction: column; align-items: center; }
+    #sim-banner { box-sizing: border-box; width: min(100%, 480px); }
+    html[data-theme="dark"] body { background: #12161d; }
+    html[data-theme="dark"] #sim-banner { background: #3a2c10; color: #f0d79a; border-color: #6b5420; }
+    html[data-theme="dark"] #sim-banner.failed { background: #3d1b1e; color: #ffb3b8; border-color: #7a3a40; }
+  </style>
+  <script>
+    // Follow the theme that the reader chose in the tutorial's settings, which live in the same origin.
+    (function () {
+      let theme = "system";
+      try { theme = (JSON.parse(localStorage.getItem("tutorial-settings") || "{}").theme) || "system"; } catch (error) { /* ignore */ }
+      const dark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      if (dark) document.documentElement.dataset.theme = "dark";
+    })();
+  </script>
+</head>
+<body>
+  <p id="sim-banner" role="status" data-starting="Starting SQLite in your browser. The first visit downloads about 1 MB." data-ready="Simulated server: your browser is running the data layer and routes from server.ts, over sql.js. Reload the page to reset the machine." data-served-by="TypeScript running in this browser (sql.js)">Starting...</p>
+  <script>
+    // A page opened from a file cannot load modules or service workers, so say so plainly.
+    if (location.protocol === "file:") {
+      const banner = document.getElementById("sim-banner");
+      banner.textContent = "This demo needs a web server. Open the tutorial through http, for example with: python -m http.server";
+      banner.classList.add("failed");
+    }
+  </script>
+  <main class="machine">
+    <h1>Vending Machine</h1>
+
+    <!-- role="status" makes screen readers announce changes to this text. -->
+    <p id="status" class="screen" role="status">Loading...</p>
+
+    <!-- Empty at first. The script adds one card here for each slot. -->
+    <section id="slots" class="slots"></section>
+  </main>
+
+  <!-- A template is HTML that the browser keeps but does not show. The script
+       copies it once for each slot and fills in the copy. -->
+  <template id="slot-template">
+    <article class="slot">
+      <h2 class="item-name"></h2>
+      <p class="price"></p>
+      <p class="stock"></p>
+      <button type="button" class="buy">Buy</button>
+    </article>
+  </template>
+
+  <!-- host.js starts the simulated server, and then loads app.js, the same file as in the project. -->
+  <script type="module" src="host.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 470" role="img" aria-label="A script on a page from port 9000 asks the browser to fetch from port 8000. The server answers normally, but the browser withholds the answer from the script because no permission header is present."><title>A script on a page from port 9000 asks the browser to fetch from port 8000. The server answers normally, but the browser withholds the answer from the script because no permission header is present.</title><style>
+:root {
+  --bg: #fbfaf6;
+  --surface: #ffffff;
+  --surface-2: #f2efe6;
+  --code-bg: #f4f1e8;
+  --text: #1d2430;
+  --muted: #586071;
+  --line: #ddd7c8;
+  --accent: #0b6e6e;
+  --accent-soft: #dcefee;
+  --on-accent: #ffffff;
+  --warn: #8a5300;
+  --warn-soft: #fbefd6;
+  --bad: #a4262c;
+  --bad-soft: #f8e2e3;
+  --good: #25663a;
+  --good-soft: #e0f1e5;
+  --tok-keyword: #8a2b9b;
+  --tok-string: #1c6b3a;
+  --tok-comment: #6b7280;
+  --tok-func: #0a58a8;
+  --tok-number: #a34a00;
+  --tok-name: #0b6e6e;
+  --seg1: #cfe6f6;
+  --seg2: #f6e1be;
+  --seg3: #e2d3f3;
+  --seg4: #cdeed4;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12161d;
+    --surface: #1a2029;
+    --surface-2: #222a36;
+    --code-bg: #0f131a;
+    --text: #e6e9ef;
+    --muted: #a0a9b8;
+    --line: #2d3644;
+    --accent: #5fcaca;
+    --accent-soft: #163a3c;
+    --on-accent: #0b1a1a;
+    --warn: #f0b34d;
+    --warn-soft: #3a2c10;
+    --bad: #ff8f95;
+    --bad-soft: #3d1b1e;
+    --good: #7fd49a;
+    --good-soft: #14301f;
+    --tok-keyword: #d79bef;
+    --tok-string: #8fd9a8;
+    --tok-comment: #8b94a5;
+    --tok-func: #7db8f5;
+    --tok-number: #f2a864;
+    --tok-name: #5fcaca;
+  --seg1: #1f4560;
+  --seg2: #5a4219;
+  --seg3: #46316a;
+  --seg4: #1f5133;
+  }
+}
+svg text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: var(--text); }
+svg .t-muted { fill: var(--muted); }
+svg .t-on { fill: var(--on-accent); font-weight: 700; }
+svg .lane { stroke: var(--line); stroke-width: 2; stroke-dasharray: 5 6; }
+svg .head { fill: var(--surface-2); stroke: var(--line); stroke-width: 1.5; }
+svg .note { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+svg .arrow { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+svg .arrow.back { stroke: var(--muted); stroke-dasharray: 7 5; }
+svg .arrow.bad { stroke: var(--bad); stroke-dasharray: 7 5; }
+svg .dot { fill: var(--accent); }
+svg .zone-bad { fill: var(--warn-soft); stroke: var(--warn); stroke-width: 2; }
+svg .zone-good { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+svg .zone-db { fill: var(--surface-2); stroke: var(--muted); stroke-width: 2; }
+svg .strong { font-weight: 700; }
+svg text.mono { font-family: ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+svg .seg1 { fill: var(--seg1); }
+svg .seg2 { fill: var(--seg2); }
+svg .seg3 { fill: var(--seg3); }
+svg .seg4 { fill: var(--seg4); }
+</style><rect width="1080" height="470" rx="12" fill="var(--surface)"/><defs><marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/></marker><marker id="ah4m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker><marker id="ah4b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--bad)"/></marker></defs><line class="lane" x1="150" y1="84" x2="150" y2="454"/><rect class="head" x="30" y="16" width="240" height="62" rx="10"/><text class="strong" x="150" y="43" text-anchor="middle" font-size="16">Script in the page</text><text class="t-muted" x="150" y="64" text-anchor="middle" font-size="13">page came from port 9000</text><line class="lane" x1="540" y1="84" x2="540" y2="454"/><rect class="head" x="420" y="16" width="240" height="62" rx="10"/><text class="strong" x="540" y="43" text-anchor="middle" font-size="16">The browser</text><text class="t-muted" x="540" y="64" text-anchor="middle" font-size="13">enforces the same-origin policy</text><line class="lane" x1="930" y1="84" x2="930" y2="454"/><rect class="head" x="810" y="16" width="240" height="62" rx="10"/><text class="strong" x="930" y="43" text-anchor="middle" font-size="16">The API server</text><text class="t-muted" x="930" y="64" text-anchor="middle" font-size="13">listens on port 8000</text><path class="arrow" d="M 150 130 L 538 130" marker-end="url(#ah4)"/><text x="345.0" y="120" font-size="14" text-anchor="middle">fetch(&quot;http://127.0.0.1:8000/api/slots&quot;)</text><path class="arrow" d="M 540 190 L 928 190" marker-end="url(#ah4)"/><text x="735.0" y="180" font-size="14" text-anchor="middle">GET /api/slots</text><path class="arrow back" d="M 930 250 L 542 250" marker-end="url(#ah4m)"/><text x="735.0" y="240" font-size="14" text-anchor="middle">200 OK and JSON, with no permission header</text><text class="t-muted" x="930" y="282" text-anchor="middle" font-size="13">server log: GET /api/slots 200</text><rect class="note" x="320" y="306" width="440" height="58" rx="8" style="stroke: var(--bad)"/><text x="540" y="330" text-anchor="middle" font-size="14">The page is from port 9000, the answer is from port 8000,</text><text x="540" y="350" text-anchor="middle" font-size="14">and no header gives permission, so the answer is withheld.</text><path class="arrow bad" d="M 540 420 L 152 420" marker-end="url(#ah4b)"/><text x="345.0" y="410" font-size="14" text-anchor="middle">network error: the script never sees the answer</text></svg>

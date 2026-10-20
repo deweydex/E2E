@@ -1,0 +1,15 @@
+{
+  "name": "vending-machine-ts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup-db": "node src/setup-db.ts",
+    "build": "tsc -p client",
+    "check": "tsc -p src",
+    "start": "node src/server.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sales</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Sales</h1>
+    <nav>
+      <a href="index.html">Machine</a>
+      <a href="restock.html?slot=A1">Restock</a>
+      <a href="sales.html">Sales</a>
+    </nav>
+  </header>
+
+  <main>
+    <p class="message" data-message></p>
+
+    <table>
+      <thead>
+        <tr><th>Sale</th><th>Item</th><th>Price</th><th>Time</th></tr>
+      </thead>
+      <tbody data-get="@@SALES@@">
+        <template>
+          <tr>
+            <td data-field="sale_id"></td>
+            <td data-field="item_name"></td>
+            <td data-field="price_cents" data-format="euros"></td>
+            <td data-field="sold_at"></td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </main>
+
+  <script src="client.js"></script>
+</body>
+</html>

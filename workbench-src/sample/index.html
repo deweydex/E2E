@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Vending machine</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Vending machine</h1>
+    <nav>
+      <a href="index.html">Machine</a>
+      <a href="restock.html?slot=A1">Restock</a>
+      <a href="sales.html">Sales</a>
+    </nav>
+  </header>
+
+  <main>
+    <p class="message" data-message></p>
+
+    <!-- client.js fetches this address and repeats the template once for every row. -->
+    <section class="machine" data-get="@@LIST@@">
+      <template>
+        <article class="slot">
+          <a class="slot-id" data-href="item.html?slot={slot_id}" data-field="slot_id"></a>
+          <h2 data-field="item_name"></h2>
+          <p class="price" data-field="price_cents" data-format="euros"></p>
+          <p class="stock"><span data-field="stock"></span> left</p>
+          <button data-post="@@BUY@@" data-success="Enjoy your snack.">Buy</button>
+        </article>
+      </template>
+    </section>
+  </main>
+
+  <script src="client.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Makes the page fit a phone screen instead of shrinking a desktop layout. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vending Machine</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="machine">
+    <h1>Vending Machine</h1>
+
+    <!-- role="status" makes screen readers announce changes to this text. -->
+    <p id="status" class="screen" role="status">Loading...</p>
+
+    <!-- Empty at first. The script adds one card here for each slot. -->
+    <section id="slots" class="slots"></section>
+  </main>
+
+  <!-- A template is HTML that the browser keeps but does not show. The script
+       copies it once for each slot and fills in the copy. -->
+  <template id="slot-template">
+    <article class="slot">
+      <h2 class="item-name"></h2>
+      <p class="price"></p>
+      <p class="stock"></p>
+      <button type="button" class="buy">Buy</button>
+    </article>
+  </template>
+
+  <!-- The script comes last, so every element it looks for already exists. -->
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

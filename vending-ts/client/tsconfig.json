@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "moduleDetection": "force",
+    "lib": ["ES2022", "DOM"],
+    "types": [],
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "outDir": "../public"
+  },
+  "include": ["*.ts"]
+}

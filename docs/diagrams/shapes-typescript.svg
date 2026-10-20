@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 640" role="img" aria-label="The fact that slot A1 has seven items left in five shapes: a database row, a server object, JSON text on the network, a script object in the page, and DOM elements. Four labelled arrows show the step that converts each shape into the next."><title>The fact that slot A1 has seven items left in five shapes: a database row, a server object, JSON text on the network, a script object in the page, and DOM elements. Four labelled arrows show the step that converts each shape into the next.</title><style>
+:root {
+  --bg: #fbfaf6;
+  --surface: #ffffff;
+  --surface-2: #f2efe6;
+  --code-bg: #f4f1e8;
+  --text: #1d2430;
+  --muted: #586071;
+  --line: #ddd7c8;
+  --accent: #0b6e6e;
+  --accent-soft: #dcefee;
+  --on-accent: #ffffff;
+  --warn: #8a5300;
+  --warn-soft: #fbefd6;
+  --bad: #a4262c;
+  --bad-soft: #f8e2e3;
+  --good: #25663a;
+  --good-soft: #e0f1e5;
+  --tok-keyword: #8a2b9b;
+  --tok-string: #1c6b3a;
+  --tok-comment: #6b7280;
+  --tok-func: #0a58a8;
+  --tok-number: #a34a00;
+  --tok-name: #0b6e6e;
+  --seg1: #cfe6f6;
+  --seg2: #f6e1be;
+  --seg3: #e2d3f3;
+  --seg4: #cdeed4;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12161d;
+    --surface: #1a2029;
+    --surface-2: #222a36;
+    --code-bg: #0f131a;
+    --text: #e6e9ef;
+    --muted: #a0a9b8;
+    --line: #2d3644;
+    --accent: #5fcaca;
+    --accent-soft: #163a3c;
+    --on-accent: #0b1a1a;
+    --warn: #f0b34d;
+    --warn-soft: #3a2c10;
+    --bad: #ff8f95;
+    --bad-soft: #3d1b1e;
+    --good: #7fd49a;
+    --good-soft: #14301f;
+    --tok-keyword: #d79bef;
+    --tok-string: #8fd9a8;
+    --tok-comment: #8b94a5;
+    --tok-func: #7db8f5;
+    --tok-number: #f2a864;
+    --tok-name: #5fcaca;
+  --seg1: #1f4560;
+  --seg2: #5a4219;
+  --seg3: #46316a;
+  --seg4: #1f5133;
+  }
+}
+svg text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: var(--text); }
+svg .t-muted { fill: var(--muted); }
+svg .t-on { fill: var(--on-accent); font-weight: 700; }
+svg .lane { stroke: var(--line); stroke-width: 2; stroke-dasharray: 5 6; }
+svg .head { fill: var(--surface-2); stroke: var(--line); stroke-width: 1.5; }
+svg .note { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+svg .arrow { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+svg .arrow.back { stroke: var(--muted); stroke-dasharray: 7 5; }
+svg .arrow.bad { stroke: var(--bad); stroke-dasharray: 7 5; }
+svg .dot { fill: var(--accent); }
+svg .zone-bad { fill: var(--warn-soft); stroke: var(--warn); stroke-width: 2; }
+svg .zone-good { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+svg .zone-db { fill: var(--surface-2); stroke: var(--muted); stroke-width: 2; }
+svg .strong { font-weight: 700; }
+svg text.mono { font-family: ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+svg .seg1 { fill: var(--seg1); }
+svg .seg2 { fill: var(--seg2); }
+svg .seg3 { fill: var(--seg3); }
+svg .seg4 { fill: var(--seg4); }
+</style><rect width="1080" height="640" rx="12" fill="var(--surface)"/><defs><marker id="ah5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/></marker></defs><rect class="zone-db" x="30" y="24" width="640" height="76" rx="10"/><text class="strong" x="46" y="52" font-size="16">1. A row in the database</text><text class="mono" x="46" y="80" font-size="12">A1 | Sparkling Water | 175 | 7</text><text class="t-muted" x="698" y="68" font-size="15">On the server&#x27;s disk, inside the SQLite file</text><path class="arrow" d="M 120 104 L 120 150" marker-end="url(#ah5)"/><text class="mono" x="140" y="132.0" font-size="13">selectOneSlot.get(slotId)</text><rect class="zone-good" x="30" y="154" width="640" height="76" rx="10"/><text class="strong" x="46" y="182" font-size="16">2. A JavaScript object in the server</text><text class="mono" x="46" y="210" font-size="12">{ slot_id: &#x27;A1&#x27;, item_name: &#x27;Sparkling Water&#x27;, price_cents: 175, stock: 7 }</text><text class="t-muted" x="698" y="198" font-size="15">In the memory of the server program</text><path class="arrow" d="M 120 234 L 120 280" marker-end="url(#ah5)"/><text class="mono" x="140" y="262.0" font-size="13">JSON.stringify(slot)</text><rect class="zone-bad" x="30" y="284" width="640" height="76" rx="10"/><text class="strong" x="46" y="312" font-size="16">3. Text on the network (JSON)</text><text class="mono" x="46" y="340" font-size="12">{&quot;slot_id&quot;:&quot;A1&quot;,&quot;item_name&quot;:&quot;Sparkling Water&quot;,&quot;price_cents&quot;:175,&quot;stock&quot;:7}</text><text class="t-muted" x="698" y="328" font-size="15">On the network, as bytes</text><path class="arrow" d="M 120 364 L 120 410" marker-end="url(#ah5)"/><text class="mono" x="140" y="392.0" font-size="13">response.json()</text><rect class="seg1" x="30" y="414" width="640" height="76" rx="10" style="stroke: var(--line); stroke-width: 2"/><text class="strong" x="46" y="442" font-size="16">4. An object in the page&#x27;s script</text><text class="mono" x="46" y="470" font-size="12">{ slot_id: &quot;A1&quot;, item_name: &quot;Sparkling Water&quot;, price_cents: 175, stock: 7 }</text><text class="t-muted" x="698" y="458" font-size="15">In the memory of the page&#x27;s script</text><path class="arrow" d="M 120 494 L 120 540" marker-end="url(#ah5)"/><text class="mono" x="140" y="522.0" font-size="13">createSlotCard(slot)</text><rect class="seg1" x="30" y="544" width="640" height="76" rx="10" style="stroke: var(--line); stroke-width: 2"/><text class="strong" x="46" y="572" font-size="16">5. Elements in the DOM</text><text class="mono" x="46" y="600" font-size="12">&lt;p class=&quot;stock&quot;&gt;7 left&lt;/p&gt;</text><text class="t-muted" x="698" y="588" font-size="15">In the browser&#x27;s DOM, then on the screen</text></svg>

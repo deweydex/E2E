@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Restock</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Restock</h1>
+    <nav>
+      <a href="index.html">Machine</a>
+      <a href="restock.html?slot=A1">Restock</a>
+      <a href="sales.html">Sales</a>
+    </nav>
+  </header>
+
+  <main>
+    <p class="message" data-message></p>
+
+    <section data-get="@@GET@@" data-one>
+      <template>
+        <p class="detail"><strong data-field="item_name"></strong> has <span data-field="stock"></span> left.</p>
+      </template>
+    </section>
+
+    <!-- A form with data-post sends its fields as JSON. The input name becomes the key. -->
+    <form data-post="@@RESTOCK@@" data-success="Stock added.">
+      <p><label>How many to add? <input name="amount" type="number" value="5"></label></p>
+      <button>Add stock</button>
+    </form>
+  </main>
+
+  <script src="client.js"></script>
+</body>
+</html>

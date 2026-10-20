@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>One slot</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>One slot</h1>
+    <nav>
+      <a href="index.html">Machine</a>
+      <a href="restock.html?slot=A1">Restock</a>
+      <a href="sales.html">Sales</a>
+    </nav>
+  </header>
+
+  <main>
+    <p class="message" data-message></p>
+
+    <!-- The address of this page ends in ?slot=A1, and {query.slot} reads that value. -->
+    <section data-get="@@GET@@" data-one>
+      <template>
+        <article class="detail slot">
+          <h2><span data-field="slot_id"></span>: <span data-field="item_name"></span></h2>
+          <p class="price" data-field="price_cents" data-format="euros"></p>
+          <p class="stock"><span data-field="stock"></span> left</p>
+          <button data-post="@@BUY@@" data-success="Enjoy your snack.">Buy</button>
+          <a data-href="restock.html?slot={slot_id}">Restock this slot</a>
+        </article>
+      </template>
+    </section>
+  </main>
+
+  <script src="client.js"></script>
+</body>
+</html>

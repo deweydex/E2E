@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 470" role="img" aria-label="Two buyers race for the last item. With read-then-write, both read a stock of 1 and both write, so two buyers get one item. With a single UPDATE, the database serves them one after the other and the second is told the slot is sold out."><title>Two buyers race for the last item. With read-then-write, both read a stock of 1 and both write, so two buyers get one item. With a single UPDATE, the database serves them one after the other and the second is told the slot is sold out.</title><style>
+:root {
+  --bg: #fbfaf6;
+  --surface: #ffffff;
+  --surface-2: #f2efe6;
+  --code-bg: #f4f1e8;
+  --text: #1d2430;
+  --muted: #586071;
+  --line: #ddd7c8;
+  --accent: #0b6e6e;
+  --accent-soft: #dcefee;
+  --on-accent: #ffffff;
+  --warn: #8a5300;
+  --warn-soft: #fbefd6;
+  --bad: #a4262c;
+  --bad-soft: #f8e2e3;
+  --good: #25663a;
+  --good-soft: #e0f1e5;
+  --tok-keyword: #8a2b9b;
+  --tok-string: #1c6b3a;
+  --tok-comment: #6b7280;
+  --tok-func: #0a58a8;
+  --tok-number: #a34a00;
+  --tok-name: #0b6e6e;
+  --seg1: #cfe6f6;
+  --seg2: #f6e1be;
+  --seg3: #e2d3f3;
+  --seg4: #cdeed4;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12161d;
+    --surface: #1a2029;
+    --surface-2: #222a36;
+    --code-bg: #0f131a;
+    --text: #e6e9ef;
+    --muted: #a0a9b8;
+    --line: #2d3644;
+    --accent: #5fcaca;
+    --accent-soft: #163a3c;
+    --on-accent: #0b1a1a;
+    --warn: #f0b34d;
+    --warn-soft: #3a2c10;
+    --bad: #ff8f95;
+    --bad-soft: #3d1b1e;
+    --good: #7fd49a;
+    --good-soft: #14301f;
+    --tok-keyword: #d79bef;
+    --tok-string: #8fd9a8;
+    --tok-comment: #8b94a5;
+    --tok-func: #7db8f5;
+    --tok-number: #f2a864;
+    --tok-name: #5fcaca;
+  --seg1: #1f4560;
+  --seg2: #5a4219;
+  --seg3: #46316a;
+  --seg4: #1f5133;
+  }
+}
+svg text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: var(--text); }
+svg .t-muted { fill: var(--muted); }
+svg .t-on { fill: var(--on-accent); font-weight: 700; }
+svg .lane { stroke: var(--line); stroke-width: 2; stroke-dasharray: 5 6; }
+svg .head { fill: var(--surface-2); stroke: var(--line); stroke-width: 1.5; }
+svg .note { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+svg .arrow { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+svg .arrow.back { stroke: var(--muted); stroke-dasharray: 7 5; }
+svg .arrow.bad { stroke: var(--bad); stroke-dasharray: 7 5; }
+svg .dot { fill: var(--accent); }
+svg .zone-bad { fill: var(--warn-soft); stroke: var(--warn); stroke-width: 2; }
+svg .zone-good { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+svg .zone-db { fill: var(--surface-2); stroke: var(--muted); stroke-width: 2; }
+svg .strong { font-weight: 700; }
+svg text.mono { font-family: ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+svg .seg1 { fill: var(--seg1); }
+svg .seg2 { fill: var(--seg2); }
+svg .seg3 { fill: var(--seg3); }
+svg .seg4 { fill: var(--seg4); }
+</style><rect width="1100" height="470" rx="12" fill="var(--surface)"/><text class="strong" x="270" y="30" text-anchor="middle" font-size="17">Read, then write</text><text class="t-muted" x="270" y="52" text-anchor="middle" font-size="13.5">two steps with a gap between them</text><line class="lane" x1="70" y1="96" x2="70" y2="380"/><rect class="head" x="18" y="64" width="104" height="30" rx="8"/><text class="strong" x="70" y="84" text-anchor="middle" font-size="14">Buyer A</text><line class="lane" x1="240" y1="96" x2="240" y2="380"/><rect class="head" x="188" y="64" width="104" height="30" rx="8"/><text class="strong" x="240" y="84" text-anchor="middle" font-size="14">Buyer B</text><line class="lane" x1="450" y1="96" x2="450" y2="380"/><rect class="head" x="398" y="64" width="104" height="30" rx="8"/><text class="strong" x="450" y="84" text-anchor="middle" font-size="14">Database</text><path class="arrow" d="M 70 120 L 440 120"/><path class="arrow" d="M 438 114 L 450 120 L 438 126"/><text x="260.0" y="112" font-size="13" text-anchor="middle">SELECT stock</text><path class="arrow back" d="M 450 144 L 80 144"/><path class="arrow back" d="M 82 138 L 70 144 L 82 150"/><text x="260.0" y="136" font-size="13" text-anchor="middle">1</text><path class="arrow" d="M 240 190 L 440 190"/><path class="arrow" d="M 438 184 L 450 190 L 438 196"/><text x="345.0" y="182" font-size="13" text-anchor="middle">SELECT stock</text><path class="arrow back" d="M 450 214 L 250 214"/><path class="arrow back" d="M 252 208 L 240 214 L 252 220"/><text x="345.0" y="206" font-size="13" text-anchor="middle">1</text><path class="arrow" d="M 70 270 L 440 270"/><path class="arrow" d="M 438 264 L 450 270 L 438 276"/><text x="260.0" y="262" font-size="13" text-anchor="middle">write stock = 0</text><path class="arrow" d="M 240 330 L 440 330"/><path class="arrow" d="M 438 324 L 450 330 L 438 336"/><text x="345.0" y="322" font-size="13" text-anchor="middle">write stock = 0</text><text class="strong" x="270" y="425" text-anchor="middle" font-size="15" style="fill: var(--bad)">Two buyers took the one item that was left.</text><line class="lane" x1="560" y1="20" x2="560" y2="440"/><text class="strong" x="830" y="30" text-anchor="middle" font-size="17">One statement</text><text class="t-muted" x="830" y="52" text-anchor="middle" font-size="13.5">check and change happen together</text><line class="lane" x1="630" y1="96" x2="630" y2="380"/><rect class="head" x="578" y="64" width="104" height="30" rx="8"/><text class="strong" x="630" y="84" text-anchor="middle" font-size="14">Buyer A</text><line class="lane" x1="800" y1="96" x2="800" y2="380"/><rect class="head" x="748" y="64" width="104" height="30" rx="8"/><text class="strong" x="800" y="84" text-anchor="middle" font-size="14">Buyer B</text><line class="lane" x1="1010" y1="96" x2="1010" y2="380"/><rect class="head" x="958" y="64" width="104" height="30" rx="8"/><text class="strong" x="1010" y="84" text-anchor="middle" font-size="14">Database</text><path class="arrow" d="M 630 130 L 1000 130"/><path class="arrow" d="M 998 124 L 1010 130 L 998 136"/><text x="820.0" y="122" font-size="13" text-anchor="middle">UPDATE ... WHERE stock &gt; 0</text><path class="arrow back" d="M 1010 156 L 640 156"/><path class="arrow back" d="M 642 150 L 630 156 L 642 162"/><text x="820.0" y="148" font-size="13" text-anchor="middle">1 row changed</text><path class="arrow" d="M 800 230 L 1000 230"/><path class="arrow" d="M 998 224 L 1010 230 L 998 236"/><text x="905.0" y="222" font-size="13" text-anchor="middle">UPDATE ... WHERE stock &gt; 0</text><path class="arrow back" d="M 1010 256 L 810 256"/><path class="arrow back" d="M 812 250 L 800 256 L 812 262"/><text x="905.0" y="248" font-size="13" text-anchor="middle">0 rows changed</text><text class="strong" x="830" y="425" text-anchor="middle" font-size="15" style="fill: var(--good)">The second buyer is told that the slot is sold out.</text></svg>

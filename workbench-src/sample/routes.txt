@@ -1,0 +1,14 @@
+# routes.txt says which request runs which query.
+# Each line has four columns: the method, the path, the query name, and the shape of the answer.
+#
+#   rows    the answer is a list of rows, which is empty when nothing matches
+#   one     the answer is a single row, or the server sends 404 when nothing matches
+#   change  the answer says how many rows changed, or the server sends 409 when no row changed
+#
+# A word with a colon in front, such as :slot, is taken from the path of the request.
+
+GET   /api/slots                 list_slots     rows
+GET   /api/slots/:slot           get_slot       one
+POST  /api/slots/:slot/buy       buy_slot       change
+POST  /api/slots/:slot/restock   restock_slot   change
+GET   /api/sales                 list_sales     rows

@@ -1,0 +1,88 @@
+/* Named values that the rest of the file reuses. Change a colour here once. */
+:root {
+  --page: #eceff1;
+  --body: #37474f;
+  --screen-bg: #102a12;
+  --screen-text: #39ff14;
+  --card: #455a64;
+  --accent: #ffb300;
+  --text: #ffffff;
+}
+
+/* Centre the machine horizontally. */
+body {
+  font-family: system-ui, sans-serif;
+  background: var(--page);
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+/* min() means "480 pixels wide, but never wider than the screen". */
+.machine {
+  background: var(--body);
+  color: var(--text);
+  padding: 24px;
+  border-radius: 12px;
+  width: min(100%, 480px);
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: 1.4rem;
+}
+
+/* The status line looks like the green display of an old machine. */
+.screen {
+  background: var(--screen-bg);
+  color: var(--screen-text);
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin: 0 0 16px;
+}
+
+/* A grid with two equal columns. */
+.slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.slot {
+  background: var(--card);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.slot h2 {
+  font-size: 1rem;
+  margin: 0 0 8px;
+}
+
+.slot p {
+  margin: 0 0 4px;
+}
+
+/* The script only adds or removes the class "sold-out". This stylesheet
+   decides what a sold-out card looks like. */
+.slot.sold-out {
+  opacity: 0.55;
+}
+
+button {
+  margin-top: 8px;
+  width: 100%;
+  padding: 10px;
+  font-weight: bold;
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* The script sets the disabled property of a button when stock is zero. */
+button:disabled {
+  background: #90a4ae;
+  cursor: not-allowed;
+}

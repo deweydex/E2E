@@ -1,0 +1,90 @@
+/* style.css controls how the pages look. Change a value and the preview updates at once. */
+
+:root {
+  --page: #f7f5ef;
+  --card: #ffffff;
+  --ink: #1f2933;
+  --quiet: #5b6673;
+  --line: #d9d4c7;
+  --accent: #0b6e6e;
+  --accent-text: #ffffff;
+  --bad: #a4262c;
+  --good: #25663a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font: 16px/1.5 system-ui, sans-serif;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding: 16px 24px;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+}
+
+h1 { margin: 0; font-size: 1.4rem; }
+
+nav a { margin-right: 16px; color: var(--accent); }
+
+main { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+/* The machine is a grid of cards, one for each slot. */
+.machine {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px;
+}
+
+.slot {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.slot h2 { margin: 4px 0; font-size: 1.1rem; }
+.slot .price { margin: 0; font-weight: 700; }
+.slot .stock { margin: 0 0 12px; color: var(--quiet); }
+.slot-id { font-weight: 700; color: var(--accent); }
+
+/* The data-stock attribute is added by client.js, so CSS can react to the data. */
+.slot[data-stock="0"] { opacity: 0.6; }
+.slot[data-stock="0"] .stock { color: var(--bad); }
+
+button {
+  font: inherit;
+  font-weight: 700;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+input {
+  font: inherit;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.message { min-height: 1.5em; font-weight: 700; }
+.message[data-kind="ok"] { color: var(--good); }
+.message[data-kind="error"] { color: var(--bad); }
+
+table { width: 100%; border-collapse: collapse; background: var(--card); }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+
+.detail { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.detail h2 { margin-top: 0; }
