@@ -5,13 +5,24 @@ A tutorial site that shows how a click in a browser reaches a database and comes
 ## Contents of the site
 
 - The landing page links to everything else.
-- The Python edition and the TypeScript edition explain the same ideas in two languages.
+- The Python edition and the TypeScript edition build the same vending machine in two languages.
 - Every diagram is also available as a standalone SVG file with light and dark styles.
 - Two in-page demos run a small server inside the browser.
 - The workbench shows a front end on the left and a back end on the right, with a timeline below.
 - Two lab projects (Python and TypeScript) can be downloaded from the tutorial pages.
 
+## How each tutorial is organised
+
+- **Start here** lists what you build, what you learn and what you need.
+- **Try it first** runs the finished machine in the page.
+- **Steps 1 to 6** lead the student through making it: follow one click, build the database, the server, the page and the script, then run it and watch the traffic.
+- Every build step has a goal, numbered actions, the annotated code, a check that it works, and a short explanation.
+- **Going deeper** holds the optional material: HTTP messages and status codes, experiments that break the machine on purpose, design choices, and extensions.
+- The **Glossary** names the step or section that explains each term.
+
 ## Publish on GitHub Pages
+
+The site is published from the `docs/` folder. To set it up again, for example in a new repository:
 
 1. Open the repository's Settings, then Pages.
 2. Set Source to "Deploy from a branch".
@@ -43,7 +54,7 @@ Do not edit files in `docs/` by hand, because the next build overwrites them.
 
 ## Bundled libraries
 
-All three are open source and sit in `workbench-src/vendor/`.
+All four are open source. The first three sit in `workbench-src/vendor/`.
 
 - sql.js 1.13.0 provides the database for the TypeScript server.
 - Sucrase 3.35.0 removes TypeScript types in the browser.
