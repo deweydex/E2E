@@ -165,7 +165,32 @@ dfn { font-style: normal; font-weight: 700; }
 .box.warn { border-left-color: var(--warn); background: var(--warn-soft); }
 .box.try { border-left-color: var(--good); background: var(--good-soft); }
 .box.bad { border-left-color: var(--bad); background: var(--bad-soft); }
+.box.goal ul, .box.check ul { margin: 4px 0 0; padding-left: 20px; }
+.box.goal li, .box.check li { margin: 2px 0; }
+.box.check { border-left-color: var(--good); background: var(--good-soft); }
 
+/* numbered steps for making things */
+ol.make { max-width: 760px; margin: 12px 0 22px; padding: 0; list-style: none; counter-reset: make; }
+ol.make > li { counter-increment: make; position: relative; padding: 0 0 10px 38px; }
+ol.make > li::before {
+  content: counter(make);
+  position: absolute; left: 0; top: 0;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent);
+  font-weight: 700; font-size: 14px;
+  display: grid; place-items: center;
+}
+
+/* optional detail that a reader can open */
+details.deeper { max-width: 760px; margin: 18px 0; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+details.deeper > summary { cursor: pointer; padding: 10px 14px; font-weight: 700; }
+details.deeper > summary .tag { color: var(--muted); font-weight: 400; margin-right: 6px; }
+details.deeper[open] > summary { border-bottom: 1px solid var(--line); }
+details.deeper > .inner { padding: 4px 16px 6px; }
+details.deeper > .inner > :last-child { margin-bottom: 8px; }
+
+dl.glossary .where { color: var(--muted); }
+.prose code, .box code, details.deeper code, ol.make code, td code { overflow-wrap: anywhere; }
 /* annotated code */
 figure.file {
   margin: 28px 0 36px;
@@ -450,6 +475,28 @@ def annotated(items, lang, caption=None):
 def box(kind, label, body):
     cls = "box" if kind == "note" else f"box {kind}"
     return f'<aside class="{cls}"><span class="label">{label}</span>{body}</aside>'
+
+
+def goal(bullets, label="In this step you will"):
+    """A box that says, in a few bullets, what the reader is about to make or learn."""
+    items = "".join(f"<li>{b}</li>" for b in bullets)
+    return f'<aside class="box goal"><span class="label">{label}</span><ul>{items}</ul></aside>'
+
+
+def make_steps(items):
+    """Numbered steps for the actions a reader performs, such as creating a file or running a command."""
+    return '<ol class="make">' + "".join(f"<li>{i}</li>" for i in items) + "</ol>"
+
+
+def check(items, label="Check that it works"):
+    """A box that says what the reader should see when the step has worked."""
+    lis = "".join(f"<li>{i}</li>" for i in items)
+    return f'<aside class="box check"><span class="label">{label}</span><ul>{lis}</ul></aside>'
+
+
+def deeper(title, body, tag="Optional"):
+    """A collapsed block for detail that a reader can skip."""
+    return f'<details class="deeper"><summary><span class="tag">{tag}:</span>{title}</summary><div class="inner">{body}</div></details>'
 
 
 def predict(body):

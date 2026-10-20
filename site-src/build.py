@@ -38,16 +38,12 @@ def build_sections(E, edition):
         sections.append(edition.sec_try_first())
     sections += [
         A.sec_journey(E),
-        A.sec_why_db(E),
-        A.sec_trust(E),
-        A.sec_http(E),
-        A.sec_api(E),
-        A.sec_shapes(E),
         edition.sec_build_db(),
         edition.sec_build_server(),
         edition.sec_build_page(),
         edition.sec_build_script(),
         B.sec_run(E),
+        B.sec_http(E),
         B.sec_experiments(E),
         B.sec_choices(E),
         B.sec_extensions(E),
@@ -62,7 +58,7 @@ def toc_html(sections, sibling_href, sibling_label):
         match = re.match(r'<section id="([^"]+)"><h2><span class="part">([^<]+)</span>(.*?)</h2>', sec, re.S)
         assert match, "section without heading: " + sec[:80]
         sec_id, part, title = match.groups()
-        label = title if part in ("Start here", "Reference", "Try it first") else f"{part.replace('Part ', '')}. {title}"
+        label = title if not part.startswith("Step ") else f"{part.replace('Step ', '')}. {title}"
         items.append(f'<li><a href="#{sec_id}">{label}</a></li>')
     return (
         '<nav class="toc" aria-label="Contents"><details open><summary>Contents</summary>'
