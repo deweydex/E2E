@@ -1,33 +1,57 @@
 # Server tutorials
 
-A tutorial site about how a click in a browser reaches a database and comes back, with a split-screen workbench where students can watch a request travel through the pipeline. The site has a Python edition and a TypeScript edition, and every diagram is also a standalone SVG file.
+A tutorial site that shows how a click in a browser reaches a database and comes back. It includes a split-screen workbench where students watch a request travel through the pipeline.
 
-## What is in this folder
+## Contents of the site
 
-- `docs/` is the finished site. It is plain HTML, CSS and JavaScript, so it needs no build step to publish.
-- `site-src/` holds the Python scripts that build the site into `docs/`.
-- `workbench-src/` holds the source of the workbench: the editors, the two server engines, the bridge script, the sample app and the server code that students read.
-- `demo-src/` holds the in-page demos, which run a small server in the browser.
-- `vending-py/` and `vending-ts/` are the two lab projects that the tutorials link to as downloads.
-- `wb-build/` lists the npm packages (Sucrase and Prism) that two of the bundled libraries were made from. The bundled files themselves are already in `workbench-src/vendor/`, so you only need this folder if you want to update a library.
-- `machine.png` is the picture of the vending machine used on the landing page.
+- The landing page links to everything else.
+- The Python edition and the TypeScript edition explain the same ideas in two languages.
+- Every diagram is also available as a standalone SVG file with light and dark styles.
+- Two in-page demos run a small server inside the browser.
+- The workbench shows a front end on the left and a back end on the right, with a timeline below.
+- Two lab projects (Python and TypeScript) can be downloaded from the tutorial pages.
 
-## Publishing on GitHub Pages
+## Publish on GitHub Pages
 
-Push this folder to a repository. Then open Settings, then Pages, choose the branch, and choose the `/docs` folder. The site appears at the address that Pages shows. The first page is `docs/index.html`, and the workbench is at `docs/workbench/index.html`.
+1. Open the repository's Settings, then Pages.
+2. Set Source to "Deploy from a branch".
+3. Choose branch `main` and folder `/docs`, then press Save.
+4. Wait a minute or two for the site to appear.
 
-## Changing something and rebuilding
+The finished site is plain HTML, CSS and JavaScript, so it needs no build step.
 
-Edit the files in `site-src/` or `workbench-src/`, then run this from the `site-src` folder:
+## Folder guide
 
-    python3 build.py
+| Folder or file | What it holds |
+|---|---|
+| `docs/` | The finished site, which is the only folder that Pages publishes. |
+| `site-src/` | The Python scripts that build the site into `docs/`. |
+| `workbench-src/` | The source of the workbench: editors, server engines, sample app and the server code that students read. |
+| `demo-src/` | The source of the two in-page demos. |
+| `vending-py/` | The Python lab project. |
+| `vending-ts/` | The TypeScript lab project. |
+| `wb-build/` | The npm package list for updating the bundled libraries. |
+| `machine.png` | The picture on the landing page. |
 
-The script rewrites everything in `docs/` that it owns. Commit the result together with your source changes. The build needs Python 3 and no extra packages.
+## Change something and rebuild
 
-## Libraries that travel with the site
+1. Edit a file in `site-src/`, `workbench-src/` or `demo-src/`.
+2. Run `python3 build.py` from inside `site-src/`. It needs Python 3 and no other packages.
+3. Commit the changed source and the rebuilt `docs/` together.
 
-The workbench includes sql.js 1.13.0 (the database), Sucrase 3.35.0 (the TypeScript step) and Prism 1.29.0 (the syntax colouring). All three sit in `docs/workbench/vendor/`, so the TypeScript server and the colouring work even when the page is opened from a folder. The Python server loads Pyodide 0.29.5 from the jsDelivr CDN the first time a student chooses it, which is a download of about 10 MB.
+Do not edit files in `docs/` by hand, because the next build overwrites them.
 
-## Known limits
+## Bundled libraries
 
-The workbench was tested in Chromium. It has not been tested in Firefox or Safari, and no student has used it yet. The `demo/` and `demo-ts/` pages need to be served over http or https, so they do not run when opened straight from a file.
+All three are open source and sit in `workbench-src/vendor/`.
+
+- sql.js 1.13.0 provides the database for the TypeScript server.
+- Sucrase 3.35.0 removes TypeScript types in the browser.
+- Prism 1.29.0 colours the code in the editors.
+- Pyodide 0.29.5 provides the Python server. It loads from the jsDelivr CDN on first use, which is a download of about 10 MB.
+
+## Browser support
+
+- The workbench is tested in Chromium.
+- The TypeScript server and the colouring work from a local folder without a network.
+- The Python server and the two in-page demos need http or https and an internet connection.
