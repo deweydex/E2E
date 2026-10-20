@@ -28,7 +28,7 @@ def sec_run(E):
     body += snippet(E["run_block"], "bash", "Start the project") + E.get("run_note", "")
     body += check(
         [
-            "The page shows four slots. This is stations 1 to 12 happening once, because the script asks for the slots as soon as it loads.",
+            "The page shows four slots. This is Stations 1 to 12 happening once, because the script asks for the slots as soon as it loads.",
             "Pressing Buy lowers the stock of that slot by one.",
             "Reloading the page keeps the new number, because it now lives in the database.",
         ]

@@ -65,7 +65,7 @@ def sec_start(E, machine_uri):
 <ul>
 <li>Work through Steps 1 to 6 in order. Each step has a goal, the code to make, a check, and a short explanation.</li>
 <li>Code appears in small pieces, with the explanation beside each piece.</li>
-<li>A badge such as <span class="badge">Station 4</span> points back to the journey in Step 1.</li>
+<li>A badge such as <span class="badge">Station 4</span> shows where a piece of code sits in the journey from Step 1, with the station before it and the station after it.</li>
 <li>A box headed <em>A prediction to make first</em> asks you to guess before you read on. A wrong guess is fine, because the gap between your guess and the answer is where you learn.</li>
 <li>A box marked <em>Optional</em> holds extra detail that you can skip.</li>
 <li>The <em>Going deeper</em> sections after Step 6 cover HTTP, experiments and design choices.</li>

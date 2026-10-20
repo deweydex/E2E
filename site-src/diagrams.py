@@ -5,6 +5,7 @@ diagrams follow the page's light and dark themes.
 """
 
 import json
+import re
 
 from lib import CSS, JS, esc  # noqa: F401  (CSS and JS are extended below)
 
@@ -66,11 +67,15 @@ def stations_data(E):
 
 def stepper_html(E, svg):
     data = stations_data(E)
+    plain = re.sub(r"<[^>]+>", "", svg)
+    for station in data:
+        label = station["title"].rstrip(".")
+        assert label in plain, "diagram label differs from station title: " + label
     payload = json.dumps(data).replace("</", "<\\/")
     return (
         '<figure class="diagram stepper" id="stepper">'
         '<div class="scroll">' + svg + "</div>"
-        '<figcaption>One click, twelve stations. Stations 1, 2, 10, 11 and 12 happen in the browser, station 3 is the network between the two programs, stations 4 to 9 happen in the server, and the database answers at stations 6 and 7. '
+        '<figcaption>One click, twelve stations. Stations 1, 2, 10, 11 and 12 happen in the browser, Station 3 is the network between the two programs, Stations 4 to 9 happen in the server, and the database answers at Stations 6 and 7. '
         "The buttons step through the stations one at a time and show what is travelling at each one." + dl_link(f"journey-{E['slug']}.svg") + "</figcaption>"
         '<div class="stepper-controls" role="group" aria-label="Step through the journey">'
         '<button type="button" id="step-prev" disabled>Previous</button>'
@@ -80,6 +85,7 @@ def stepper_html(E, svg):
         "</div>"
         '<div class="step-panel" id="step-panel" aria-live="polite" hidden>'
         '<h4 id="step-title"></h4><p id="step-text"></p>'
+        '<p class="around-links"><button type="button" id="step-before" class="linkish"></button><button type="button" id="step-after" class="linkish"></button></p>'
         '<p class="cap">In flight at this station</p><pre class="code" id="step-flight"></pre>'
         "</div>"
 
@@ -130,17 +136,17 @@ def journey_svg(server_label):
         parts.append(f'<text class="strong" x="{x}" y="43" text-anchor="middle" font-size="17">{name}</text>')
         parts.append(f'<text class="t-muted" x="{x}" y="64" text-anchor="middle" font-size="13.5">{sub}</text>')
 
-    parts.append(group("1", badge(1, bx, 130) + selfnote(bx, 130, 250, "The click event fires")))
+    parts.append(group("1", badge(1, bx, 130) + selfnote(bx, 130, 250, "The browser notices the click")))
     parts.append(group("2 3", arrow(bx, sx, 200, "POST /api/slots/A1/buy")))
-    parts.append(group("2", badge(2, bx + 40, 226) + f'<text class="t-muted" x="{bx + 64}" y="231" font-size="13.5">fetch builds it</text>'))
-    parts.append(group("3", badge(3, sx - 40, 226) + f'<text class="t-muted" x="{sx - 62}" y="231" font-size="13.5" text-anchor="end">travels to :8000</text>'))
-    parts.append(group("4", badge(4, sx, 280) + selfnote(sx, 280, 290, "The route table picks a handler")))
-    parts.append(group("5", badge(5, sx, 335) + selfnote(sx, 335, 290, "The input is checked")))
-    parts.append(group("6", arrow(sx, dx, 400, "UPDATE ... SET stock = stock - 1") + badge(6, sx + 40, 426) + f'<text class="t-muted" x="{sx + 64}" y="431" font-size="13.5">SQL travels over a connection</text>'))
-    parts.append(group("7", badge(7, dx, 480) + selfnote(dx, 480, 250, "Row changed and committed", side="left") + arrow(dx, sx, 535, "1 row changed", back=True)))
-    parts.append(group("8", badge(8, sx, 590) + selfnote(sx, 590, 290, "The result becomes JSON")))
-    parts.append(group("9", arrow(sx, bx, 655, "200 OK with a JSON body", back=True) + badge(9, sx - 40, 681) + f'<text class="t-muted" x="{sx - 62}" y="686" font-size="13.5" text-anchor="end">status, headers and body</text>'))
-    parts.append(group("10", badge(10, bx, 715) + selfnote(bx, 715, 330, "fetch hands the reply to our script")))
+    parts.append(group("2", badge(2, bx + 40, 226) + f'<text class="t-muted" x="{bx + 64}" y="231" font-size="13.5">The script builds a request</text>'))
+    parts.append(group("3", badge(3, sx - 40, 252) + f'<text class="t-muted" x="{sx - 62}" y="257" font-size="13.5" text-anchor="end">The request travels to port 8000</text>'))
+    parts.append(group("4", badge(4, sx, 280) + selfnote(sx, 280, 290, "The server chooses a handler")))
+    parts.append(group("5", badge(5, sx, 335) + selfnote(sx, 335, 290, "The handler checks the input")))
+    parts.append(group("6", arrow(sx, dx, 400, "UPDATE ... SET stock = stock - 1") + badge(6, sx + 40, 426) + f'<text class="t-muted" x="{sx + 64}" y="431" font-size="13.5">The handler sends SQL to the database</text>'))
+    parts.append(group("7", badge(7, dx, 480) + selfnote(dx, 480, 250, "The database changes the row", side="left") + arrow(dx, sx, 535, "1 row changed", back=True)))
+    parts.append(group("8", badge(8, sx, 590) + selfnote(sx, 590, 290, "The handler packages the result")))
+    parts.append(group("9", arrow(sx, bx, 655, "200 OK with a JSON body", back=True) + badge(9, sx - 40, 681) + f'<text class="t-muted" x="{sx - 62}" y="686" font-size="13.5" text-anchor="end">The server sends a response</text>'))
+    parts.append(group("10", badge(10, bx, 715) + selfnote(bx, 715, 330, "The reply reaches the script")))
     parts.append(group("11", badge(11, bx, 760) + selfnote(bx, 760, 330, "The script changes the DOM")))
     parts.append(group("12", badge(12, bx, 805) + selfnote(bx, 805, 330, "The browser repaints the screen")))
     parts.append("</svg>")
@@ -383,6 +389,10 @@ figure.diagram .scroll svg { min-width: 760px; }
 #step-count { color: var(--muted); font-size: 14px; margin-left: 6px; }
 .step-panel { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 12px 18px 6px; margin-top: 12px; max-width: 900px; }
 .step-panel h4 { margin: 0 0 4px; font-size: 1.05rem; }
+.step-panel .around-links { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 6px 0 0; font-size: 13px; }
+.step-panel button.linkish { font: inherit; font-size: 13px; background: none; border: none; color: var(--muted); padding: 0; cursor: pointer; text-align: left; }
+.step-panel button.linkish:hover:not(:disabled) { color: var(--accent); text-decoration: underline; }
+.step-panel button.linkish:disabled { cursor: default; }
 .step-panel .cap { font-size: 13px; color: var(--muted); margin: 8px 0 2px; }
 .step-panel pre.code { border: 1px solid var(--line); border-radius: 8px; margin-bottom: 10px; white-space: pre-wrap; word-break: break-word; }
 .stepper.stepping g.station { opacity: 0.25; transition: opacity 0.2s; }
@@ -426,7 +436,13 @@ STEPPER_JS = r"""
     } else {
       const station = stations[current - 1];
       panel.hidden = false;
-      document.getElementById("step-title").textContent = current + ". " + station.title;
+      document.getElementById("step-title").textContent = "Station " + current + ": " + station.title;
+      const before = document.getElementById("step-before");
+      const after = document.getElementById("step-after");
+      before.textContent = current > 1 ? "\u2190 Before: Station " + (current - 1) + ", " + stations[current - 2].title.replace(/\.$/, "") : "\u2190 Before: the click has not happened yet";
+      after.textContent = current < stations.length ? "Next: Station " + (current + 1) + ", " + stations[current].title.replace(/\.$/, "") + " \u2192" : "Next: the journey is over \u2192";
+      before.disabled = current === 1;
+      after.disabled = current === stations.length;
       document.getElementById("step-text").innerHTML = station.text;
       document.getElementById("step-flight").textContent = station.flight;
       count.textContent = "Station " + current + " of " + stations.length;
@@ -437,6 +453,8 @@ STEPPER_JS = r"""
     next.disabled = current === stations.length;
   }
 
+  document.getElementById("step-before").addEventListener("click", () => { if (current > 1) { current -= 1; render(); } });
+  document.getElementById("step-after").addEventListener("click", () => { if (current < stations.length) { current += 1; render(); } });
   next.addEventListener("click", () => { if (current < stations.length) { current += 1; render(); } });
   prev.addEventListener("click", () => { if (current > 1) { current -= 1; render(); } });
   all.addEventListener("click", () => { current = 0; render(); });

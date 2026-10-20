@@ -2,6 +2,7 @@
 
 import base64
 import html
+import re
 from pathlib import Path
 
 from pygments import highlight
@@ -248,6 +249,13 @@ pre.code {
 }
 .why { padding: 14px 20px 6px; font-size: 15.5px; line-height: 1.6; }
 .why p { margin: 0 0 12px; }
+.trails { margin-bottom: 8px; }
+.trail { margin-bottom: 8px; }
+.trail .now { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+.trail .now-title { font-weight: 700; font-size: 0.95rem; }
+.trail .around { display: flex; flex-direction: column; gap: 1px; font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+.trail .around a { color: var(--muted); text-decoration: none; }
+.trail .around a:hover { color: var(--accent); text-decoration: underline; }
 .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
 .badge {
   background: var(--accent);
@@ -403,10 +411,57 @@ def highlight_code(text, lang):
 
 
 def station_badges(stations):
+    """A marker that build.py later turns into a trail: where this code sits in the journey, and what comes before and after."""
     if not stations:
         return ""
-    badges = "".join(f'<span class="badge">Station {n}</span>' for n in stations)
-    return f'<div class="badges">{badges}</div>'
+    return f'<!--TRAIL:{",".join(str(n) for n in stations)}-->'
+
+
+def _runs(numbers):
+    """Group sorted station numbers into runs of consecutive numbers: [1,2,10,11] becomes [[1,2],[10,11]]."""
+    runs = []
+    for n in sorted(numbers):
+        if runs and n == runs[-1][-1] + 1:
+            runs[-1].append(n)
+        else:
+            runs.append([n])
+    return runs
+
+
+def build_trails(page, titles):
+    """Replace each trail marker with badges that show the current station and its neighbours.
+
+    titles[0] is the title of Station 1. Each run of consecutive stations gets one trail:
+    the current station or stations, the station before, and the station after.
+    """
+
+    def short(n):
+        return titles[n - 1].rstrip(".")
+
+    def trail(run):
+        first, last = run[0], run[-1]
+        if first == last:
+            now = f'<span class="badge">Station {first}</span> <span class="now-title">{short(first)}</span>'
+        else:
+            now = (
+                f'<span class="badge">Stations {first} to {last}</span> '
+                f'<span class="now-title">{short(first)}, then {short(last)[0].lower() + short(last)[1:]}</span>'
+            )
+        if first > 1:
+            before_text = f'<a class="was" href="#journey">&larr; Before: Station {first - 1}, {short(first - 1)}</a>'
+        else:
+            before_text = '<span class="was">&larr; Before: the click has not happened yet</span>'
+        if last < len(titles):
+            after_text = f'<a class="then" href="#journey">Next: Station {last + 1}, {short(last + 1)} &rarr;</a>'
+        else:
+            after_text = '<span class="then">Next: the journey is over &rarr;</span>'
+        return f'<div class="trail"><div class="now">{now}</div><div class="around"><span>{before_text}</span><span>{after_text}</span></div></div>'
+
+    def repl(match):
+        numbers = [int(x) for x in match.group(1).split(",")]
+        return '<div class="trails">' + "".join(trail(run) for run in _runs(numbers)) + "</div>"
+
+    return re.sub(r"<!--TRAIL:([0-9,]+)-->", repl, page)
 
 
 def chunk_html(code_text, lang, explanation, stations=()):

@@ -70,6 +70,8 @@ def toc_html(sections, sibling_href, sibling_label):
 
 def build_edition(E, edition, filename, sibling_href, sibling_label, title):
     sections = build_sections(E, edition)
+    titles = [s["title"] for s in diagrams.stations_data(E)]
+    sections = [lib.build_trails(section, titles) for section in sections]
     nav = toc_html(sections, sibling_href, sibling_label)
     body = (
         '<div class="shell">' + nav + "<main>"
