@@ -258,6 +258,7 @@ def build_landing(diagram_items):
 <div class="cards">
 <a class="card" href="python.html"><h2>Python edition</h2><p>The server, the database code and the setup script are written in Python, using only its standard library. Needs Python 3.10 or newer.</p></a>
 <a class="card" href="typescript.html"><h2>TypeScript edition</h2><p>Everything is TypeScript on Node, including the short script in the page. Needs Node 22.18 or newer.</p></a>
+<a class="card wide" href="files/"><h2>Inside a file</h2><p>An interactive filesystem lab: follow text into bytes, explore folders and paths, and see how names, file records, RAM and storage connect.</p></a>
 <a class="card wide" href="workbench/index.html"><h2>Workbench</h2><p>A split screen with the browser on the left and the server and database on the right. Press a button and follow the request through a timeline, one stage at a time. Edit the HTML, the CSS, the SQL and the server code, or upload your own files. It has three levels and offers a TypeScript server and a Python server.</p></a>
 </div>
 <h2>The diagrams as files</h2>
@@ -275,6 +276,17 @@ def build_landing(diagram_items):
     (DIST / "index.html").write_text(page)
 
 
+
+def build_filemagic():
+    """Publish the filesystem explorer and preserve earlier public URLs."""
+    target = DIST / "files"
+    target.mkdir(parents=True, exist_ok=True)
+    shutil.copy(W / "site-src" / "filemagic.html", target / "index.html")
+    redirect = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<meta http-equiv="refresh" content="0; url=files/">\n<title>Inside a file · A filesystem you can explore</title>\n<link rel="canonical" href="files/">\n</head>\n<body>\n<p>The interactive filesystem lab is at <a href="files/">Inside a file</a>.</p>\n<script>location.replace(\'files/\' + location.search + location.hash);</script>\n</body>\n</html>\n'
+    for name in ("filemagic.html", "inside-a-file.html"):
+        (DIST / name).write_text(redirect, encoding="utf-8")
+
+
 def main():
     DIST.mkdir(exist_ok=True)
     py_page = build_edition(
@@ -287,6 +299,7 @@ def main():
     )
     diagram_items = svgfiles.write_all(DIST, (py_edition.E, ts_edition.E))
     build_landing(diagram_items)
+    build_filemagic()
     build_demo()
     build_demo_ts()
     workbench.build()
@@ -297,3 +310,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

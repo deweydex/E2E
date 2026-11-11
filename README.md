@@ -5,6 +5,7 @@ A tutorial site that shows how a click in a browser reaches a database and comes
 ## Contents of the site
 
 - The landing page links to everything else.
+- The filesystem lab is at `files/`. Both `filemagic.html` and `inside-a-file.html` redirect there. Edit its source in `site-src/filemagic.html`; the build copies it to `docs/files/index.html`.
 - The Python edition and the TypeScript edition build the same vending machine in two languages.
 - Every diagram is also available as a standalone SVG file with light and dark styles.
 - Two in-page demos run a small server inside the browser.
@@ -38,7 +39,7 @@ The finished site is plain HTML, CSS and JavaScript, so it needs no build step.
 | Folder or file | What it holds |
 |---|---|
 | `docs/` | The finished site, which is the only folder that Pages publishes. |
-| `site-src/` | The Python scripts that build the site into `docs/`. |
+| `site-src/` | The Python scripts that build the site into `docs/`, plus `filemagic.html`, the standalone filesystem lab source. |
 | `workbench-src/` | The source of the workbench: editors, server engines, sample app and the server code that students read. |
 | `demo-src/` | The source of the two in-page demos. |
 | `vending-py/` | The Python lab project. |
@@ -68,3 +69,4 @@ All four are open source. The first three sit in `workbench-src/vendor/`.
 - The workbench is tested in Chromium.
 - The TypeScript server and the colouring work from a local folder without a network.
 - The Python server and the two in-page demos need http or https and an internet connection.
+
