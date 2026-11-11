@@ -258,7 +258,7 @@ def build_landing(diagram_items):
 <div class="cards">
 <a class="card" href="python.html"><h2>Python edition</h2><p>The server, the database code and the setup script are written in Python, using only its standard library. Needs Python 3.10 or newer.</p></a>
 <a class="card" href="typescript.html"><h2>TypeScript edition</h2><p>Everything is TypeScript on Node, including the short script in the page. Needs Node 22.18 or newer.</p></a>
-<a class="card wide" href="files/"><h2>Inside a file</h2><p>An interactive filesystem lab: follow text into bytes, explore folders and paths, and see how names, file records, RAM and storage connect.</p></a>
+<a class="card wide" href="files/"><h2>Inside a file</h2><p>A beginner’s interactive filesystem lab. Start with names, paths and contents; inspect file records, learn bits and hex, then follow saving and recovery. Python examples stay alongside each step.</p></a>
 <a class="card wide" href="workbench/index.html"><h2>Workbench</h2><p>A split screen with the browser on the left and the server and database on the right. Press a button and follow the request through a timeline, one stage at a time. Edit the HTML, the CSS, the SQL and the server code, or upload your own files. It has three levels and offers a TypeScript server and a Python server.</p></a>
 </div>
 <h2>The diagrams as files</h2>
@@ -310,4 +310,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
