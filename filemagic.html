@@ -1,12 +1,120 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>filemagic</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inside a file / interactive lab</title>
+    <style>
+      :root {
+        --paper: #f6f3ec;
+        --ink: #162e40;
+        --muted: #53616b;
+        --line: #d9dedb;
+        --rust: #a74729;
+        --teal: #216b63;
+        --soft: #eaf1ef;
+        --white: #fffefa;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font: 16px/1.6 system-ui, sans-serif;
+      }
+      .wrap {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 24px 24px 64px;
+      }
+      .mast {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+        padding: 18px 0 20px;
+        margin-bottom: 28px;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .brand span {
+        font-weight: 400;
+        color: var(--muted);
+      }
+      .section {
+        padding: 28px 0;
+      }
+      h1, h2, h3 {
+        margin: 0 0 12px;
+        line-height: 1.15;
+      }
+      h1 { font-size: clamp(2.1rem, 4vw, 4rem); }
+      h2 { font-size: clamp(1.7rem, 2vw, 2.4rem); }
+      p {
+        margin: 0 0 1em;
+        color: var(--muted);
+      }
+      .eyebrow {
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--rust);
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+      .card {
+        border: 1px solid var(--line);
+        background: var(--white);
+        border-radius: 12px;
+        padding: 20px;
+      }
+      code {
+        background: var(--soft);
+        border-radius: 6px;
+        padding: 0.12em 0.35em;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      a {
+        color: var(--teal);
+        text-decoration: none;
+      }
+      a:hover { text-decoration: underline; }
+    </style>
   </head>
   <body>
-    <h1>filemagic</h1>
-    <p>This file now uses the correct .html extension.</p>
+    <div class="wrap">
+      <header class="mast">
+        <span class="brand">Inside a file <span>/ interactive lab</span></span>
+      </header>
+
+      <section class="section">
+        <div class="eyebrow">From Python to the physical world</div>
+        <h1>Where does a file live?</h1>
+        <p>
+          A file is not just a name. It is a collection of bytes that can be stored, found,
+          opened, and changed by the operating system.
+        </p>
+        <div class="card">
+          <p><strong>Example:</strong> <code>path = "/home/josh/notes.txt"</code></p>
+          <p>
+            The text in the string tells Python and the OS how to locate the file. Its
+            contents are separate from the filename, and the bytes are what persist on disk.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="eyebrow">Same idea, different implementations</div>
+        <h2>The OS is not the filesystem.</h2>
+        <p>
+          Different operating systems map names to storage structures in slightly different
+          ways, but the idea is the same: a path resolves to a file record, and the file
+          record points to bytes stored on a device.
+        </p>
+      </section>
+    </div>
   </body>
 </html>
