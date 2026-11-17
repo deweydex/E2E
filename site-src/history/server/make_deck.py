@@ -5,7 +5,9 @@ same format as the Slides artifact, so the files can be published there unchange
 """
 
 import json
+import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 OUT = Path(__file__).resolve().parent / "deck"
 NAVY, CREAM, CARD = "#1B2A4A", "#F7F5F0", "#FFFDF9"
@@ -433,6 +435,8 @@ def main():
     (OUT / "deck.css").write_text("body { font-family: 'Public Sans', Arial, sans-serif; color: #1B2A4A; }\n")
     (OUT / "deck.json").write_text(json.dumps(deck, ensure_ascii=False))
     print(len(order), "slides")
+    import adoption  # the opening section on adoption curves
+    adoption.update_deck("server")
 
 
 if __name__ == "__main__":

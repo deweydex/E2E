@@ -246,6 +246,9 @@ figure { margin: 14px 0 16px; }
 .map span { position: absolute; font-size: 13px; line-height: 1.25; color: var(--muted); max-width: 36%; }
 .map span::before { content: "● "; color: var(--db); }
 .map span.q { color: var(--fg); font-weight: 700; } .map span.q::before { content: ""; }
+figure.chart { color: var(--fg); margin: 16px 0; }
+figure.chart svg { display: block; width: 100%; height: auto; }
+details { margin: 8px 0 14px; } summary { cursor: pointer; font-weight: 700; }
 .toc { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 18px; margin: 18px 0; }
 .toc ol { margin: 6px 0 0; padding-left: 1.3em; }
 .top { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--muted); }
