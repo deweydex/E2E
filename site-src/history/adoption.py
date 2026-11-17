@@ -78,6 +78,132 @@ DATA["network"] = {
     "notes": "This chart is the same S-curve as the slide before, drawn from real numbers. It rose slowly through the 1990s, steeply in the 2000s and 2010s, and is now flattening below the top. A protocol date on a later slide marks the start of a curve like this one, which for HTTP/2 rose and then fell back as HTTP/3 replaced it.",
 }
 
+# ---------------------------------------------------------------- the long view
+# Each line measures a different group, so the lines show shapes and speeds, not shares of one whole.
+PEW_SMART = [(2011, 35), (2012, 45), (2013, 56), (2014, 58), (2015, 68), (2016, 77), (2018, 77), (2019, 81), (2021, 85), (2023, 90), (2024, 91), (2025, 91)]
+FLEX = [(2019, 49), (2020, 63), (2021, 71), (2022, 74)]
+GRID = [(2019, 2), (2020, 5), (2021, 8), (2022, 12)]
+HTTPS = [(2018, 26.9), (2019, 45.9), (2020, 57.4), (2021, 68.8), (2022, 77.4), (2023, 81.2), (2024, 84.9), (2025, 87.7)]
+TS = [(2019, 21.2), (2021, 30.2), (2022, 34.8), (2024, 38.5)]
+FLASH = [(2015, 12.1), (2017, 7.3), (2019, 4.0), (2021, 2.2), (2023, 1.5), (2025, 1.0)]
+WP = [(2015, 23.3), (2017, 27.3), (2019, 32.7), (2021, 39.5), (2022, 43.2), (2025, 43.6)]
+PHP = [(2015, 80.6), (2017, 80.0), (2019, 78.9), (2021, 79.1), (2023, 77.7), (2025, 75.2)]
+NODE = [(2015, 0.1), (2017, 0.3), (2019, 0.7), (2021, 1.2), (2023, 2.3), (2025, 4.0)]
+H2 = [(2016, 5.6), (2017, 11.2), (2018, 23.1), (2019, 32.5), (2020, 42.6), (2021, 49.9), (2022, 46.9), (2023, 40.0), (2024, 35.5), (2025, 34.5)]
+H3 = [(2020, 2.3), (2021, 4.1), (2022, 24.2), (2023, 25.1), (2024, 27.8), (2025, 33.6)]
+NET_USERS = list(zip(range(1990, 2024), DATA["network"]["series"][0][2]))
+
+LONG = {
+    "web": {"x0": 2010, "x1": 2025, "series": [
+        ("US adults with a smartphone", "#A24A18", PEW_SMART, "Pew Research Center"),
+        ("Pages using Flexbox", "#24588F", FLEX, "HTTP Archive, mobile pages"),
+        ("Pages using Grid", "#8DB4E2", GRID, "HTTP Archive, mobile pages"),
+        ("Sites sending visitors to HTTPS", "#2E6B4A", HTTPS, "W3Techs"),
+        ("Developers using TypeScript", "#7A5D00", TS, "Stack Overflow survey"),
+        ("Sites using Flash", "#5A6478", FLASH, "W3Techs")]},
+    "server": {"x0": 2010, "x1": 2025, "series": [
+        ("Sites running PHP", "#2E6B4A", PHP, "W3Techs, sites with a known language"),
+        ("Sites using WordPress", "#5B3F9E", WP, "W3Techs"),
+        ("Sites sending visitors to HTTPS", "#24588F", HTTPS, "W3Techs"),
+        ("Developers using TypeScript", "#7A5D00", TS, "Stack Overflow survey"),
+        ("Sites running Node", "#A24A18", NODE, "W3Techs, sites with a known language"),
+        ("US adults with a smartphone", "#5A6478", PEW_SMART, "Pew Research Center")]},
+    "network": {"x0": 1990, "x1": 2025, "series": [
+        ("World population online", "#1F6B66", NET_USERS, "World Bank and ITU"),
+        ("US adults with a smartphone", "#A24A18", PEW_SMART, "Pew Research Center"),
+        ("Sites sending visitors to HTTPS", "#2E6B4A", HTTPS, "W3Techs"),
+        ("Sites using HTTP/2", "#24588F", H2, "W3Techs"),
+        ("Sites using HTTP/3", "#7A5D00", H3, "W3Techs")]},
+}
+LONG_POINTS = {
+    "web": ["Smartphones went from a third of US adults to nine in ten in about a decade, and pages had to work on them.",
+            "Flexbox was on half of pages within two years of being everywhere; Grid, from 2017, was on only 12 per cent by 2022.",
+            "TypeScript grew among developers every year, while Flash shrank for a decade after its peak."],
+    "server": ["PHP fell slowly while Node and TypeScript rose slowly: servers change over decades, not years.",
+               "HTTPS went from about a quarter of sites to nearly nine in ten in seven years, once certificates were free.",
+               "In 2024, 51 per cent of developers in the Stack Overflow survey used SQL, as many as used Python."],
+    "network": ["Internet use climbed for thirty years and has still not reached everyone.",
+                "Smartphones spread faster than the internet itself, on top of networks already built.",
+                "HTTP/2 rose to half of sites, then gave ground to HTTP/3: a protocol can be replaced before it finishes spreading."],
+}
+LONG_SOURCES = ("Sources: Pew Research Center, Mobile fact sheet; HTTP Archive, Web Almanac CSS chapter 2022; W3Techs historical trends; "
+                "Stack Overflow Developer Surveys 2019, 2021, 2022 and 2024; World Bank and ITU. Each line measures a different group.")
+
+
+def long_svg(name, width, height, labels, text_colour="#1B2A4A", grid="#D9D3C7"):
+    d = LONG[name]
+    x0, x1 = d["x0"], d["x1"]
+    pad_l, pad_r, pad_t, pad_b = (44 if labels else 6), (250 if labels else 6), 10, (28 if labels else 6)
+    w, h = width - pad_l - pad_r, height - pad_t - pad_b
+
+    def X(y):
+        return pad_l + (y - x0) / (x1 - x0) * w
+
+    def Y(v):
+        return pad_t + h - v / 100 * h
+
+    out = [f'<svg viewBox="0 0 {width} {height}" width="{width}" height="{height}" role="img" aria-label="Line chart of the adoption of several technologies from {x0} to {x1}" style="max-width:100%;height:auto">']
+    for v in (0, 25, 50, 75, 100):
+        out.append(f'<line x1="{pad_l}" y1="{Y(v):.1f}" x2="{pad_l + w}" y2="{Y(v):.1f}" stroke="{grid}" stroke-width="1"/>')
+        if labels:
+            out.append(f'<text x="{pad_l - 6}" y="{Y(v) + 4:.1f}" text-anchor="end" font-size="12" fill="{text_colour}">{v}%</text>')
+    if labels:
+        step = 5
+        for y in range(x0, x1 + 1, step):
+            out.append(f'<text x="{X(y):.1f}" y="{pad_t + h + 18}" text-anchor="middle" font-size="12" fill="{text_colour}">{y}</text>')
+    placed = []
+    for name_, colour, pts, _src in d["series"]:
+        pts = [(y, v) for y, v in pts if x0 <= y <= x1]
+        poly = " ".join(f"{X(y):.1f},{Y(v):.1f}" for y, v in pts)
+        out.append(f'<polyline points="{poly}" fill="none" stroke="{colour}" stroke-width="{3 if labels else 6}" stroke-linejoin="round" stroke-linecap="round"/>')
+        for y, v in pts:
+            out.append(f'<circle cx="{X(y):.1f}" cy="{Y(v):.1f}" r="{3 if labels else 6}" fill="{colour}"/>')
+        if labels:
+            ly = Y(pts[-1][1]) + 4
+            while any(abs(ly - p) < 14 for p in placed):
+                ly += 14
+            placed.append(ly)
+            out.append(f'<text x="{X(pts[-1][0]) + 8:.1f}" y="{ly:.1f}" font-size="11.5" font-weight="700" fill="{colour}">{name_} {pts[-1][1]:g}%</text>')
+    out.append("</svg>")
+    return "".join(out)
+
+
+def long_table(name):
+    d = LONG[name]
+    rows = "".join(f"<tr><td>{n}</td><td>{s}</td><td>{p[0][0]}: {p[0][1]:g}%</td><td>{p[-1][0]}: {p[-1][1]:g}%</td></tr>" for n, _, p, s in d["series"])
+    return f"<details><summary>The numbers behind the chart</summary><table><tr><th>Line</th><th>Who is measured</th><th>First point</th><th>Last point</th></tr>{rows}</table></details>"
+
+
+def slide_long(name):
+    d = LONG[name]
+    legend = "".join(
+        f'<div style="display:flex;gap:14px;align-items:center"><div style="width:36px;height:8px;background:{c};border-radius:4px"></div><p style="font-size:24px;color:{NAVY}"><b>{n}</b> {p[0][1]:g}% ({p[0][0]}) → {p[-1][1]:g}% ({p[-1][0]})</p></div>'
+        for n, c, p, _ in d["series"])
+    years = "".join(f'<p style="font-size:22px;color:#5A6478">{y}</p>' for y in range(d["x0"], d["x1"] + 1, 5))
+    return (f'<section id="long-view" data-transition="fade" style="background:{CREAM};color:{NAVY};font-family:\'Public Sans\', Arial, sans-serif;padding:112px 128px;display:flex;flex-direction:column;gap:32px">'
+            '<div style="display:flex;flex-direction:column;gap:12px">'
+            f'<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">{d["x0"]} to {d["x1"]} · each line measures a different group</p>'
+            f'<h2 style="font-family:\'Libre Baskerville\', Georgia, serif;font-size:64px;font-weight:700;line-height:1.1">The long view: every curve has its own speed</h2></div>'
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start">'
+            '<div style="display:flex;flex-direction:column;gap:10px">'
+            '<div style="display:flex;gap:16px"><div style="display:flex;flex-direction:column;justify-content:space-between;height:400px"><p style="font-size:22px;color:#5A6478">100%</p><p style="font-size:22px;color:#5A6478">50%</p><p style="font-size:22px;color:#5A6478">0%</p></div>'
+            f'{long_svg(name, 720, 400, False)}</div>'
+            f'<div style="display:flex;justify-content:space-between;padding:0 0 0 88px">{years}</div></div>'
+            f'<div style="display:flex;flex-direction:column;gap:12px">{legend}</div></div>'
+            f'<p style="font-size:22px;color:#5A6478">{LONG_SOURCES}</p>'
+            f'<aside>{" ".join(LONG_POINTS[name])} The lines measure different things: some count people, some developers, some websites. Compare their shapes and speeds, not their heights.</aside></section>')
+
+
+def long_block(name, fig_class):
+    return f"""<h3>The long view: every curve has its own speed</h3>
+<p>Each line below measures a different group: people, developers or websites. Compare the shapes and speeds of the lines, not their heights.</p>
+<figure class="{fig_class}">{long_svg(name, 760, 340, True, text_colour="currentColor", grid="rgba(127,127,127,.3)")}</figure>
+{long_table(name)}
+<ul>{"".join(f"<li>{p}</li>" for p in LONG_POINTS[name])}</ul>
+<p class="cap muted">{LONG_SOURCES}</p>
+"""
+
+
 NAVY, CREAM = "#1B2A4A", "#F7F5F0"
 
 
@@ -214,10 +340,11 @@ def update_deck(name):
     deck_dir = HERE / name / "deck"
     (deck_dir / "slides" / "adoption-curve.html").write_text(slide_curve(name) + "\n")
     (deck_dir / "slides" / "messy.html").write_text(slide_messy(name) + "\n")
+    (deck_dir / "slides" / "long-view.html").write_text(slide_long(name) + "\n")
     deck = json.loads((deck_dir / "deck.json").read_text())
-    order = [s for s in deck["order"] if s not in ("adoption-curve", "messy")]
+    order = [s for s in deck["order"] if s not in ("adoption-curve", "messy", "long-view")]
     i = order.index("timeline") + 1
-    deck["order"] = order[:i] + ["adoption-curve", "messy"] + order[i:]
+    deck["order"] = order[:i] + ["adoption-curve", "messy", "long-view"] + order[i:]
     deck["sections"]["s1a"] = {"description": "Before we start: how technologies spread, and why the dates are messy", "start": "adoption-curve"}
     deck["sections"] = dict(sorted(deck["sections"].items(), key=lambda kv: deck["order"].index(kv[1]["start"])))
     (deck_dir / "deck.json").write_text(json.dumps(deck, ensure_ascii=False))
@@ -261,7 +388,7 @@ def notes_section(name):
 {table_html(d["series"], d.get("years"), d.get("every", 2))}
 <ul>{"".join(f"<li>{p}</li>" for p in d["points"])}</ul>
 <p class="cap">{d["source"]}</p>
-<!-- adoption:end -->
+{long_block(name, "chart")}<!-- adoption:end -->
 """
 
 
@@ -277,7 +404,7 @@ def site_section(name):
 <figure class="adopt-fig">{lines_svg(d["series"], d["ymax"], 720, 300, True, axis="currentColor", text_colour="currentColor", grid="rgba(127,127,127,.3)", years=d.get("years"), every=d.get("every", 2))}</figure>
 <ul>{"".join(f"<li>{p}</li>" for p in d["points"])}</ul>
 <p class="muted">{d["source"]} Rogers, <i>Diffusion of Innovations</i> (1962).</p>
-</div>
+{long_block(name, "adopt-fig")}</div>
 </section>
 <!-- adoption:end -->
 """

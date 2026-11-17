@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Every date in three histories</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Public+Sans:wght@400;700&display=swap">
+<style>
+:root { --bg: #f7f5f0; --fg: #1b2a4a; --muted: #4a5568; --card: #fffdf9; --line: #d9d3c7; }
+@media (prefers-color-scheme: dark) { :root { --bg: #131b2e; --fg: #f4f1ea; --muted: #c9d2e3; --card: #1b2a4a; --line: #33456b; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.55 "Public Sans", system-ui, sans-serif; }
+main { max-width: 900px; margin: 0 auto; padding: 40px 16px 80px; }
+h1 { font: 700 clamp(30px, 6vw, 44px)/1.1 "Libre Baskerville", Georgia, serif; margin: 0 0 10px; }
+.lede { color: var(--muted); max-width: 64ch; }
+a { color: inherit; text-underline-offset: 3px; }
+fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; margin: 14px 0; }
+legend { font-weight: 700; padding: 0 6px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.filters button { font: 600 14px "Public Sans", sans-serif; border: 2px solid var(--line); background: var(--card); color: var(--fg); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.filters button[aria-pressed="true"] { border-color: var(--fg); }
+.filters button[aria-pressed="false"] { opacity: .55; text-decoration: line-through; }
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 6px; vertical-align: -1px; margin-right: 6px; }
+ol { list-style: none; padding: 0; margin: 20px 0 0; border-left: 3px solid var(--line); }
+li { display: grid; grid-template-columns: 7.5em 1fr; gap: 4px 14px; padding: 8px 0 8px 18px; position: relative; }
+li::before { content: ""; position: absolute; left: -9px; top: 15px; width: 15px; height: 15px; border-radius: 50%; background: var(--c); border: 2px solid var(--bg); }
+li .y { font-weight: 700; }
+li .s { grid-column: 2; font-size: 13px; color: var(--muted); }
+li[hidden] { display: none; }
+.count { color: var(--muted); font-size: 14px; }
+:focus-visible { outline: 3px solid #e9c46a; outline-offset: 2px; }
+@media (max-width: 520px) { li { grid-template-columns: 1fr; } li .s { grid-column: 1; } }
+</style>
+</head>
+<body>
+<main>
+<p><a href="index.html">All history pages</a></p>
+<h1>Every date in three histories</h1>
+<p class="lede">Every date from the three histories, on one line of time. Each date marks when something appeared or became a standard, not when everyone used it, so read it alongside the adoption curves at the start of each history.</p>
+<fieldset><legend>Show these histories</legend><div class="filters" id="f-story"></div></fieldset>
+<fieldset><legend>Show these parts</legend><div class="filters" id="f-part"></div></fieldset>
+<p class="count" id="count" aria-live="polite"></p>
+<ol id="list"></ol>
+</main>
+<script>
+(function () {
+  var DATA = [{"year": "Late 1960s", "sort": 1968, "label": "IBM's IMS stores data as trees", "part": "db", "story": "server"}, {"year": "1969", "sort": 1969, "label": "ARPANET carries its first message, “LO”", "part": "net", "story": "network"}, {"year": "1970", "sort": 1970, "label": "Codd describes the relational model", "part": "db", "story": "server"}, {"year": "1974", "sort": 1974, "label": "SEQUEL, later SQL, is described at IBM", "part": "db", "story": "server"}, {"year": "1974", "sort": 1974, "label": "Cerf and Kahn design TCP/IP", "part": "net", "story": "network"}, {"year": "1979", "sort": 1979, "label": "The first commercial SQL database goes on sale", "part": "db", "story": "server"}, {"year": "1983", "sort": 1983, "label": "ARPANET switches to TCP/IP on flag day", "part": "net", "story": "network"}, {"year": "1983", "sort": 1983, "label": "DNS turns names into addresses", "part": "net", "story": "network"}, {"year": "1986", "sort": 1986, "label": "SQL becomes an official standard", "part": "db", "story": "server"}, {"year": "1990", "sort": 1990, "label": "The first web server runs at CERN", "part": "server", "story": "server"}, {"year": "1991", "sort": 1991, "label": "The first web page goes online at CERN", "part": "html", "story": "web"}, {"year": "1991", "sort": 1991, "label": "HTTP/0.9: one line, one page", "part": "net", "story": "network"}, {"year": "1993", "sort": 1993, "label": "CGI lets a server run a program", "part": "server", "story": "server"}, {"year": "1994", "sort": 1994, "label": "Cookies let a server remember a browser", "part": "server", "story": "server"}, {"year": "1995", "sort": 1995, "label": "Forms become part of HTML 2.0", "part": "html", "story": "web"}, {"year": "1995", "sort": 1995, "label": "JavaScript arrives in the Netscape browser", "part": "scripts", "story": "web"}, {"year": "1995", "sort": 1995, "label": "PHP is first released", "part": "server", "story": "web"}, {"year": "1995", "sort": 1995, "label": "Apache, PHP and MySQL are released", "part": "server", "story": "server"}, {"year": "1995", "sort": 1995, "label": "Netscape adds SSL encryption", "part": "net", "story": "network"}, {"year": "1996", "sort": 1996, "label": "CSS level 1 becomes a standard", "part": "css", "story": "web"}, {"year": "1996", "sort": 1996, "label": "Flash appears as a browser plugin", "part": "plugin", "story": "web"}, {"year": "1996", "sort": 1996, "label": "Microsoft releases ASP", "part": "server", "story": "web"}, {"year": "1996", "sort": 1996, "label": "PostgreSQL takes its name", "part": "db", "story": "server"}, {"year": "1996", "sort": 1996, "label": "HTTP/1.0 adds status codes and headers", "part": "net", "story": "network"}, {"year": "1997", "sort": 1997, "label": "HTTP/1.1 keeps connections open and adds Host", "part": "net", "story": "network"}, {"year": "1997", "sort": 1997, "label": "The first Wi-Fi standard, 802.11", "part": "net", "story": "network"}, {"year": "1998", "sort": 1998, "label": "CSS level 2 adds positioning and :hover", "part": "css", "story": "web"}, {"year": "1998", "sort": 1998, "label": "LAMP is named", "part": "server", "story": "server"}, {"year": "1998", "sort": 1998, "label": "SQL injection is described", "part": "db", "story": "server"}, {"year": "1998", "sort": 1998, "label": "The 56k modem standard is agreed", "part": "net", "story": "network"}, {"year": "1998", "sort": 1998, "label": "Akamai starts the first big CDN", "part": "net", "story": "network"}, {"year": "1999", "sort": 1999, "label": "802.11b and the Wi-Fi Alliance; TLS 1.0", "part": "net", "story": "network"}, {"year": "2000", "sort": 2000, "label": "Fielding describes REST", "part": "server", "story": "server"}, {"year": "2000", "sort": 2000, "label": "SQLite is released", "part": "db", "story": "server"}, {"year": "2001", "sort": 2001, "label": "The first 3G network opens, in Japan", "part": "net", "story": "network"}, {"year": "2003", "sort": 2003, "label": "WordPress is released", "part": "server", "story": "web"}, {"year": "2003", "sort": 2003, "label": "memcached caches answers in memory", "part": "server", "story": "server"}, {"year": "2004", "sort": 2004, "label": "Gmail updates its inbox without reloading", "part": "scripts", "story": "web"}, {"year": "2004", "sort": 2004, "label": "Ruby on Rails is released", "part": "server", "story": "server"}, {"year": "2005", "sort": 2005, "label": "Ajax is named, and Google Maps launches", "part": "scripts", "story": "web"}, {"year": "2005", "sort": 2005, "label": "Tim O'Reilly's essay names Web 2.0", "part": "server", "story": "web"}, {"year": "2005", "sort": 2005, "label": "Django is released", "part": "server", "story": "server"}, {"year": "2005", "sort": 2005, "label": "YouTube launches", "part": "net", "story": "network"}, {"year": "2006", "sort": 2006, "label": "jQuery is released", "part": "scripts", "story": "web"}, {"year": "2006", "sort": 2006, "label": "Amazon S3 and EC2 rent storage and servers", "part": "server", "story": "server"}, {"year": "2006", "sort": 2006, "label": "Google describes Bigtable", "part": "db", "story": "server"}, {"year": "2007", "sort": 2007, "label": "The first iPhone arrives without Flash", "part": "html", "story": "web"}, {"year": "2007", "sort": 2007, "label": "Amazon describes Dynamo", "part": "db", "story": "server"}, {"year": "2008", "sort": 2008, "label": "The iPhone 3G brings mobile data to a mass audience", "part": "net", "story": "network"}, {"year": "2009", "sort": 2009, "label": "Node.js runs JavaScript on the server", "part": "scripts", "story": "web"}, {"year": "2009", "sort": 2009, "label": "NoSQL is named; MongoDB and Redis appear", "part": "db", "story": "server"}, {"year": "2009", "sort": 2009, "label": "The first 4G LTE networks open", "part": "net", "story": "network"}, {"year": "2009", "sort": 2009, "label": "Google starts SPDY, the ancestor of HTTP/2", "part": "net", "story": "network"}, {"year": "2010", "sort": 2010, "label": "Responsive web design is named", "part": "css", "story": "web"}, {"year": "2010", "sort": 2010, "label": "AngularJS is released", "part": "scripts", "story": "web"}, {"year": "2011", "sort": 2011, "label": "WebSocket keeps a line open", "part": "scripts", "story": "network"}, {"year": "2012", "sort": 2012, "label": "TypeScript is released", "part": "scripts", "story": "web"}, {"year": "2013", "sort": 2013, "label": "React is released", "part": "scripts", "story": "web"}, {"year": "2013", "sort": 2013, "label": "Docker makes containers easy", "part": "server", "story": "server"}, {"year": "2013", "sort": 2013, "label": "Google starts testing QUIC", "part": "net", "story": "network"}, {"year": "2014", "sort": 2014, "label": "HTML5 becomes a finished standard", "part": "html", "story": "web"}, {"year": "2014", "sort": 2014, "label": "Vue is released", "part": "scripts", "story": "web"}, {"year": "2014", "sort": 2014, "label": "Kubernetes and AWS Lambda arrive", "part": "server", "story": "server"}, {"year": "2015", "sort": 2015, "label": "Let's Encrypt gives away free certificates", "part": "server", "story": "web"}, {"year": "2015", "sort": 2015, "label": "HTTP/2 becomes a standard", "part": "net", "story": "network"}, {"year": "2016", "sort": 2016, "label": "Next.js renders React pages on the server", "part": "server", "story": "web"}, {"year": "2017", "sort": 2017, "label": "CSS Grid ships in every major browser", "part": "css", "story": "web"}, {"year": "2017", "sort": 2017, "label": "WebAssembly runs in every major browser", "part": "scripts", "story": "web"}, {"year": "2017", "sort": 2017, "label": "The Equifax breach exposes about 147 million people", "part": "server", "story": "server"}, {"year": "2018", "sort": 2018, "label": "The GDPR begins to apply", "part": "server", "story": "web"}, {"year": "2018", "sort": 2018, "label": "Chrome marks plain HTTP pages “Not secure”", "part": "server", "story": "web"}, {"year": "2018", "sort": 2018, "label": "TLS 1.3 halves the handshake", "part": "net", "story": "network"}, {"year": "2019", "sort": 2019, "label": "HTML becomes one living standard", "part": "html", "story": "web"}, {"year": "2019", "sort": 2019, "label": "CSS can follow the device's dark mode", "part": "css", "story": "web"}, {"year": "2019", "sort": 2019, "label": "The first 5G networks open; Wi-Fi 6 arrives", "part": "net", "story": "network"}, {"year": "2019", "sort": 2019, "label": "Lazy loading becomes an HTML attribute", "part": "html", "story": "network"}, {"year": "2020", "sort": 2020, "label": "Flash reaches its official end", "part": "plugin", "story": "web"}, {"year": "2020", "sort": 2020, "label": "Retrieval-augmented generation is described", "part": "db", "story": "server"}, {"year": "2021", "sort": 2021, "label": "pgvector adds vector search to PostgreSQL", "part": "db", "story": "server"}, {"year": "2021", "sort": 2021, "label": "QUIC becomes a standard", "part": "net", "story": "network"}, {"year": "2022", "sort": 2022, "label": "Internet Explorer is retired", "part": "html", "story": "web"}, {"year": "2022", "sort": 2022, "label": "Browser makers begin Interop", "part": "html", "story": "web"}, {"year": "2022", "sort": 2022, "label": "ChatGPT launches", "part": "scripts", "story": "web"}, {"year": "2022", "sort": 2022, "label": "HTTP/3 becomes a standard", "part": "net", "story": "network"}, {"year": "2023", "sort": 2023, "label": ":has() and container queries work everywhere", "part": "css", "story": "web"}, {"year": "2023", "sort": 2023, "label": "OpenAI names its crawler, GPTBot", "part": "server", "story": "web"}, {"year": "2024", "sort": 2024, "label": "Google shows AI Overviews above search results", "part": "server", "story": "web"}, {"year": "2024", "sort": 2024, "label": "llms.txt is proposed", "part": "server", "story": "web"}, {"year": "2024", "sort": 2024, "label": "68 per cent of the world is online; 2.6 billion are not", "part": "net", "story": "network"}, {"year": "2025", "sort": 2025, "label": "Cloudflare blocks AI crawlers by default", "part": "server", "story": "web"}, {"year": "2025", "sort": 2025, "label": "Buttons can open dialogs with commandfor", "part": "html", "story": "web"}];
+  var STORIES = {"web": "How the Web Learned to Respond", "server": "Behind the Page", "network": "Down the Wire"};
+  var PARTS = {"html": {"name": "HTML", "colour": "#E8955C"}, "css": {"name": "CSS", "colour": "#8DB4E2"}, "scripts": {"name": "Scripts", "colour": "#E9C46A"}, "server": {"name": "Server", "colour": "#8CC9A6"}, "db": {"name": "Database", "colour": "#B9A6E0"}, "net": {"name": "Network", "colour": "#7CC6C1"}, "plugin": {"name": "Plugins", "colour": "#C9D2E3"}};
+  var on = { story: {}, part: {} };
+  Object.keys(STORIES).forEach(function (k) { on.story[k] = true; });
+  Object.keys(PARTS).forEach(function (k) { on.part[k] = true; });
+  var list = document.getElementById("list");
+  DATA.forEach(function (d) {
+    var li = document.createElement("li");
+    li.dataset.story = d.story; li.dataset.part = d.part; li.style.setProperty("--c", PARTS[d.part].colour);
+    li.innerHTML = '<span class="y"></span><span class="l"></span><span class="s"></span>';
+    li.querySelector(".y").textContent = d.year;
+    li.querySelector(".l").textContent = d.label;
+    li.querySelector(".s").textContent = STORIES[d.story] + " · " + PARTS[d.part].name;
+    list.appendChild(li);
+  });
+  function filters(id, kind, names) {
+    var box = document.getElementById(id);
+    Object.keys(names).forEach(function (k) {
+      var b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-pressed", "true");
+      b.innerHTML = (kind === "part" ? '<span class="dot" style="background:' + names[k].colour + '"></span>' : "") + (kind === "part" ? names[k].name : names[k]);
+      b.addEventListener("click", function () { on[kind][k] = !on[kind][k]; b.setAttribute("aria-pressed", String(on[kind][k])); apply(); });
+      box.appendChild(b);
+    });
+  }
+  function apply() {
+    var n = 0;
+    Array.prototype.forEach.call(list.children, function (li) {
+      var show = on.story[li.dataset.story] && on.part[li.dataset.part]; li.hidden = !show; if (show) n++;
+    });
+    document.getElementById("count").textContent = n + " of " + DATA.length + " dates shown";
+  }
+  filters("f-story", "story", STORIES); filters("f-part", "part", PARTS); apply();
+})();
+</script>
+</body>
+</html>

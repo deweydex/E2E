@@ -294,6 +294,8 @@ def main():
     write(OUT, "Down the Wire")
     import adoption  # the opening section on adoption curves
     adoption.update_deck("network")
+    import timeline  # every date in the story, before the recap
+    timeline.update_deck("network")
 
 
 if __name__ == "__main__":

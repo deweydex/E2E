@@ -11,6 +11,7 @@ Each piece lives in site-src/history/<name>/ and has two parts:
 """
 
 import html
+import sys
 import json
 import re
 import shutil
@@ -18,6 +19,7 @@ from pathlib import Path
 
 W = Path(__file__).resolve().parent.parent
 SRC = W / "site-src" / "history"
+sys.path.insert(0, str(SRC))
 DIST = W / "docs" / "history"
 
 PIECES = [
@@ -348,6 +350,9 @@ def build():
         cards.append(f'<div class="card"><h2>{html.escape(site_title)}</h2><p>{html.escape(blurb)}</p>'
                      f'<p><a href="{name}/index.html">The era-by-era page</a><br><a href="{name}/slides.html">The slides</a><br><a href="{name}/notes.html">The notes, to read on their own</a>'
                      + "".join(f'<br><a href="{name}/{f.name}" download>The slides as PowerPoint</a>' for f in pptx) + '</p></div>')
+    import timeline
+    (DIST / "timeline.html").write_text(timeline.combined_page())
+    cards.append('<div class="card"><h2>Every date in three histories</h2><p>All the dates from the three histories on one line of time, which you can filter by history and by part.</p><p><a href="timeline.html">The combined timeline</a></p></div>')
     (DIST / "index.html").write_text(HUB.replace("CARDS", "\n".join(cards)))
 
 

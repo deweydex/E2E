@@ -437,6 +437,8 @@ def main():
     print(len(order), "slides")
     import adoption  # the opening section on adoption curves
     adoption.update_deck("server")
+    import timeline  # every date in the story, before the recap
+    timeline.update_deck("server")
 
 
 if __name__ == "__main__":
