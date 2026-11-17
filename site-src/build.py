@@ -19,6 +19,7 @@ import theme  # noqa: E402
 theme.apply()
 
 import svgfiles  # noqa: E402
+import history
 import py_edition  # noqa: E402
 import shared_a as A  # noqa: E402
 import shared_b as B  # noqa: E402
@@ -259,6 +260,7 @@ def build_landing(diagram_items):
 <a class="card" href="python.html"><h2>Python edition</h2><p>The server, the database code and the setup script are written in Python, using only its standard library. Needs Python 3.10 or newer.</p></a>
 <a class="card" href="typescript.html"><h2>TypeScript edition</h2><p>Everything is TypeScript on Node, including the short script in the page. Needs Node 22.18 or newer.</p></a>
 <a class="card wide" href="files/"><h2>Inside a file</h2><p>A beginner’s interactive filesystem lab. Start with names, paths and contents; inspect file records, learn bits and hex, then follow saving and recovery. Python examples stay alongside each step.</p></a>
+<a class="card wide" href="history/index.html"><h2>Two histories of the web</h2><p>The same thirty-odd years told twice, each as a page that rebuilds itself in the look of every era and as a slide deck with notes. One history watches from the browser: HTML, CSS and scripts. The other watches from behind the page: servers and databases.</p></a>
 <a class="card wide" href="workbench/index.html"><h2>Workbench</h2><p>A split screen with the browser on the left and the server and database on the right. Press a button and follow the request through a timeline, one stage at a time. Edit the HTML, the CSS, the SQL and the server code, or upload your own files. It has three levels and offers a TypeScript server and a Python server.</p></a>
 </div>
 <h2>The diagrams as files</h2>
@@ -300,6 +302,7 @@ def main():
     diagram_items = svgfiles.write_all(DIST, (py_edition.E, ts_edition.E))
     build_landing(diagram_items)
     build_filemagic()
+    history.build()
     build_demo()
     build_demo_ts()
     workbench.build()

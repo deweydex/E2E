@@ -1,0 +1,828 @@
+<title>The Server Remembers</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&family=VT323&display=swap">
+<style>
+/* Layout: one long scroll. Each era is a full-width band dressed like the tools that ran servers
+   and databases at the time. A sticky "session" bar on top names the machine and the command of
+   the era in view. Only the frame and the present-day band follow the viewer's light or dark theme. */
+:root {
+  --bg: oklch(97.5% 0.006 235); --fg: oklch(24% 0.03 255); --muted: oklch(45% 0.025 255);
+  --line: oklch(86% 0.015 250); --card: oklch(99.5% 0.003 235); --focus: oklch(55% 0.2 260);
+  --html: #E8955C; --css: #8DB4E2; --scripts: #E9C46A; --server: #8CC9A6; --db: #B9A6E0;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --text: "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: oklch(19% 0.02 255); --fg: oklch(93% 0.01 240); --muted: oklch(75% 0.02 245);
+  --line: oklch(34% 0.025 255); --card: oklch(23% 0.022 255); --focus: oklch(75% 0.15 250); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: oklch(19% 0.02 255); --fg: oklch(93% 0.01 240); --muted: oklch(75% 0.02 245);
+  --line: oklch(34% 0.025 255); --card: oklch(23% 0.022 255); --focus: oklch(75% 0.15 250); color-scheme: dark }
+
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--fg); }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.era { scroll-margin-top: 64px; padding-block: 48px 56px; }
+.wrap { max-width: 960px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.scroll-x { overflow-x: auto; max-width: 100%; }
+pre, code { white-space: pre-wrap; overflow-wrap: anywhere; }
+button, input, select { font: inherit; }
+[hidden] { display: none !important; }
+
+/* ---------- the session bar ---------- */
+.chrome { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; font: 13px/1.2 var(--mono);
+  padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px));
+  padding-block: 8px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; transition: background .4s, color .4s; }
+.chrome .who { font-weight: 600; white-space: nowrap; }
+.chrome .cmd { flex: 1 1 220px; min-width: 0; padding: 4px 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.chrome .cmd::before { content: "$ "; opacity: .6; }
+.chrome select, .chrome button { padding: 3px 8px; cursor: pointer; font: 13px var(--mono); }
+.progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: currentColor; transform-origin: 0 50%; transform: scaleX(0); opacity: .6; }
+@supports (animation-timeline: scroll()) { .progress { animation: grow linear both; animation-timeline: scroll(root); } }
+@keyframes grow { to { transform: scaleX(1); } }
+.chrome[data-era="1970"] { background: #000; color: #33ff66; font-family: "VT323", monospace; font-size: 18px; }
+.chrome[data-era="1970"] .cmd, .chrome[data-era="1970"] select, .chrome[data-era="1970"] button { background: #000; color: #33ff66; border: 1px solid #1d8f3a; font-family: "VT323", monospace; font-size: 17px; border-radius: 0; }
+.chrome[data-era="1993"] { background: #fff; color: #000; border-bottom: 1px solid #000; }
+.chrome[data-era="1993"] .cmd, .chrome[data-era="1993"] select, .chrome[data-era="1993"] button { background: #fff; color: #000; border: 1px solid #000; border-radius: 0; }
+.chrome[data-era="1999"] { background: #d4d0c8; color: #000; border-bottom: 2px solid #808080; font-family: Verdana, Tahoma, sans-serif; font-size: 11px; }
+.chrome[data-era="1999"] .cmd { background: #fff; color: #000; border: 2px inset #ddd; }
+.chrome[data-era="1999"] select, .chrome[data-era="1999"] button { background: #d4d0c8; color: #000; border: 2px outset #eee; border-radius: 0; font: 11px Verdana, sans-serif; }
+.chrome[data-era="2005"] { background: #fff; color: #333; border-bottom: 3px solid #c52f24; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.chrome[data-era="2005"] .cmd { background: #f4f4f4; color: #333; border: 1px solid #ccc; border-radius: 4px; }
+.chrome[data-era="2005"] select, .chrome[data-era="2005"] button { background: #c52f24; color: #fff; border: 0; border-radius: 4px; }
+.chrome[data-era="2014"] { background: #161e2e; color: #d6e2f0; font-family: "IBM Plex Sans", sans-serif; border-bottom: 1px solid #2b3a52; }
+.chrome[data-era="2014"] .cmd { background: #0e1522; color: #7ee0c3; border: 1px solid #2b3a52; border-radius: 4px; font-family: var(--mono); }
+.chrome[data-era="2014"] select, .chrome[data-era="2014"] button { background: #23324b; color: #d6e2f0; border: 1px solid #3a4d6b; border-radius: 4px; }
+.chrome[data-era="2023"] { background: #f5f3ff; color: #3b2a7a; border-bottom: 1px solid #ddd6fe; }
+.chrome[data-era="2023"] .cmd { background: #fff; color: #3b2a7a; border: 1px solid #ddd6fe; border-radius: 8px; }
+.chrome[data-era="2023"] select, .chrome[data-era="2023"] button { background: #fff; color: #3b2a7a; border: 1px solid #c4b5fd; border-radius: 8px; }
+.chrome[data-era="now"] { background: color-mix(in oklch, var(--bg) 82%, transparent); backdrop-filter: blur(12px); color: var(--fg); border-bottom: 1px solid var(--line); }
+.chrome[data-era="now"] .cmd, .chrome[data-era="now"] select, .chrome[data-era="now"] button { background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 999px; }
+
+/* ---------- the five parts: one tag, restyled by every era ---------- */
+.tag { white-space: nowrap; display: inline-block; vertical-align: middle; }
+.e1970 .tag { font: 18px "VT323", monospace; text-transform: uppercase; border: 1px solid currentColor; padding: 0 6px; }
+.e1993 .tag::before { content: "["; } .e1993 .tag::after { content: "]"; } .e1993 .tag { font-weight: normal; }
+.e1999 .tag { font: bold 10px Verdana, sans-serif; border: 1px solid #555; padding: 0 4px; background: #eee; color: #000; }
+.e2005 .tag, .e2014 .tag, .e2023 .tag, .enow .tag { color: #1b2a4a; }
+.e2005 .tag { font: bold 11px "Helvetica Neue", Arial, sans-serif; padding: 2px 8px; border-radius: 3px; }
+.e2014 .tag { font: 600 11px "IBM Plex Sans", sans-serif; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: .06em; }
+.e2023 .tag { font: 600 12px var(--text); padding: 2px 10px; border-radius: 8px; }
+.enow .tag { font: 700 13px var(--text); padding: 3px 11px; border-radius: 999px; }
+.tag[data-part="html"] { background: var(--html); } .tag[data-part="css"] { background: var(--css); }
+.tag[data-part="scripts"] { background: var(--scripts); } .tag[data-part="server"] { background: var(--server); } .tag[data-part="db"] { background: var(--db); }
+.e1970 .tag, .e1993 .tag { background: none !important; }
+
+/* ---------- 1970: a green-screen terminal ---------- */
+.e1970 { background: #020a04; color: #33ff66; font: 21px/1.35 "VT323", "IBM Plex Mono", monospace; text-shadow: 0 0 6px rgb(51 255 102 / .45); }
+.e1970 h2 { font: 30px/1.2 "VT323", monospace; text-transform: uppercase; margin: 28px 0 10px; letter-spacing: .04em; }
+.e1970 h2:first-child { margin-top: 0; }
+.e1970 a { color: #b6ffc8; }
+.e1970 .screen { border: 2px solid #1d8f3a; padding: 16px 18px; margin: 14px 0; }
+.e1970 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 720px) { .e1970 .two { grid-template-columns: 1fr; } }
+.e1970 pre { font: inherit; margin: 8px 0; }
+.e1970 button { font: 20px "VT323", monospace; background: #000; color: #33ff66; border: 1px solid #33ff66; padding: 2px 12px; cursor: pointer; text-transform: uppercase; }
+.e1970 button:hover { background: #0c3a18; }
+.e1970 .out { min-height: 6.5em; }
+.e1970 .hl { background: #33ff66; color: #000; text-shadow: none; }
+
+/* ---------- 1993: a server's own text pages ---------- */
+.e1993 { background: #fff; color: #000; font: 16px/1.4 "Times New Roman", Times, serif; }
+.e1993 h2 { font: bold 24px "Times New Roman", serif; margin: 28px 0 8px; }
+.e1993 h2:first-child { margin-top: 0; }
+.e1993 a { color: #0000ee; }
+.e1993 pre, .e1993 code { font: 14px/1.4 "Courier New", Courier, monospace; }
+.e1993 pre { background: #fff; border: 1px solid #000; padding: 10px; margin: 8px 0; }
+.e1993 .term { background: #000; color: #ddd; border: 0; min-height: 9em; }
+.e1993 .log { background: #f4f4f4; max-height: 10em; overflow: auto; }
+.e1993 input[type="text"] { font: 14px "Courier New", monospace; border: 1px solid #000; padding: 2px 4px; width: min(260px, 100%); }
+.e1993 button { font: 14px "Times New Roman", serif; border: 1px solid #000; background: #eee; padding: 2px 10px; cursor: pointer; }
+.e1993 hr { border: 0; border-top: 1px solid #000; }
+
+/* ---------- 1999: a database admin tool in grey ---------- */
+.e1999 { background: #f5f5f5; color: #000; font: 12px/1.5 Verdana, Tahoma, Arial, sans-serif; }
+.e1999 .wrap { max-width: 980px; }
+.e1999 .frame { display: grid; grid-template-columns: 170px 1fr; border: 1px solid #999; background: #fff; }
+@media (max-width: 720px) { .e1999 .frame { grid-template-columns: 1fr; } }
+.e1999 .side { background: #d0dce0; padding: 10px; border-right: 1px solid #999; font-size: 11px; }
+.e1999 .side b { display: block; margin-bottom: 6px; }
+.e1999 .side a { color: #0000ee; display: block; }
+.e1999 .main { padding: 12px 16px; min-width: 0; }
+.e1999 .tabs { display: flex; flex-wrap: wrap; gap: 2px; border-bottom: 1px solid #999; margin-bottom: 12px; }
+.e1999 .tabs span { background: #e5e5e5; border: 1px solid #999; border-bottom: 0; padding: 3px 10px; font-size: 11px; }
+.e1999 .tabs span.on { background: #fff; font-weight: bold; }
+.e1999 h2 { font: bold 15px Verdana, sans-serif; color: #003366; margin: 22px 0 6px; border-bottom: 1px solid #ccc; padding-bottom: 3px; }
+.e1999 h2:first-child { margin-top: 0; }
+.e1999 table.data { border-collapse: collapse; font-size: 11px; margin: 6px 0 10px; }
+.e1999 table.data th { background: #d0dce0; border: 1px solid #999; padding: 3px 8px; text-align: left; }
+.e1999 table.data td { border: 1px solid #ccc; padding: 3px 8px; }
+.e1999 table.data tr:nth-child(odd) td { background: #e5e5e5; }
+.e1999 pre, .e1999 code { font: 12px "Courier New", monospace; }
+.e1999 pre { background: #ffffee; border: 1px solid #ccc; padding: 6px 8px; margin: 6px 0; }
+.e1999 .sqlbad { background: #fde8e8; } .e1999 .sqlgood { background: #e8f6ea; }
+.e1999 fieldset { border: 1px solid #999; margin: 8px 0; padding: 8px 10px; }
+.e1999 legend { font-weight: bold; color: #003366; }
+.e1999 input[type="text"] { font: 12px Verdana, sans-serif; border: 1px solid #7f9db9; padding: 2px 4px; width: min(220px, 100%); }
+.e1999 button { font: 11px Verdana, sans-serif; background: #d4d0c8; border: 2px outset #eee; padding: 2px 10px; cursor: pointer; }
+.e1999 .note { font-size: 11px; color: #444; }
+.e1999 a { color: #0000ee; }
+
+/* ---------- 2005: a framework's scaffold page ---------- */
+.e2005 { background: #fbfaf7; color: #333; font: 15px/1.6 "Lucida Grande", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.e2005 .hdr { background: linear-gradient(#d8483d, #b02a20); color: #fff; padding: 18px 20px; border-radius: 6px 6px 0 0; }
+.e2005 .hdr h2 { margin: 0; font: bold 24px "Helvetica Neue", Arial, sans-serif; letter-spacing: -.01em; }
+.e2005 .hdr p { margin: 4px 0 0; opacity: .9; }
+.e2005 .panel { background: #fff; border: 1px solid #ddd; border-top: 0; padding: 16px 20px; margin-bottom: 22px; border-radius: 0 0 6px 6px; }
+.e2005 h3 { font: bold 18px "Helvetica Neue", Arial, sans-serif; color: #b02a20; margin: 18px 0 6px; }
+.e2005 h3:first-child { margin-top: 0; }
+.e2005 .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 720px) { .e2005 .pair { grid-template-columns: 1fr; } }
+.e2005 pre { font: 13px/1.5 Monaco, Menlo, "Courier New", monospace; background: #222; color: #e8e8e8; padding: 10px 12px; border-radius: 4px; margin: 6px 0; }
+.e2005 code { font: 13px Monaco, Menlo, monospace; background: #f0ece4; padding: 0 4px; border-radius: 3px; }
+.e2005 button { font: bold 13px "Helvetica Neue", Arial, sans-serif; background: linear-gradient(#fff, #e4e0d8); border: 1px solid #aaa; border-radius: 4px; padding: 5px 12px; cursor: pointer; color: #333; }
+.e2005 .meter { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0; }
+.e2005 .lamp { display: inline-block; padding: 2px 10px; border-radius: 10px; font-weight: bold; font-size: 13px; }
+.e2005 .hit { background: #d8f5d8; color: #1d5e1d; } .e2005 .miss { background: #fde3d0; color: #7a3412; }
+.e2005 a { color: #b02a20; }
+
+/* ---------- 2014: a cloud console ---------- */
+.e2014 { background: #0e1522; color: #d6e2f0; font: 15px/1.6 "IBM Plex Sans", "Segoe UI", sans-serif; }
+.e2014 h2 { font: 600 22px "IBM Plex Sans", sans-serif; margin: 28px 0 8px; }
+.e2014 h2:first-child { margin-top: 0; }
+.e2014 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.e2014 .tile { background: #161e2e; border: 1px solid #2b3a52; border-radius: 6px; padding: 14px 16px; min-width: 0; }
+.e2014 .tile h3 { font: 600 13px "IBM Plex Sans", sans-serif; text-transform: uppercase; letter-spacing: .08em; color: #8aa0bd; margin: 0 0 8px; }
+.e2014 .big { font: 600 28px "IBM Plex Mono", monospace; color: #7ee0c3; }
+.e2014 pre { font: 13px/1.5 var(--mono); background: #0a101b; border: 1px solid #2b3a52; color: #c9f5e6; padding: 10px 12px; border-radius: 4px; margin: 6px 0; }
+.e2014 code { font: 13px var(--mono); color: #7ee0c3; }
+.e2014 a { color: #7ee0c3; }
+.e2014 .fleet { display: flex; flex-wrap: wrap; gap: 6px; min-height: 54px; align-items: flex-start; margin: 8px 0; }
+.e2014 .box { width: 46px; height: 46px; border-radius: 6px; background: #1f6f5c; border: 1px solid #7ee0c3; display: grid; place-items: center; font: 600 11px var(--mono); color: #d6fff3; transition: transform .25s, opacity .25s; }
+.e2014 .box.fn { background: #5b3f9e; border-color: #c4b5fd; }
+@starting-style { .e2014 .box { transform: scale(.4); opacity: 0; } }
+.e2014 input[type="range"] { width: min(320px, 100%); accent-color: #7ee0c3; }
+.e2014 .seg { display: inline-flex; border: 1px solid #3a4d6b; border-radius: 4px; overflow: hidden; }
+.e2014 .seg button { background: #161e2e; color: #d6e2f0; border: 0; padding: 5px 12px; cursor: pointer; font: 13px "IBM Plex Sans", sans-serif; }
+.e2014 .seg button[aria-pressed="true"] { background: #7ee0c3; color: #0e1522; font-weight: 600; }
+
+/* ---------- 2023: a notebook with a map of meaning ---------- */
+.e2023 { background: #faf9ff; color: #241a4d; font: 16px/1.65 var(--text); }
+.e2023 h2 { font: 800 26px/1.2 var(--display); margin: 30px 0 8px; letter-spacing: -.01em; }
+.e2023 h2:first-child { margin-top: 0; }
+.e2023 .cell { background: #fff; border: 1px solid #e4dffb; border-left: 4px solid #8b5cf6; border-radius: 8px; padding: 12px 14px; margin: 12px 0; }
+.e2023 .cell .in { font: 12px var(--mono); color: #7c6bb3; margin-bottom: 4px; }
+.e2023 pre, .e2023 code { font: 13.5px/1.55 var(--mono); }
+.e2023 pre { margin: 0; }
+.e2023 svg.map { width: 100%; height: auto; background: #fff; border: 1px solid #e4dffb; border-radius: 12px; display: block; }
+.e2023 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.e2023 .chips button { font: 14px var(--text); border: 1px solid #c4b5fd; background: #fff; color: #3b2a7a; border-radius: 999px; padding: 5px 14px; cursor: pointer; }
+.e2023 .chips button[aria-pressed="true"] { background: #5b3f9e; color: #fff; border-color: #5b3f9e; }
+.e2023 a { color: #5b3f9e; }
+.e2023 .log { background: #1e1638; color: #e9e4ff; border-radius: 10px; padding: 12px 14px; font: 13px/1.6 var(--mono); }
+.e2023 .log .bot { color: #fbbf24; } .e2023 .log .slow { color: #fca5a5; }
+.e2023 .ask { background: #fff7e6; border-radius: 12px; padding: 14px 18px; margin-top: 18px; }
+.e2023 .ask ol { margin: 6px 0 0; padding-left: 1.3em; }
+
+/* ---------- now: the frame's own theme ---------- */
+.enow { background: var(--bg); color: var(--fg); font: 17px/1.6 var(--text); }
+.enow h2 { font: 800 clamp(28px, 4.6vw, 42px)/1.08 var(--display); letter-spacing: -.02em; margin: 0 0 10px; text-wrap: balance; }
+.enow h3 { font: 500 21px/1.25 var(--display); margin: 0 0 6px; }
+.enow p { max-width: 68ch; }
+.enow a { color: var(--fg); text-decoration-color: var(--focus); text-underline-offset: 3px; }
+.enow .muted { color: var(--muted); }
+.enow code { font: 14px var(--mono); background: color-mix(in oklch, var(--fg) 8%, transparent); padding: 1px 5px; border-radius: 5px; }
+.enow pre { font: 14px/1.55 var(--mono); background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
+.enow .road { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+@media (max-width: 720px) { .enow .road { grid-template-columns: 1fr; } }
+.enow .stop { background: var(--card); border: 1px solid var(--line); border-top: 6px solid var(--line); border-radius: 12px; padding: 14px; min-width: 0; transition: border-color .3s, box-shadow .3s; }
+.enow .stop[data-part="scripts"] { border-top-color: var(--scripts); } .enow .stop[data-part="server"] { border-top-color: var(--server); } .enow .stop[data-part="db"] { border-top-color: var(--db); }
+.enow .stop.on { box-shadow: 0 0 0 3px var(--focus); }
+.enow .step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; min-height: 6em; }
+.enow .ctl { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.enow button { background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.enow button.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.enow .habits { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.enow .habits > div { border-top: 6px solid var(--server); padding-top: 10px; min-width: 0; }
+.enow .habits > div.d { border-top-color: var(--db); }
+.enow textarea { width: 100%; box-sizing: border-box; font: 14px/1.5 var(--mono); background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 10px; padding: 10px; min-height: 5em; }
+.enow table { border-collapse: collapse; font-size: 15px; }
+.enow th, .enow td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+.enow th { font: 700 12px var(--text); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.enow .sources li { margin: 6px 0; }
+.enow .insp { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; padding: 0; list-style: none; }
+.enow .insp li { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+.built { margin-top: 28px; }
+.enow .built { border-left: 4px solid var(--focus); padding: 4px 0 4px 14px; color: var(--muted); }
+.key { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+
+html.calm *, html.calm *::before, html.calm *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+</style>
+
+<header class="chrome" id="chrome" data-era="1970" aria-label="The machine and command for the era on screen">
+  <span class="who" id="who">IBM 3270 terminal</span>
+  <span class="cmd" id="cmd">LOGON TSO</span>
+  <label for="jump" class="who" style="font-weight:400">Go to</label>
+  <select id="jump">
+    <option value="y1970">1966 · Data in tables</option>
+    <option value="y1993">1990 · The first servers</option>
+    <option value="y1999">1995 · Pages from a database</option>
+    <option value="y2005">2003 · Frameworks and NoSQL</option>
+    <option value="y2014">2006 · The cloud</option>
+    <option value="y2023">2020 · Data for AI</option>
+    <option value="now">Today · Putting it together</option>
+    <option value="sources">Sources</option>
+  </select>
+  <button type="button" id="calm" aria-pressed="false">Calm mode</button>
+  <span class="progress" aria-hidden="true"></span>
+</header>
+
+<main>
+<!-- ===================== 1966 to 1986 ===================== -->
+<section class="era e1970" id="y1970" data-era="1970" data-who="IBM 3270 terminal" data-cmd="LOGON TSO">
+<div class="wrap">
+<h2>The Server Remembers</h2>
+<p>This page is a history of the web told from behind the page: the programs that answer requests and the databases that remember. It rebuilds itself as you scroll, in the look of each era's machines, from a green screen in the 1970s to the browser you are using now.</p>
+<p>Five tags mark what each idea belongs to:</p>
+<ul class="key">
+<li><span class="tag" data-part="html">HTML</span> the page the server sends back</li>
+<li><span class="tag" data-part="css">CSS</span> the look of that page</li>
+<li><span class="tag" data-part="scripts">Scripts</span> code in the browser that sends requests</li>
+<li><span class="tag" data-part="server">Server</span> the program that answers</li>
+<li><span class="tag" data-part="db">Database</span> the place that remembers</li>
+</ul>
+
+<h2>1966 to 1970: data lived in trees <span class="tag" data-part="db">Database</span></h2>
+<p>Banks and airlines needed computers that remembered things long before the web existed. IBM's IMS, built in the late 1960s for the Apollo space programme, stored data as a tree. A customer held orders, and each order held items. A program found data by walking down the tree, one level at a time.</p>
+
+<h2>1970: Codd puts everything in tables <span class="tag" data-part="db">Database</span></h2>
+<p>In June 1970 Edgar F. Codd, a mathematician at IBM, published <a href="https://dl.acm.org/doi/10.1145/362384.362685">A Relational Model of Data for Large Shared Data Banks</a>. Every fact goes in a table of rows and columns, and a key in one table points at a row in another. You say <i>what</i> you want, and the database works out <i>how</i> to find it.</p>
+<p>Ask both systems the same question below: which items cost less than 1.00?</p>
+<div class="two">
+<div class="screen">
+<pre>CUSTOMER  AOIFE
+  ORDER 17
+    ITEM  CRISPS   1.20
+    ITEM  WATER    0.90
+  ORDER 18
+    ITEM  APPLE    0.50
+CUSTOMER  BRIAN
+  ORDER 19
+    ITEM  WATER    0.90</pre>
+<button type="button" id="ask-tree">Ask the tree</button>
+<pre class="out" id="tree-out" aria-live="polite"></pre>
+</div>
+<div class="screen">
+<pre>ITEMS
+ID  NAME    PRICE  ORDER_ID
+1   CRISPS  1.20   17
+2   WATER   0.90   17
+3   APPLE   0.50   18
+4   WATER   0.90   19</pre>
+<button type="button" id="ask-table">Ask the table</button>
+<pre class="out" id="table-out" aria-live="polite"></pre>
+</div>
+</div>
+
+<h2>1974 to 1986: SQL, one language for asking <span class="tag" data-part="db">Database</span></h2>
+<p>Researchers at IBM wrote a language for Codd's tables, first called SEQUEL and later SQL. In 1979 the company that became Oracle sold the first commercial SQL database. SQL became an official standard in 1986, so the same language works across products. Fifty years on, the line on the right above still runs, almost unchanged, in every SQL database.</p>
+<p class="built"><b>HOW THIS PART IS BUILT:</b> A GREEN TEXT FONT ON BLACK, A SOFT TEXT-SHADOW FOR THE GLOW OF A CATHODE-RAY TUBE, AND A SCRIPT THAT TYPES ITS ANSWER ONE LINE AT A TIME, THE WAY A SLOW TERMINAL DID.</p>
+</div>
+</section>
+
+<!-- ===================== 1990 to 1995 ===================== -->
+<section class="era e1993" id="y1993" data-era="1993" data-who="info.cern.ch" data-cmd="httpd -port 80">
+<div class="wrap">
+<h2>1990: a server is a program that listens <span class="tag" data-part="server">Server</span> <span class="tag" data-part="html">HTML</span></h2>
+<p>Tim Berners-Lee wrote the first web server at CERN in 1990. It waited on a network port for a request, found the matching file on its disk and sent it back. When the file was missing, it answered with a status code instead. 404 still means "Not Found".</p>
+<p>Type a path and send a request to this pretend server. It holds two files: <code>/index.html</code> and <code>/about.html</code>.</p>
+<p><label for="path">Path:</label> <input type="text" id="path" value="/index.html"> <button type="button" id="send">Send request</button></p>
+<pre class="term" id="http-out" aria-live="polite"></pre>
+
+<h2>1993: CGI, the server runs a program <span class="tag" data-part="server">Server</span></h2>
+<p>The Common Gateway Interface, from NCSA in 1993, let a server run a program and send back whatever that program printed. A form could now send data to a script, often written in Perl, and the page did not exist until somebody asked for it. Pages built this way are called <i>dynamic</i>.</p>
+<form id="cgi-form">
+<p><label for="cgi-name">Your name:</label> <input type="text" id="cgi-name" value="Aoife"> <button type="submit">Submit to /cgi-bin/hello</button></p>
+</form>
+<pre id="cgi-out" aria-live="polite">#!/usr/bin/perl
+print "Content-Type: text/html\n\n";
+print "&lt;h1&gt;Hello, $name&lt;/h1&gt;";</pre>
+
+<h2>1995: Apache, and the server log <span class="tag" data-part="server">Server</span></h2>
+<p>In 1995 a group of webmasters gathered their fixes to the NCSA server and released them as <a href="https://httpd.apache.org/ABOUT_APACHE.html">Apache</a>. Like most servers, Apache writes one line to a log for every request. Each request you sent above has a line here: who asked, when, the method and path, the status code, and the size of the answer in bytes.</p>
+<pre class="log" id="access-log" aria-live="polite" aria-label="access.log"></pre>
+<hr>
+<p class="built"><b>How this part is built:</b> black on white, a serif font, a horizontal rule, and no styling of its own, like the plain pages early servers produced. A script plays the server's part: it matches the path, picks a status code and writes a log line in Apache's Common Log Format.</p>
+</div>
+</section>
+
+<!-- ===================== 1995 to 2004 ===================== -->
+<section class="era e1999" id="y1999" data-era="1999" data-who="shared host · MySQL 3.23" data-cmd="mysql -u shop -p shopdb">
+<div class="wrap">
+<div class="frame">
+<div class="side" aria-label="Databases">
+<b>Databases (2)</b>
+<a href="#y1999">shopdb (2)</a>
+<span>&nbsp;&nbsp;users</span><br>
+<span>&nbsp;&nbsp;products</span>
+<br><br><b>Server</b>
+Apache 1.3<br>PHP 4<br>MySQL 3.23
+</div>
+<div class="main">
+<div class="tabs" aria-hidden="true"><span class="on">Browse</span><span>Structure</span><span>SQL</span><span>Search</span><span>Insert</span></div>
+
+<h2>1995 to 1998: a free stack for everyone <span class="tag" data-part="server">Server</span> <span class="tag" data-part="db">Database</span></h2>
+<p>PHP and MySQL were both released in 1995. Run them on Linux with Apache, and every part of a database-backed site was free. A German magazine named the four together LAMP in 1998. Shared hosting cost a few euro a month, so blogs, forums and shops could all keep their data in a database. PostgreSQL, the other big free database, took its name in 1996.</p>
+<p>Here is the <code>users</code> table of a small shop, as a database admin tool of the time showed it:</p>
+<div class="scroll-x"><table class="data" id="users-table"><tr><th>id</th><th>name</th><th>password</th><th>role</th></tr>
+<tr><td>1</td><td>aoife</td><td>sunflower</td><td>admin</td></tr>
+<tr><td>2</td><td>brian</td><td>letmein</td><td>customer</td></tr>
+<tr><td>3</td><td>ciara</td><td>hurling99</td><td>customer</td></tr></table></div>
+<p class="note">Look at the password column. Storing passwords as plain text was common then, and it is a serious mistake. The last band of this page shows the fix.</p>
+
+<h2>1994 onwards: how the server remembers you <span class="tag" data-part="server">Server</span></h2>
+<p>HTTP forgets each request the moment it ends. From 1994 a server could hand the browser a small <b>cookie</b>, and the browser sent it back with every later request. The cookie holds only an id. The server keeps the details, such as who you are and what is in your basket, in a <b>session</b>.</p>
+<pre>Set-Cookie: PHPSESSID=8f3a91c2; HttpOnly
+sessions:  8f3a91c2 → user 2 (brian), basket [3, 7]</pre>
+
+<h2>1998: SQL injection <span class="tag" data-part="server">Server</span> <span class="tag" data-part="db">Database</span></h2>
+<p>In 1998 a researcher called rain.forest.puppy described how text typed into a form could change the SQL a server ran. The cause is building a query by gluing strings together. The cure is a <b>parameterised query</b>, where the SQL and the data travel separately. Try both below against a real SQL database running in this page.</p>
+<fieldset>
+<legend>Shop login, as the server sees it</legend>
+<p><label for="inj-name">Name:</label> <input type="text" id="inj-name" value="brian"> <label for="inj-pass">Password:</label> <input type="text" id="inj-pass" value="wrong"></p>
+<p><button type="button" id="inj-glue">Log in, gluing strings</button> <button type="button" id="inj-param">Log in, with parameters</button> <button type="button" id="inj-attack">Fill in the attack</button></p>
+<pre id="inj-sql" aria-live="polite">The query will appear here.</pre>
+<div id="inj-result" class="note" aria-live="polite"></div>
+</fieldset>
+<p class="note" id="sql-status">Loading the database…</p>
+
+<h2>2000 to 2002: servers start answering with data <span class="tag" data-part="server">Server</span> <span class="tag" data-part="scripts">Scripts</span></h2>
+<p>In 2000 Roy Fielding described REST in <a href="https://ics.uci.edu/~fielding/pubs/dissertation/top.htm">his PhD thesis</a>: design a server around resources, each with an address, and read or change them with the HTTP methods. Soon after, <a href="https://www.json.org/">JSON</a> gave servers a light way to send data instead of whole pages, and a script in the browser decided how to show it.</p>
+<pre>GET /api/products/2
+
+{ "id": 2, "name": "Water", "price": 0.9 }</pre>
+<p class="built note"><b>How this part is built:</b> a two-column frame with a grey sidebar, Verdana at 11 and 12 pixels, tabs drawn with borders, and table rows striped with <code>:nth-child(odd)</code>. Those zebra tables were everywhere in database admin tools. The login box runs real SQL in the page, using SQLite compiled to WebAssembly.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ===================== 2003 to 2010 ===================== -->
+<section class="era e2005" id="y2005" data-era="2005" data-who="Mongrel · Rails 1.2" data-cmd="script/server -p 3000">
+<div class="wrap">
+<div class="hdr"><h2>Welcome aboard</h2><p>You're riding a web framework. Here are three ideas it brought with it.</p></div>
+<div class="panel">
+<h3>2004 and 2005: frameworks and the ORM <span class="tag" data-part="server">Server</span> <span class="tag" data-part="db">Database</span></h3>
+<p>Ruby on Rails in 2004 and Django, in Python, in 2005 gave every new site the same folders, routes and database setup. An <b>ORM</b>, an object-relational mapper, lets the program treat rows as objects, and the framework writes the SQL. <b>Migrations</b> change the tables step by step, so every copy of a site has the same structure.</p>
+<div class="pair">
+<div><p><b>What you write</b></p><pre># Django
+Product.objects.filter(price__lt=1)</pre></div>
+<div><p><b>The SQL it sends</b></p><pre>SELECT * FROM products
+WHERE price &lt; 1;</pre></div>
+</div>
+<p>An ORM saves typing and guards against injection. It also hides the SQL, so a slow query can go unnoticed.</p>
+
+<h3>2003: caching, remember the answer <span class="tag" data-part="server">Server</span></h3>
+<p>A popular page asked the database the same question thousands of times a minute. <b>memcached</b>, written in 2003 for the LiveJournal blog site, kept recent answers in memory. The server checks the cache first and asks the database only on a miss.</p>
+<div class="meter"><button type="button" id="c-load">Load the price list</button> <button type="button" id="c-change">Change a price</button> <span id="c-lamp" class="lamp" aria-live="polite">nothing loaded yet</span></div>
+<p id="c-note"></p>
+
+<h3>2006 to 2009: NoSQL, bigger with fewer rules <span class="tag" data-part="db">Database</span></h3>
+<p>Google described <a href="https://research.google/pubs/bigtable-a-distributed-storage-system-for-structured-data/">Bigtable</a> in 2006 and Amazon described Dynamo in 2007: databases spread over thousands of machines. To grow that big, they gave up some of what SQL databases promise, such as joins between tables. In 2009 a meetup in San Francisco gave the movement a name, <b>NoSQL</b>, and MongoDB and Redis were both released that year.</p>
+<p><button type="button" id="shape-btn" aria-pressed="false">Show the same order as a document</button></p>
+<div class="pair" id="shape-sql">
+<pre>orders
+id  customer
+17  aoife</pre>
+<pre>order_items
+order_id  item    price
+17        crisps  1.20
+17        water   0.90</pre>
+</div>
+<pre id="shape-doc" hidden>{
+  "_id": 17,
+  "customer": "aoife",
+  "items": [
+    { "item": "crisps", "price": 1.20 },
+    { "item": "water",  "price": 0.90 }
+  ]
+}</pre>
+<p>A document keeps the whole order in one place, which is quick to read. Tables keep each fact once, which is safer when money must add up. Most new projects still choose SQL, and many SQL databases now store JSON too.</p>
+
+<h3>2009: JavaScript on the server <span class="tag" data-part="server">Server</span> <span class="tag" data-part="scripts">Scripts</span></h3>
+<p>Node.js, from 2009, handles thousands of open connections in one program, because it never sits idle waiting for the disk or the database. The same language, JavaScript or TypeScript, can now run in the browser and on the server.</p>
+<p class="built"><b>How this part is built:</b> a red gradient header, Lucida Grande and Helvetica, rounded panels and code on black, in the spirit of the scaffold pages that frameworks generated. The cache is a JavaScript object, and the "database" is a timer that takes its time.</p>
+</div>
+</div>
+</section>
+
+<!-- ===================== 2006 to 2019 ===================== -->
+<section class="era e2014" id="y2014" data-era="2014" data-who="console · eu-west-1" data-cmd="docker run -p 80:8080 shop:latest">
+<div class="wrap">
+<h2>2006: renting servers by the hour <span class="tag" data-part="server">Server</span> <span class="tag" data-part="db">Database</span></h2>
+<p>Before 2006, a company that wanted a server bought one and kept it running. A busy day meant buying more, and a quiet month left them idle. In March 2006 Amazon began renting storage with S3, and in August it began renting whole virtual servers by the hour with EC2. Google, Microsoft and others followed. A new server now took minutes instead of weeks.</p>
+<p>Drag the slider to change the traffic, and choose how this pretend shop runs.</p>
+<div class="grid">
+<div class="tile"><h3>Requests per second</h3><p class="big" id="rps-v">40</p><input type="range" id="rps" min="0" max="400" step="10" value="40" aria-label="Requests per second"></div>
+<div class="tile"><h3>Running</h3><div class="fleet" id="fleet" aria-live="polite"></div></div>
+<div class="tile"><h3>Cost per hour</h3><p class="big" id="cost">€0.10</p><p id="cost-note" style="margin:0;font-size:13px;color:#8aa0bd"></p></div>
+</div>
+<p><span class="seg" role="group" aria-label="How the shop runs"><button type="button" data-mode="own" aria-pressed="false">Own one server</button><button type="button" data-mode="vm" aria-pressed="true">Rent and scale</button><button type="button" data-mode="fn" aria-pressed="false">Serverless</button></span></p>
+
+<h2>2013 and 2014: containers <span class="tag" data-part="server">Server</span></h2>
+<p>A container packs a program together with everything it needs to run, so it runs the same way on a laptop and in a data centre. Docker made containers easy in 2013, and in 2014 Google released <a href="https://kubernetes.io/blog/2024/06/06/10-years-of-kubernetes/">Kubernetes</a>, which runs many containers across many machines and restarts any that fail. The boxes above are containers.</p>
+<pre># Dockerfile
+FROM python:3.12-slim
+COPY . /app
+CMD ["python", "/app/server.py"]</pre>
+
+<h2>2014: serverless, just the function <span class="tag" data-part="server">Server</span></h2>
+<p>AWS Lambda, <a href="https://press.aboutamazon.com/2014/11/amazon-web-services-announces-aws-lambda">announced in November 2014</a>, runs one function each time a request arrives, and nothing runs between requests. Choose <b>Serverless</b> above and the purple boxes appear only while requests arrive. There are still servers, of course. Somebody else looks after them.</p>
+
+<h2>2017 and 2018: data comes with rules <span class="tag" data-part="db">Database</span></h2>
+<div class="grid">
+<div class="tile"><h3>Breaches</h3><p style="margin:0">In 2017 attackers took personal data about roughly 147 million people from Equifax, through a web framework on a server that had gone about two months without an available security fix.</p></div>
+<div class="tile"><h3>GDPR</h3><p style="margin:0">The EU's data protection law began to apply on 25 May 2018. A site must collect only the data it needs, protect it, and delete it on request.</p></div>
+</div>
+<p class="built"><b>How this part is built:</b> dark tiles, IBM Plex Sans and a teal accent, like the cloud consoles of the mid-2010s. Each box is a <code>div</code> that grows in with <code>@starting-style</code>. The prices are made up, so compare the shapes of the three choices rather than the numbers.</p>
+</div>
+</section>
+
+<!-- ===================== 2020 to now ===================== -->
+<section class="era e2023" id="y2023" data-era="2023" data-who="notebook · pgvector" data-cmd="psql -c 'CREATE EXTENSION vector;'">
+<div class="wrap">
+<h2>Meaning as a list of numbers <span class="tag" data-part="db">Database</span></h2>
+<p>An <b>embedding</b> turns a piece of text into a list of numbers, called a vector. Texts with similar meanings get similar vectors, so a database can find the rows closest in meaning to a question even when they share no words with it. Real embeddings hold hundreds or thousands of numbers. The map below uses only two, so each note can sit at a point on a page.</p>
+<p>Pick a question. The database finds the three nearest notes.</p>
+<div class="chips" id="q-chips" role="group" aria-label="Questions"></div>
+<svg class="map" id="map" viewBox="0 0 640 360" role="img" aria-label="A map of notes placed by meaning"></svg>
+<div class="cell"><div class="in">In [1]:</div><pre id="vec-sql">SELECT note FROM notes
+ORDER BY embedding &lt;-&gt; :question
+LIMIT 3;</pre></div>
+<div class="cell"><div class="in">Out[1]:</div><pre id="vec-out" aria-live="polite">Pick a question above.</pre></div>
+<p>The <code>&lt;-&gt;</code> operator measures the distance between two vectors. <a href="https://github.com/pgvector/pgvector">pgvector</a> first added it to PostgreSQL in 2021.</p>
+
+<h2>Look it up, then answer <span class="tag" data-part="db">Database</span> <span class="tag" data-part="server">Server</span></h2>
+<p>A language model knows only what was in its training data. To answer questions about your own documents, a server first finds the nearest notes in a vector database, then hands them to the model along with the question. Researchers at Facebook AI named this <a href="https://arxiv.org/abs/2005.11401">retrieval-augmented generation</a>, or RAG, in 2020. It is a three-tier application in disguise: the browser asks, a server program decides, and a database remembers.</p>
+
+<h2>The servers' new visitors <span class="tag" data-part="server">Server</span></h2>
+<p>From 2023, AI companies sent crawlers to read the web for training data, and many sites saw their logs fill with bots. A site can ask crawlers to stay away in <code>robots.txt</code>, and a <b>rate limit</b> slows any visitor that asks too fast with status 429, Too Many Requests.</p>
+<pre class="log">66.249.66.1  "GET /notes/12"  200  <span class="bot">Googlebot</span>
+20.15.240.9  "GET /notes/13"  200  <span class="bot">GPTBot</span>
+20.15.240.9  "GET /notes/14"  200  <span class="bot">GPTBot</span>
+20.15.240.9  "GET /notes/15"  <span class="slow">429</span>  <span class="bot">GPTBot</span>
+81.17.4.22   "GET /notes/12"  200  Firefox</pre>
+
+<div class="ask">
+<b>Talk it over</b>
+<ol>
+<li>If your writing helped train a model, should you have been asked? Should you be paid?</li>
+<li>The GDPR gives you a right to have your data deleted. How would anyone delete it from a trained model?</li>
+<li>When an assistant answers from your own documents, how would you check that it read them correctly?</li>
+</ol>
+</div>
+<p class="built"><b>How this part is built:</b> notebook cells with a coloured edge, an SVG map drawn by a script, and the same nearest-neighbour search a vector database does, written in a few lines of JavaScript.</p>
+</div>
+</section>
+
+<!-- ===================== now ===================== -->
+<section class="era enow" id="now" data-era="now" data-who="your browser, today" data-cmd="sqlite3 shop.db">
+<div class="wrap">
+<h2>The journey of one click <span class="tag" data-part="scripts">Scripts</span> <span class="tag" data-part="server">Server</span> <span class="tag" data-part="db">Database</span></h2>
+<p>Every era above added one stop on the road a click travels. Step through a purchase from a small shop. The database is real: SQLite, running inside this page.</p>
+<div class="road">
+<div class="stop" data-part="scripts" id="stop-0"><h3>Browser</h3><p class="muted">A script sends the request and shows the reply.</p></div>
+<div class="stop" data-part="server" id="stop-1"><h3>Server program</h3><p class="muted">A route checks the request and decides what to do.</p></div>
+<div class="stop" data-part="db" id="stop-2"><h3>Database</h3><p class="muted">A parameterised query reads or changes rows.</p></div>
+</div>
+<div class="step" id="j-step" aria-live="polite"></div>
+<div class="ctl"><button type="button" id="j-start">Start</button><button type="button" id="j-back">Back</button><button type="button" class="primary" id="j-next">Forward</button><button type="button" id="j-end">End</button></div>
+<div class="scroll-x"><table id="stock"><tr><th>id</th><th>name</th><th>price</th><th>stock</th></tr></table></div>
+
+<h2 style="margin-top:44px">Five habits that keep a server safe <span class="tag" data-part="server">Server</span> <span class="tag" data-part="db">Database</span></h2>
+<div class="habits">
+<div class="d"><h3>Parameters</h3><p>Never glue input into SQL. Send it as a parameter. (1998)</p></div>
+<div class="d"><h3>Hashes</h3><p>Store a slow hash of each password, never the password itself.</p></div>
+<div><h3>Check again</h3><p>Check every request on the server, even if the page checked it first.</p></div>
+<div><h3>HTTPS</h3><p>Encrypt every request, so nobody can read or change it on the way.</p></div>
+<div><h3>Updates</h3><p>Install security updates promptly. (2017)</p></div>
+</div>
+<p>A slow hash, such as bcrypt or Argon2, turns a password into a fixed string that cannot be turned back. Here is what the <code>users</code> table from the 1999 band should have held:</p>
+<pre>id  name   password_hash
+2   brian  $2b$12$Q9vWm0…  (60 characters, different for every user)</pre>
+
+<h2 style="margin-top:44px">SQL is still here <span class="tag" data-part="db">Database</span></h2>
+<p>SQLite, first released in 2000, keeps a whole SQL database in one file. It is in every phone and every web browser, and it is probably the most used database in the world. The free databases of 1995, PostgreSQL and MySQL, still run a large share of the web, now with JSON and vector features added. Fifty years after Codd, the table and the SELECT statement are still the place to start. Try your own query on the shop's database:</p>
+<label for="q-box" class="muted">A read-only SELECT on the tables <code>products</code> and <code>users</code></label>
+<textarea id="q-box">SELECT name, price FROM products WHERE price &lt; 1 ORDER BY price;</textarea>
+<div class="ctl"><button type="button" class="primary" id="q-run">Run</button></div>
+<div class="scroll-x" id="q-out" aria-live="polite"></div>
+<p class="built"><b>How this part is built:</b> with today's HTML and CSS, light or dark to match your device, and SQLite compiled to WebAssembly so that real SQL runs in your browser. The same database answers the login box in the 1999 band.</p>
+</div>
+</section>
+
+<!-- ===================== sources ===================== -->
+<section class="era enow" id="sources" data-era="now" data-who="your browser, today" data-cmd="cat SOURCES">
+<div class="wrap">
+<h2>Sources and further reading</h2>
+<ul class="sources">
+<li>E. F. Codd, <a href="https://dl.acm.org/doi/10.1145/362384.362685">A Relational Model of Data for Large Shared Data Banks</a>, Communications of the ACM (1970), and <a href="https://www.historyofinformation.com/detail.php?id=94">a short account of its impact</a></li>
+<li>Cybercultural, <a href="https://cybercultural.com/p/1993-cgi-scripts-and-early-server-side-web-programming/">1993: CGI scripts and early server-side web programming</a></li>
+<li>Apache HTTP Server Project, <a href="https://httpd.apache.org/ABOUT_APACHE.html">About Apache</a></li>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/MySQL">MySQL</a> and <a href="https://en.wikipedia.org/wiki/LAMP_(software_bundle)">LAMP</a></li>
+<li>eSecurity Planet, <a href="https://www.esecurityplanet.com/networks/how-was-sql-injection-discovered/">How was SQL injection discovered?</a></li>
+<li>Roy Fielding, <a href="https://ics.uci.edu/~fielding/pubs/dissertation/top.htm">Architectural Styles and the Design of Network-based Software Architectures</a> (2000)</li>
+<li>Martin Fowler, <a href="https://www.martinfowler.com/bliki/NosqlDefinition.html">NoSQL definition</a>, and InfoQ, <a href="https://www.infoq.com/news/2009/08/NoSQL-and-the-End-of-RDBMS-Era/">NoSQL and the end of the RDBMS era</a> (2009)</li>
+<li>Amazon, <a href="https://press.aboutamazon.com/news-releases/news-release-details/amazon-web-services-launches-amazon-s3-simple-storage-service">Amazon S3 launch</a> (2006) and <a href="https://press.aboutamazon.com/2014/11/amazon-web-services-announces-aws-lambda">AWS Lambda announcement</a> (2014)</li>
+<li>Kubernetes blog, <a href="https://kubernetes.io/blog/2024/06/06/10-Years-of-Kubernetes/">10 years of Kubernetes</a></li>
+<li>EUR-Lex, <a href="https://eur-lex.europa.eu/content/news/general-data-protection-regulation-GDPR-applies-from-25-May-2018.html">The GDPR applies from 25 May 2018</a></li>
+<li>Patrick Lewis and others, <a href="https://arxiv.org/abs/2005.11401">Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</a> (2020)</li>
+<li><a href="https://github.com/pgvector/pgvector">pgvector</a>, open-source vector search for PostgreSQL</li>
+<li>OWASP, <a href="https://owasp.org/Top10/2025/">Top 10:2025</a>, the most common security risks in web applications</li>
+<li>SQLite, <a href="https://www.sqlite.org/mostdeployed.html">Most widely deployed and used database engine</a></li>
+</ul>
+<h2 style="margin-top:40px">Other places that tell this story</h2>
+<ul class="insp">
+<li><a href="https://dbdb.io/"><b>The Database of Databases</b></a><br><span class="muted">An encyclopedia of database systems, old and new, with the history of each.</span></li>
+<li><a href="https://www.sqlite.org/whentouse.html"><b>Appropriate Uses for SQLite</b></a><br><span class="muted">The SQLite project's own guide to when one file is enough.</span></li>
+<li><a href="https://info.cern.ch/"><b>info.cern.ch</b></a><br><span class="muted">The address of the first web server, still online at CERN.</span></li>
+</ul>
+<p>This page tells the history from behind the page, in each era's look, with working models of the ideas: a server that writes a log, a cache that goes stale, a fleet that scales, a map of meaning, and a real SQL database that you can attack and then protect.</p>
+</div>
+</section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var root = document.documentElement;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function calm() { return reduce || root.classList.contains("calm"); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  /* ---- the session bar follows the era in view ---- */
+  var chrome = document.getElementById("chrome"), who = document.getElementById("who"), cmd = document.getElementById("cmd"), jump = document.getElementById("jump");
+  var eras = Array.prototype.slice.call(document.querySelectorAll("section.era"));
+  function setEra(sec) {
+    chrome.dataset.era = sec.dataset.era; who.textContent = sec.dataset.who; cmd.textContent = sec.dataset.cmd;
+    if (jump.querySelector('option[value="' + sec.id + '"]')) jump.value = sec.id;
+  }
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) { entries.forEach(function (e) { if (e.isIntersecting) setEra(e.target); }); }, { rootMargin: "-45% 0px -50% 0px" });
+    eras.forEach(function (s) { io.observe(s); });
+  }
+  jump.addEventListener("change", function () { var t = document.getElementById(jump.value); if (t) t.scrollIntoView({ behavior: calm() ? "auto" : "smooth" }); });
+  var calmBtn = document.getElementById("calm");
+  function setCalm(on) { root.classList.toggle("calm", on); calmBtn.setAttribute("aria-pressed", String(on)); calmBtn.textContent = on ? "Calm mode: on" : "Calm mode"; }
+  calmBtn.addEventListener("click", function () { setCalm(!root.classList.contains("calm")); });
+
+  /* ---- 1970: the tree walks, the table answers ---- */
+  var typing = {};
+  function typeLines(el, lines) {
+    clearTimeout(typing[el.id]);
+    if (calm()) { el.textContent = lines.join("\n"); return; }
+    el.textContent = ""; var i = 0;
+    (function next() { if (i < lines.length) { el.textContent += (i ? "\n" : "") + lines[i++]; typing[el.id] = setTimeout(next, 260); } })();
+  }
+  document.getElementById("ask-tree").addEventListener("click", function () {
+    typeLines(document.getElementById("tree-out"), ["OPEN CUSTOMER AOIFE", "  OPEN ORDER 17 ... WATER 0.90", "  OPEN ORDER 18 ... APPLE 0.50", "OPEN CUSTOMER BRIAN", "  OPEN ORDER 19 ... WATER 0.90", "9 STEPS. A NEW QUESTION NEEDS A NEW PROGRAM."]);
+  });
+  document.getElementById("ask-table").addEventListener("click", function () {
+    typeLines(document.getElementById("table-out"), ["SELECT NAME, PRICE FROM ITEMS", "  WHERE PRICE < 1.00;", "WATER  0.90", "APPLE  0.50", "WATER  0.90", "1 QUESTION. THE DATABASE FINDS THE WAY."]);
+  });
+
+  /* ---- 1993: a pretend server with a log ---- */
+  var files = { "/index.html": "<h1>Welcome</h1>\n<p>See <a href=\"/about.html\">about</a>.</p>", "/about.html": "<h1>About</h1>\n<p>This server runs on a NeXT cube.</p>" };
+  var logEl = document.getElementById("access-log"), logLines = [];
+  function stamp() {
+    var d = new Date(), m = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()];
+    function p(n) { return (n < 10 ? "0" : "") + n; }
+    return "[" + p(d.getDate()) + "/" + m + "/1995:" + p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds()) + " +0000]";
+  }
+  function log(path, status, size) {
+    logLines.push("192.0.2.17 - - " + stamp() + ' "GET ' + path + ' HTTP/1.0" ' + status + " " + size);
+    logEl.textContent = logLines.slice(-8).join("\n");
+  }
+  function sendReq() {
+    var raw = document.getElementById("path").value.trim() || "/";
+    var path = raw.charAt(0) === "/" ? raw : "/" + raw;
+    if (path === "/") path = "/index.html";
+    var body = files[path], status = body ? "200 OK" : "404 Not Found";
+    if (!body) body = "<h1>Not Found</h1>\n<p>The requested URL " + path + " was not found on this server.</p>";
+    document.getElementById("http-out").textContent = "GET " + path + " HTTP/1.0\n\nHTTP/1.0 " + status + "\nServer: CERN/3.0\nContent-Type: text/html\nContent-Length: " + body.length + "\n\n" + body;
+    log(path, status.slice(0, 3), body.length);
+  }
+  document.getElementById("send").addEventListener("click", sendReq);
+  document.getElementById("path").addEventListener("keydown", function (e) { if (e.key === "Enter") sendReq(); });
+  document.getElementById("cgi-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = document.getElementById("cgi-name").value.slice(0, 40);
+    var html = "<h1>Hello, " + name + "</h1>";
+    document.getElementById("cgi-out").textContent = "POST /cgi-bin/hello HTTP/1.0\nname=" + encodeURIComponent(name) + "\n\nHTTP/1.0 200 OK\nContent-Type: text/html\n\n" + html + "\n\n(The page was printed by a Perl script just now. Nothing was stored on disk.)";
+    logLines.push("192.0.2.17 - - " + stamp() + ' "POST /cgi-bin/hello HTTP/1.0" 200 ' + html.length);
+    logEl.textContent = logLines.slice(-8).join("\n");
+  });
+  log("/index.html", 200, files["/index.html"].length);
+
+  /* ---- the real database: SQLite compiled to WebAssembly ---- */
+  var db = null, dbReady = [], status = document.getElementById("sql-status");
+  function whenDb(fn) { if (db) fn(db); else dbReady.push(fn); }
+  function loadScript(src) {
+    return new Promise(function (ok, fail) { var s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = fail; document.head.appendChild(s); });
+  }
+  function startDb(SQL) {
+    db = new SQL.Database();
+    db.run("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, password TEXT, role TEXT);" +
+      "INSERT INTO users VALUES (1,'aoife','sunflower','admin'),(2,'brian','letmein','customer'),(3,'ciara','hurling99','customer');" +
+      "CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, price REAL, stock INTEGER);" +
+      "INSERT INTO products VALUES (1,'Crisps',1.20,4),(2,'Water',0.90,6),(3,'Apple',0.50,3),(4,'Chocolate',1.50,2);");
+    status.textContent = "Database ready: SQLite " + db.exec("SELECT sqlite_version()")[0].values[0][0] + ", running in this page.";
+    dbReady.splice(0).forEach(function (fn) { fn(db); });
+  }
+  var LOCAL = "../../workbench/vendor/", CDN = "https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/";
+  function b64(s) { var bin = atob(s), out = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return out; }
+  loadScript(LOCAL + "sql-wasm-data.js").then(function () { return loadScript(LOCAL + "sql-wasm.js"); })
+    .then(function () { return initSqlJs({ wasmBinary: b64(window.SQL_WASM_BASE64) }); })
+    .catch(function () { return loadScript(CDN + "sql-wasm.js").then(function () { return initSqlJs({ locateFile: function (f) { return CDN + f; } }); }); })
+    .then(startDb)
+    .catch(function (err) {
+      status.textContent = "The database could not load here (" + (err && err.message ? err.message : "blocked") + "). The SQL demos need it; the rest of the page works without it.";
+      document.getElementById("q-out").textContent = status.textContent;
+    });
+
+  function rowsTable(res) {
+    if (!res.length) return "<p class='muted'>No rows.</p>";
+    var r = res[0];
+    return "<table><tr>" + r.columns.map(function (c) { return "<th>" + esc(c) + "</th>"; }).join("") + "</tr>" +
+      r.values.map(function (v) { return "<tr>" + v.map(function (x) { return "<td>" + esc(x) + "</td>"; }).join("") + "</tr>"; }).join("") + "</table>";
+  }
+
+  /* ---- 1998: injection, then the fix ---- */
+  var injSql = document.getElementById("inj-sql"), injRes = document.getElementById("inj-result");
+  function login(glue) {
+    var name = document.getElementById("inj-name").value, pass = document.getElementById("inj-pass").value;
+    whenDb(function (db) {
+      var sql, res;
+      try {
+        if (glue) {
+          sql = "SELECT id, name, role FROM users WHERE name = '" + name + "' AND password = '" + pass + "';";
+          injSql.className = "sqlbad"; injSql.textContent = "-- glued together\n" + sql;
+          res = db.exec(sql);
+        } else {
+          sql = "SELECT id, name, role FROM users WHERE name = ? AND password = ?;";
+          injSql.className = "sqlgood"; injSql.textContent = "-- parameterised\n" + sql + "\n-- parameters: [" + JSON.stringify(name) + ", " + JSON.stringify(pass) + "]";
+          var st = db.prepare(sql); st.bind([name, pass]); var vals = []; var cols = st.getColumnNames();
+          while (st.step()) vals.push(st.get()); st.free();
+          res = vals.length ? [{ columns: cols, values: vals }] : [];
+        }
+        var n = res.length ? res[0].values.length : 0;
+        injRes.innerHTML = (n ? "<b>Logged in.</b> The query returned " + n + " row" + (n > 1 ? "s" : "") + ", so the server lets you in as the first: <b>" + esc(res[0].values[0][1]) + "</b> (" + esc(res[0].values[0][2]) + ")." : "<b>Login refused.</b> The query returned no rows.") + rowsTable(res);
+      } catch (err) {
+        injRes.innerHTML = "<b>Database error:</b> " + esc(err.message) + ". An error message like this one also tells an attacker how the query is built.";
+      }
+    });
+  }
+  document.getElementById("inj-glue").addEventListener("click", function () { login(true); });
+  document.getElementById("inj-param").addEventListener("click", function () { login(false); });
+  document.getElementById("inj-attack").addEventListener("click", function () {
+    document.getElementById("inj-name").value = "anyone";
+    document.getElementById("inj-pass").value = "' OR '1'='1";
+    injRes.innerHTML = "The password box now holds <code>' OR '1'='1</code>. Try both buttons.";
+  });
+
+  /* ---- 2003: a cache in front of a slow database ---- */
+  var cache = null, prices = { Crisps: 1.2, Water: 0.9, Apple: 0.5 }, cLamp = document.getElementById("c-lamp"), cNote = document.getElementById("c-note"), busy = false;
+  function listText(p) { return Object.keys(p).map(function (k) { return k + " " + p[k].toFixed(2); }).join(", "); }
+  document.getElementById("c-load").addEventListener("click", function () {
+    if (busy) return;
+    if (cache) { cLamp.className = "lamp hit"; cLamp.textContent = "cache hit · 2 ms"; cNote.textContent = "Served from memory: " + listText(cache) + "."; return; }
+    busy = true; cLamp.className = "lamp miss"; cLamp.textContent = "cache miss · asking the database…";
+    setTimeout(function () {
+      cache = JSON.parse(JSON.stringify(prices)); busy = false;
+      cLamp.textContent = "cache miss · 800 ms"; cNote.textContent = "Fetched from the database and remembered: " + listText(cache) + ". Press Load again.";
+    }, calm() ? 0 : 800);
+  });
+  document.getElementById("c-change").addEventListener("click", function () {
+    prices.Water = prices.Water === 0.9 ? 1.1 : 0.9;
+    cNote.textContent = "The database now says Water costs " + prices.Water.toFixed(2) + ". " + (cache ? "The cache still remembers " + cache.Water.toFixed(2) + ", so the next load serves a stale price until the cache is cleared." : "Nothing was cached yet.");
+    if (cache) { setTimeout(function () { cache = null; }, 6000); }
+  });
+  var shapeBtn = document.getElementById("shape-btn");
+  shapeBtn.addEventListener("click", function () {
+    var doc = shapeBtn.getAttribute("aria-pressed") !== "true";
+    shapeBtn.setAttribute("aria-pressed", String(doc));
+    shapeBtn.textContent = doc ? "Show the same order as tables" : "Show the same order as a document";
+    document.getElementById("shape-doc").hidden = !doc; document.getElementById("shape-sql").hidden = doc;
+  });
+
+  /* ---- 2014: own, rent or go serverless ---- */
+  var rps = document.getElementById("rps"), fleet = document.getElementById("fleet"), mode = "vm", tick;
+  function draw() {
+    var r = +rps.value; document.getElementById("rps-v").textContent = r;
+    var n, cost, note, cls = "";
+    if (mode === "own") { n = 1; cost = 0.30; note = r > 100 ? "Overloaded: requests over 100 a second wait or fail." : "Paid for every hour, busy or not."; }
+    else if (mode === "vm") { n = Math.max(1, Math.ceil(r / 80)); cost = n * 0.10; note = "One rented server per 80 requests a second."; }
+    else { n = r === 0 ? 0 : Math.min(24, Math.ceil(r / 20)); cost = r * 0.0009; cls = "fn"; note = r === 0 ? "No requests, nothing running, nothing to pay." : "Functions start for each burst of requests."; }
+    fleet.innerHTML = "";
+    for (var i = 0; i < n; i++) { var b = document.createElement("div"); b.className = "box " + cls; b.textContent = cls ? "λ" : "shop"; fleet.appendChild(b); }
+    if (!n) fleet.textContent = "nothing running";
+    document.getElementById("cost").textContent = "€" + cost.toFixed(2);
+    document.getElementById("cost-note").textContent = note;
+  }
+  rps.addEventListener("input", draw);
+  Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function (b) {
+    b.addEventListener("click", function () {
+      mode = b.dataset.mode;
+      Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      draw();
+    });
+  });
+  draw();
+
+  /* ---- 2023: a map of meaning and a nearest-neighbour search ---- */
+  var notes = [
+    { t: "How to reset a password", x: 120, y: 70 }, { t: "Forgot my login details", x: 150, y: 105 }, { t: "Changing your account email", x: 205, y: 60 },
+    { t: "Refunds take five working days", x: 470, y: 80 }, { t: "Returning a damaged item", x: 520, y: 125 }, { t: "Cancelling an order", x: 430, y: 140 },
+    { t: "Opening hours on bank holidays", x: 120, y: 270 }, { t: "Is the shop open on Sunday?", x: 175, y: 300 },
+    { t: "Delivery to Northern Ireland", x: 450, y: 270 }, { t: "How long does shipping take?", x: 510, y: 300 }, { t: "Tracking a parcel", x: 560, y: 250 },
+    { t: "Gift cards never expire", x: 320, y: 190 }
+  ];
+  var questions = [
+    { t: "I can't sign in", x: 140, y: 90 }, { t: "When will I get my money back?", x: 480, y: 105 },
+    { t: "Are you open at Christmas?", x: 140, y: 290 }, { t: "Where is my order?", x: 520, y: 270 }
+  ];
+  var svg = document.getElementById("map"), NS = "http://www.w3.org/2000/svg";
+  function el(name, attrs, text) { var e = document.createElementNS(NS, name); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text) e.textContent = text; return e; }
+  function drawMap(q) {
+    svg.innerHTML = "";
+    var near = [];
+    if (q) {
+      near = notes.map(function (n) { return { n: n, d: Math.hypot(n.x - q.x, n.y - q.y) }; }).sort(function (a, b) { return a.d - b.d; }).slice(0, 3);
+      near.forEach(function (m) { svg.appendChild(el("line", { x1: q.x, y1: q.y, x2: m.n.x, y2: m.n.y, stroke: "#8b5cf6", "stroke-width": 2, "stroke-dasharray": "4 4" })); });
+    }
+    notes.forEach(function (n) {
+      var hit = near.some(function (m) { return m.n === n; });
+      svg.appendChild(el("circle", { cx: n.x, cy: n.y, r: hit ? 7 : 5, fill: hit ? "#5b3f9e" : "#c4b5fd" }));
+      var right = n.x > 360;
+      svg.appendChild(el("text", { x: right ? n.x - 9 : n.x + 9, y: n.y + 4, "text-anchor": right ? "end" : "start", "font-size": 11, fill: hit ? "#241a4d" : "#6b5fa0", "font-family": "Atkinson Hyperlegible Next, sans-serif", "font-weight": hit ? 700 : 400 }, n.t));
+    });
+    if (q) {
+      svg.appendChild(el("rect", { x: q.x - 7, y: q.y - 7, width: 14, height: 14, fill: "#f59e0b", transform: "rotate(45 " + q.x + " " + q.y + ")" }));
+      svg.appendChild(el("text", { x: q.x > 360 ? q.x - 10 : q.x + 10, y: q.y + 26, "text-anchor": q.x > 360 ? "end" : "start", "font-size": 12, "font-weight": 700, fill: "#92400e", "font-family": "Atkinson Hyperlegible Next, sans-serif" }, "“" + q.t + "”"));
+      document.getElementById("vec-out").textContent = near.map(function (m, i) { return (i + 1) + "  " + m.n.t + "   (distance " + Math.round(m.d) + ")"; }).join("\n");
+    }
+  }
+  var chipBox = document.getElementById("q-chips");
+  questions.forEach(function (q) {
+    var b = document.createElement("button"); b.type = "button"; b.textContent = q.t; b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", function () {
+      Array.prototype.forEach.call(chipBox.children, function (c) { c.setAttribute("aria-pressed", String(c === b)); });
+      drawMap(q);
+    });
+    chipBox.appendChild(b);
+  });
+  drawMap(null);
+
+  /* ---- now: the journey of one click, with real SQL ---- */
+  var steps = [
+    { s: 0, h: "1 · The click", t: "You press <b>Buy</b> next to Water. A script in the page sends a request: <code>POST /api/buy</code> with the body <code>{\"id\": 2}</code>." },
+    { s: 1, h: "2 · The route", t: "The server program matches the path to a route. It checks that the id is a whole number before it touches the database, because anyone can send any request." },
+    { s: 2, h: "3 · The read", t: "The route asks the database a parameterised question: <code>SELECT stock FROM products WHERE id = ?</code> with the parameter 2.", sql: "SELECT stock FROM products WHERE id = ?" },
+    { s: 2, h: "4 · The write", t: "Stock is above zero, so the route sends one UPDATE. Doing the check inside the UPDATE means two buyers at once cannot both take the last bottle.", sql: "UPDATE products SET stock = stock - 1 WHERE id = ? AND stock > 0", write: true },
+    { s: 1, h: "5 · The answer", t: "The database reports one changed row. The server answers <code>200 OK</code> with JSON: <code>{\"ok\": true, \"stock\": …}</code>. A missing product would get <code>404</code>, and an empty shelf <code>409 Conflict</code>." },
+    { s: 0, h: "6 · The page", t: "The script reads the JSON and changes one number on the page, with no reload. The table below shows the row the click changed." }
+  ];
+  var j = -1, stepEl = document.getElementById("j-step");
+  function stockTable() { whenDb(function (db) { document.getElementById("stock").outerHTML = rowsTable(db.exec("SELECT id, name, price, stock FROM products")).replace("<table>", "<table id='stock'>"); }); }
+  function showStep(n) {
+    j = Math.max(-1, Math.min(steps.length - 1, n));
+    for (var i = 0; i < 3; i++) document.getElementById("stop-" + i).classList.toggle("on", j >= 0 && steps[j].s === i);
+    if (j < 0) { stepEl.innerHTML = "<b>Ready.</b> Press Forward to send one purchase of Water through the three tiers."; return; }
+    var st = steps[j]; stepEl.innerHTML = "<b>" + st.h + "</b><br>" + st.t;
+    if (st.sql) whenDb(function (db) {
+      var res;
+      if (st.write) { db.run(st.sql, [2]); res = db.exec("SELECT changes() AS rows_changed"); stockTable(); }
+      else { var q = db.prepare(st.sql); q.bind([2]); q.step(); res = [{ columns: ["stock"], values: [q.get()] }]; q.free(); }
+      stepEl.innerHTML += rowsTable(res);
+    });
+  }
+  document.getElementById("j-start").addEventListener("click", function () { showStep(-1); });
+  document.getElementById("j-back").addEventListener("click", function () { showStep(j - 1); });
+  document.getElementById("j-next").addEventListener("click", function () { showStep(j + 1); });
+  document.getElementById("j-end").addEventListener("click", function () { for (var k = j + 1; k < steps.length; k++) showStep(k); });
+  showStep(-1); stockTable();
+
+  document.getElementById("q-run").addEventListener("click", function () {
+    var out = document.getElementById("q-out"), sql = document.getElementById("q-box").value.trim();
+    if (!/^select\b/i.test(sql) || /;\s*\S/.test(sql)) { out.innerHTML = "<p>This box runs a single SELECT, which only reads. Start your query with SELECT.</p>"; return; }
+    whenDb(function (db) {
+      try { out.innerHTML = rowsTable(db.exec(sql)); } catch (err) { out.innerHTML = "<p><b>Error:</b> " + esc(err.message) + "</p>"; }
+    });
+  });
+
+  if (reduce) setCalm(true);
+})();
+</script>

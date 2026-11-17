@@ -1,0 +1,22 @@
+<section id="grid" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">March 2017</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:6px 18px;border-radius:24px">CSS</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">CSS Grid: real layout at last</h2>
+<p style="font-size:30px;line-height:1.45;color:#C9D2E3">In March 2017, Chrome, Firefox and Safari all shipped CSS Grid within a few weeks of each other. For the first time, CSS could lay out rows and columns together. Twenty years of tables, floats and workarounds came to an end.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="display:grid;grid-template-columns:1fr 2fr;grid-template-rows:64px 160px 56px;gap:12px">
+<div style="grid-column:span 2;background:#8DB4E2;border-radius:8px;display:flex;align-items:center;padding:0 0 0 20px"><p style="font-size:24px;font-weight:700;color:#1B2A4A">header</p></div>
+<div style="background:#C9D2E3;border-radius:8px;padding:16px"><p style="font-size:24px;font-weight:700;color:#1B2A4A">nav</p></div>
+<div style="background:#8DB4E2;border-radius:8px;padding:16px"><p style="font-size:24px;font-weight:700;color:#1B2A4A">main</p></div>
+<div style="grid-column:span 2;background:#C9D2E3;border-radius:8px;display:flex;align-items:center;padding:0 0 0 20px"><p style="font-size:24px;font-weight:700;color:#1B2A4A">footer</p></div>
+</div>
+<div style="background:#0F1A30;border-radius:16px;padding:28px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.6;color:#F4F1EA">grid-template-areas:<br>  "header header"<br>  "nav    main"<br>  "footer footer";</p>
+</div>
+</div>
+<aside>Compare this with the 1996 and 2001 pages, which used tables for exactly this layout. Grid does the same job in CSS, so the HTML can stay semantic. Jen Simmons’s “Variations on a Grid” experiments from 2017 are good to show the class.</aside>
+</section>

@@ -1,0 +1,41 @@
+<section id="tiers" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">Putting it together</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:6px 18px;border-radius:24px">HTML</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:6px 18px;border-radius:24px">CSS</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Three tiers, three jobs</h2>
+</div>
+<div style="display:flex;align-items:center;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #1B2A4A;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700">Presentation</h3>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:4px 14px;border-radius:24px">HTML</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:4px 14px;border-radius:24px">CSS</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:4px 14px;border-radius:24px">Scripts</p>
+</div>
+<p style="font-size:26px;line-height:1.4;color:#3D4A63">The client, which is the browser. It shows the page and sends requests.</p>
+</div>
+<x-shape kind="arrow-right" style="background:#1B2A4A;width:96px;height:48px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #1B2A4A;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700">Application</h3>
+<div style="display:flex;gap:8px">
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:4px 14px;border-radius:24px">Server</p>
+</div>
+<p style="font-size:26px;line-height:1.4;color:#3D4A63">The server’s program, in PHP, Node or Python. It checks each request and decides what to do.</p>
+</div>
+<x-shape kind="arrow-right" style="background:#1B2A4A;width:96px;height:48px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #1B2A4A;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700">Data</h3>
+<div style="display:flex;gap:8px">
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:4px 14px;border-radius:24px">Server</p>
+</div>
+<p style="font-size:26px;line-height:1.4;color:#3D4A63">A database server. It stores the data and answers many users at once.</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">Keeping the tiers apart means each one can be changed, secured or made bigger without rebuilding the others. A desktop database, by contrast, serves one person on one machine.</p>
+<aside>The application tier is sometimes called middleware. Walk a search through it: the visitor types in the browser, the application tier checks the request and asks the database, the database returns rows, and the application sends them back, often as JSON.</aside>
+</section>

@@ -1,0 +1,29 @@
+<section id="security" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">Keeping a dynamic site safe</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">The browser helps. The server protects.</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:16px;border-top:8px solid #8CC9A6;padding:32px 0 0 0">
+<x-icon name="Database" style="color:#8CC9A6;width:56px;height:56px"></x-icon>
+<h3 style="font-size:36px;font-weight:700">SQL injection</h3>
+<p style="font-size:28px;line-height:1.4;color:#C9D2E3">An attacker types SQL into a form to change the query. The defence is a parameterised query, which keeps what they typed apart from the SQL.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;border-top:8px solid #E9C46A;padding:32px 0 0 0">
+<x-icon name="Code" style="color:#E9C46A;width:56px;height:56px"></x-icon>
+<h3 style="font-size:36px;font-weight:700">Cross-site scripting</h3>
+<p style="font-size:28px;line-height:1.4;color:#C9D2E3">An attacker gets a script into a page that other visitors see. The defence is to escape output, so text never runs as code.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;border-top:8px solid #8CC9A6;padding:32px 0 0 0">
+<x-icon name="Lock" style="color:#8CC9A6;width:56px;height:56px"></x-icon>
+<h3 style="font-size:36px;font-weight:700">Passwords</h3>
+<p style="font-size:28px;line-height:1.4;color:#C9D2E3">Store a hash, never the password. A hash cannot be turned back into the password if the database leaks.</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#C9D2E3">A form that checks itself with required and pattern helps the visitor. Anyone can bypass it, so the server must check every request again.</p>
+<aside>Two of the three attacks target the server and its database, so they are green. Cross-site scripting turns a page’s own scripts against its visitors, so it is gold. The last line matters most now that HTML does so much checking: browser checks are a convenience for the visitor, never a defence.</aside>
+</section>

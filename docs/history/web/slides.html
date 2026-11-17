@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How the Web Learned to Respond · slides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #0d1424; color: #f4f1ea; font: 15px/1.4 "Public Sans", system-ui, sans-serif; }
+body { display: grid; grid-template-rows: auto 1fr auto; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 8px 14px; background: #1b2a4a; }
+.bar a { color: #c9d2e3; }
+.bar .title { font-weight: 700; margin-right: auto; }
+.bar select { max-width: min(320px, 60vw); }
+.bar button, .bar select { font: inherit; background: #24365c; color: #f4f1ea; border: 1px solid #3d527c; border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+.bar button:focus-visible, .bar select:focus-visible { outline: 3px solid #e9c46a; outline-offset: 2px; }
+.stage-wrap { position: relative; overflow: hidden; }
+.stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: 0 0; }
+.stage > section { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; box-sizing: border-box; }
+.stage > section:not(.on) { display: none !important; }
+.stage section * { margin: 0; box-sizing: border-box; }
+.stage aside { display: none !important; }
+.notes { background: #f7f5f0; color: #1b2a4a; padding: 12px 18px; max-height: 30vh; overflow: auto; font-size: 16px; line-height: 1.5; }
+.notes[hidden] { display: none; }
+.count { font-variant-numeric: tabular-nums; color: #c9d2e3; }
+</style>
+</head>
+<body>
+<div class="bar">
+<span class="title">How the Web Learned to Respond</span>
+<a href="index.html">The era-by-era page</a>
+<a href="../index.html">All history pages</a>
+<a href="how-the-web-learned-to-respond.pptx" download>PowerPoint</a>
+<label for="jump" class="count">Chapter</label> <select id="jump"><option value="0">The four parts of a website, their colours, and the plan for the talk</option><option value="3">Chapter 1, 1991 to 1995: documents and forms</option><option value="6">Chapter 2, 1995 to 2004: scripts, styles, server languages and plugins</option><option value="11">Chapter 3, 2005 to 2014: Web 2.0, HTML5 and every screen</option><option value="18">Chapter 4, 2009 to now: scripts grow up</option><option value="22">Chapter 5, 2016 to 2022: the platform catches up</option><option value="30">Chapter 6, 2023 to now: AI and the web</option><option value="35">Chapter 7, today: putting it together and keeping a site safe</option></select>
+<button type="button" id="prev" aria-label="Previous slide">←</button>
+<span class="count" id="count" aria-live="polite"></span>
+<button type="button" id="next" aria-label="Next slide">→</button>
+<button type="button" id="toggle-notes" aria-pressed="false">Notes</button>
+</div>
+<div class="stage-wrap"><div class="stage">
+<section id="cover" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<p style="font-size:32px;font-weight:600;color:#C9D2E3;letter-spacing:4px;text-transform:uppercase">A history of the web</p>
+<h1 style="font-family:'Libre Baskerville', Georgia, serif;font-size:120px;font-weight:700;line-height:1.1;color:#F4F1EA">How the web learned to respond</h1>
+<p style="font-size:44px;color:#C9D2E3">HTML, CSS, scripts and servers, from 1991 to now</p>
+<div style="display:flex;gap:24px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:32px;color:#1B2A4A;background:#E8955C;padding:12px 24px;border-radius:8px">&lt;html&gt;</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:32px;color:#1B2A4A;background:#8DB4E2;padding:12px 24px;border-radius:8px">{ css }</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:32px;color:#1B2A4A;background:#E9C46A;padding:12px 24px;border-radius:8px">script()</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:32px;color:#1B2A4A;background:#8CC9A6;padding:12px 24px;border-radius:8px">server</p>
+</div>
+<aside>This talk follows the web from its first page to today. It looks at four parts: HTML, CSS, scripts and servers. Each part has its own colour, and the next slide explains them. For each part we ask what it does, when it arrived, and how its job changed.</aside>
+</section>
+<section id="four-parts" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">The colour key</p>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Four parts, four jobs, four colours</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:16px solid #E8955C;border-radius:16px">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#A24A18;width:56px;height:56px"><path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/></svg>
+<h3 style="font-size:44px;font-weight:700;color:#A24A18">HTML</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4A63">The structure. It says what each part of the page is: a heading, a list, a link.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:16px solid #8DB4E2;border-radius:16px">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#24588F;width:56px;height:56px"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></svg>
+<h3 style="font-size:44px;font-weight:700;color:#24588F">CSS</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4A63">The look. It sets colours, fonts, spacing and layout.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:16px solid #E9C46A;border-radius:16px">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#7A5D00;width:56px;height:56px"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg>
+<h3 style="font-size:44px;font-weight:700;color:#7A5D00">Scripts</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4A63">The behaviour. JavaScript runs in the visitor’s browser and changes the page.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:16px solid #8CC9A6;border-radius:16px">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#2E6B4A;width:56px;height:56px"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+<h3 style="font-size:44px;font-weight:700;color:#2E6B4A">Server</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4A63">The computer that sends the page, runs programs and keeps the data.</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#3D4A63">Every slide after this one carries a coloured tag for each part it is about. Over thirty years, jobs moved between these four parts, and that movement is the story of the talk.</p>
+<aside>Ask the class to name a site they used today, and find each of the four parts in it. The colours stay the same for the whole talk: orange for HTML, blue for CSS, gold for scripts and green for the server. Each tag also carries its name, so nobody has to rely on the colour alone.</aside>
+</section>
+<section id="timeline" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:112px 128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">The plan</p>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Seven chapters, from 1991 to now</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:40px 40px">
+<div style="display:flex;flex-direction:column;gap:10px;border-top:6px solid #C9D2E3;padding:16px 0 0 0">
+<div style="display:flex;gap:20px;align-items:baseline"><p style="font-family:'Libre Baskerville', Georgia, serif;font-size:48px;font-weight:700;color:#C9D2E3">1</p><p style="font-size:22px;font-weight:700;color:#C9D2E3">1991 to 1995</p></div>
+<h3 style="font-size:30px;font-weight:700;line-height:1.2">Documents and forms</h3>
+<div style="display:flex;flex-wrap:wrap;gap:10px"><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:4px 16px;border-radius:24px">HTML</p><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:4px 16px;border-radius:24px">Server</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;border-top:6px solid #C9D2E3;padding:16px 0 0 0">
+<div style="display:flex;gap:20px;align-items:baseline"><p style="font-family:'Libre Baskerville', Georgia, serif;font-size:48px;font-weight:700;color:#C9D2E3">2</p><p style="font-size:22px;font-weight:700;color:#C9D2E3">1995 to 2004</p></div>
+<h3 style="font-size:30px;font-weight:700;line-height:1.2">Scripts, styles and server languages</h3>
+<div style="display:flex;flex-wrap:wrap;gap:10px"><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:4px 16px;border-radius:24px">Scripts</p><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:4px 16px;border-radius:24px">CSS</p><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:4px 16px;border-radius:24px">Server</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;border-top:6px solid #C9D2E3;padding:16px 0 0 0">
+<div style="display:flex;gap:20px;align-items:baseline"><p style="font-family:'Libre Baskerville', Georgia, serif;font-size:48px;font-weight:700;color:#C9D2E3">3</p><p style="font-size:22px;font-weight:700;color:#C9D2E3">2005 to 2014</p></div>
+<h3 style="font-size:30px;font-weight:700;line-height:1.2">Web 2.0, HTML5 and every screen</h3>
+<div style="display:flex;flex-wrap:wrap;gap:10px"><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:4px 16px;border-radius:24px">Scripts</p><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:4px 16px;border-radius:24px">HTML</p><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:4px 16px;border-radius:24px">CSS</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;border-top:6px solid #C9D2E3;padding:16px 0 0 0">
+<div style="display:flex;gap:20px;align-items:baseline"><p style="font-family:'Libre Baskerville', Georgia, serif;font-size:48px;font-weight:700;color:#C9D2E3">4</p><p style="font-size:22px;font-weight:700;color:#C9D2E3">2009 to now</p></div>
+<h3 style="font-size:30px;font-weight:700;line-height:1.2">Scripts grow up</h3>
+<div style="display:flex;flex-wrap:wrap;gap:10px"><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:4px 16px;border-radius:24px">Scripts</p><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:4px 16px;border-radius:24px">Server</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;border-top:6px solid #C9D2E3;padding:16px 0 0 0">
+<div style="display:flex;gap:20px;align-items:baseline"><p style="font-family:'Libre Baskerville', Georgia, serif;font-size:48px;font-weight:700;color:#C9D2E3">5</p><p style="font-size:22px;font-weight:700;color:#C9D2E3">2016 to 2022</p></div>
+<h3 style="font-size:30px;font-weight:700;line-height:1.2">The platform catches up</h3>
+<div style="display:flex;flex-wrap:wrap;gap:10px"><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:4px 16px;border-radius:24px">CSS</p><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:4px 16px;border-radius:24px">Server</p><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:4px 16px;border-radius:24px">Scripts</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;border-top:6px solid #C9D2E3;padding:16px 0 0 0">
+<div style="display:flex;gap:20px;align-items:baseline"><p style="font-family:'Libre Baskerville', Georgia, serif;font-size:48px;font-weight:700;color:#C9D2E3">6</p><p style="font-size:22px;font-weight:700;color:#C9D2E3">2023 to now</p></div>
+<h3 style="font-size:30px;font-weight:700;line-height:1.2">AI and the web</h3>
+<div style="display:flex;flex-wrap:wrap;gap:10px"><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:4px 16px;border-radius:24px">HTML</p><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:4px 16px;border-radius:24px">Server</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;border-top:6px solid #C9D2E3;padding:16px 0 0 0">
+<div style="display:flex;gap:20px;align-items:baseline"><p style="font-family:'Libre Baskerville', Georgia, serif;font-size:48px;font-weight:700;color:#C9D2E3">7</p><p style="font-size:22px;font-weight:700;color:#C9D2E3">Today</p></div>
+<h3 style="font-size:30px;font-weight:700;line-height:1.2">Putting it together</h3>
+<div style="display:flex;flex-wrap:wrap;gap:10px"><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:4px 16px;border-radius:24px">HTML</p><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:4px 16px;border-radius:24px">CSS</p><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:4px 16px;border-radius:24px">Scripts</p><p style="font-size:22px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:4px 16px;border-radius:24px">Server</p></div>
+</div>
+</div>
+<aside>This is the map for the whole talk. Each chapter opens with a slide like this one, so the class always knows where we are. The chapters overlap a little in time, because the four parts changed at different speeds. Chapter 4 starts in 2009, before chapter 3 ends. Chapter 6, on AI, is the one with no settled ending, so it finishes with questions for discussion.</aside>
+</section>
+<section id="ch1" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<p style="font-size:32px;font-weight:700;color:#C9D2E3;letter-spacing:4px;text-transform:uppercase">Chapter 1 · 1991 to 1995</p>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:96px;font-weight:700;line-height:1.1">Documents and forms</h2>
+<p style="font-size:40px;line-height:1.4;color:#C9D2E3">The web begins as pages of text and links, and forms let readers write back.</p>
+<div style="display:flex;gap:16px">
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:8px 24px;border-radius:24px">HTML</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:8px 24px;border-radius:24px">Server</p>
+</div>
+<aside>Chapter 1 has two parts in play: HTML for the pages, and a server to send them and read forms.</aside>
+</section>
+<section id="first-page" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:grid;grid-template-columns:1fr 1fr;gap:96px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">1991</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:6px 18px;border-radius:24px">HTML</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">The first page was text and links</h2>
+<p style="font-size:32px;line-height:1.45;color:#3D4A63">Tim Berners-Lee put the first web page online at CERN. A page could not respond to anything except a click on a link. Each click asked the server for a whole new page.</p>
+<p style="font-size:32px;line-height:1.45;color:#3D4A63">That first page is still online, at info.cern.ch.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:40px;align-items:center">
+<div style="display:flex;align-items:center;gap:32px">
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px;background:#FFFDF9;border:2px solid #1B2A4A;border-top:12px solid #E8955C;border-radius:16px;padding:32px 40px">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#1B2A4A;width:72px;height:72px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3z"/></svg>
+<p style="font-size:32px;font-weight:700">Browser</p>
+<p style="font-size:24px;color:#3D4A63">shows HTML</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;align-items:center">
+<p style="font-size:24px;color:#1B2A4A;font-weight:700">asks for a page</p>
+<x-shape kind="arrow-right" style="background:#1B2A4A;width:160px;height:56px"></x-shape>
+<x-shape kind="arrow-left" style="background:#5A6478;width:160px;height:56px"></x-shape>
+<p style="font-size:24px;color:#5A6478;font-weight:700">sends the whole page</p>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px;background:#FFFDF9;border:2px solid #1B2A4A;border-top:12px solid #8CC9A6;border-radius:16px;padding:32px 40px">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#1B2A4A;width:72px;height:72px"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+<p style="font-size:32px;font-weight:700">Server</p>
+<p style="font-size:24px;color:#3D4A63">stores files</p>
+</div>
+</div>
+<p style="font-size:28px;color:#3D4A63;text-align:center">Each request brings back one whole page, and every website still starts this way.</p>
+</div>
+<aside>The request and response on the right is the oldest pattern on the web, and it has never gone away. Every later idea in this talk is a way to do more without asking for a whole new page.</aside>
+</section>
+<section id="forms" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">1993 to 1995</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:6px 18px;border-radius:24px">HTML</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Forms let readers write back</h2>
+</div>
+<div style="display:flex;gap:32px;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:12px solid #E8955C;border-radius:16px">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:56px;font-weight:700;color:#A24A18">1</p>
+<p style="font-size:30px;line-height:1.4">A visitor fills in a form on an HTML page and presses Send.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:12px solid #8CC9A6;border-radius:16px">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:56px;font-weight:700;color:#2E6B4A">2</p>
+<p style="font-size:30px;line-height:1.4">A program on the server reads what they typed. Early programs used a system called CGI.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:12px solid #8CC9A6;border-radius:16px">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:56px;font-weight:700;color:#2E6B4A">3</p>
+<p style="font-size:30px;line-height:1.4">The program builds a brand new page as its answer, and sends it back.</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.45;color:#3D4A63">Forms became part of HTML 2.0 in 1995. Every answer, even “please fill in your email”, meant a trip to the server and a whole new page.</p>
+<aside>This is where the server becomes more than a file cabinet, because it now runs a program. Point out the cost of step 3. A small mistake on the form meant waiting for a new page just to hear about it. Scripts arrived partly to fix that, in chapter 2.</aside>
+</section>
+<section id="ch2" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<p style="font-size:32px;font-weight:700;color:#C9D2E3;letter-spacing:4px;text-transform:uppercase">Chapter 2 · 1995 to 2004</p>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:96px;font-weight:700;line-height:1.1">Scripts, styles and server languages</h2>
+<p style="font-size:40px;line-height:1.4;color:#C9D2E3">Browsers and servers both learn to run programs, and plugins fill the gaps.</p>
+<div style="display:flex;gap:16px">
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:8px 24px;border-radius:24px">Scripts</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:8px 24px;border-radius:24px">CSS</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:8px 24px;border-radius:24px">Server</p>
+</div>
+<aside>In chapter 2 every part except HTML gets something new. JavaScript and CSS arrive in the browser, and PHP and its relatives arrive on the server. The chapter ends by looking back at what we now call Web 1.0.</aside>
+</section>
+<section id="scripts-arrive" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">1995 and 1996</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:6px 18px;border-radius:24px">CSS</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Scripts and CSS arrive within a year</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+<div style="display:flex;flex-direction:column;gap:20px;background:#FFFDF9;padding:48px;border:2px solid #D9D3C7;border-top:16px solid #E9C46A;border-radius:16px">
+<h3 style="font-size:44px;font-weight:700;color:#7A5D00">JavaScript, 1995</h3>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">The Netscape browser added a language that runs inside the page. For the first time, a page could change without asking the server.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px;background:#FFFDF9;padding:48px;border:2px solid #D9D3C7;border-top:16px solid #8DB4E2;border-radius:16px">
+<h3 style="font-size:44px;font-weight:700;color:#24588F">CSS, 1996</h3>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">Style sheets moved colours and fonts out of the HTML. Browsers supported CSS unevenly for years, so many sites kept using tables and scripts.</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.45;color:#3D4A63">Through the early 2000s, scripts did jobs that CSS does today: rollovers, opening and closing panels, checking forms and opening pop-up windows. Chapter 5 shows those jobs moving back.</p>
+<aside>The 1990s browser wars between Netscape and Internet Explorer meant each browser did things its own way. That is why so much early CSS was unreliable, and why scripts took over so many jobs. Hold on to that idea: jQuery in chapter 3 was built to cope with those differences.</aside>
+</section>
+<section id="server-languages" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">1995 to 2005</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Servers learn to build pages from data</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:56px">
+<div style="display:flex;flex-direction:column;gap:24px">
+<p style="font-size:28px;line-height:1.45;color:#3D4A63">PHP was first released in 1995. A PHP file looks like HTML with small pieces of code inside. The server runs that code, fills in the gaps from a database, and sends plain HTML to the browser.</p>
+<div style="display:flex;flex-direction:column;gap:12px;background:#1B2A4A;border-radius:16px;padding:32px">
+<p style="font-size:24px;font-weight:700;color:#8CC9A6">On the server</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#F4F1EA">&lt;p&gt;Hello, &lt;?php echo $name; ?&gt;&lt;/p&gt;</p>
+<p style="font-size:24px;font-weight:700;color:#E8955C">What the browser receives</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#F4F1EA">&lt;p&gt;Hello, Aoife&lt;/p&gt;</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:0">
+<div style="display:flex;flex-direction:column;gap:8px;background:#FFFDF9;padding:24px 32px;border:2px solid #D9D3C7;border-left:12px solid #8CC9A6">
+<h3 style="font-size:30px;font-weight:700">PHP, 1995</h3>
+<p style="font-size:26px;color:#3D4A63">Code mixed into the page itself</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FFFDF9;padding:24px 32px;border:2px solid #D9D3C7;border-top:none;border-left:12px solid #8CC9A6">
+<h3 style="font-size:30px;font-weight:700">ASP, 1996</h3>
+<p style="font-size:26px;color:#3D4A63">Microsoft’s version of the same idea</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FFFDF9;padding:24px 32px;border:2px solid #D9D3C7;border-top:none;border-left:12px solid #8CC9A6">
+<h3 style="font-size:30px;font-weight:700">Ruby on Rails, 2004, and Django, 2005</h3>
+<p style="font-size:26px;color:#3D4A63">Frameworks for Ruby and Python</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FFFDF9;padding:24px 32px;border:2px solid #D9D3C7;border-top:none;border-left:12px solid #8CC9A6">
+<h3 style="font-size:30px;font-weight:700">WordPress, 2003</h3>
+<p style="font-size:26px;color:#3D4A63">Written in PHP, and still behind a large share of sites</p>
+</div>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">The browser never sees PHP. It only ever receives the HTML that the server built.</p>
+<aside>A common setup was called LAMP: Linux, Apache, MySQL and PHP. Each request runs the PHP again, so the same file can show a different page to every visitor. WordPress still works this way: when someone saves a post, PHP stores it in a database and builds the page from it each time someone visits.</aside>
+</section>
+<section id="plugins" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:grid;grid-template-columns:1fr 1fr;gap:96px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">1996 to 2020</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#C9D2E3;padding:6px 18px;border-radius:24px">Plugins</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:6px 18px;border-radius:24px">HTML</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Plugins filled the gaps</h2>
+<p style="font-size:32px;line-height:1.45;color:#C9D2E3">A plugin is a program added to the browser to do what HTML could not. Flash was the best known. It played video, animation and games for over a decade.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px;border-left:8px solid #C9D2E3;padding:0 0 0 32px">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:56px;font-weight:700;color:#C9D2E3">2007</p>
+<p style="font-size:30px;line-height:1.4">The first iPhone arrives without Flash.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-left:8px solid #E8955C;padding:0 0 0 32px">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:56px;font-weight:700;color:#E8955C">2014</p>
+<p style="font-size:30px;line-height:1.4">HTML5 adds &lt;video&gt; and &lt;audio&gt;, so a page can play a clip on its own.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-left:8px solid #C9D2E3;padding:0 0 0 32px">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:56px;font-weight:700;color:#C9D2E3">2020</p>
+<p style="font-size:30px;line-height:1.4">Flash reaches its official end in December.</p>
+</div>
+</div>
+<aside>Plugins are not one of our four parts, so their tag is grey. The story ends in HTML, which is why the 2014 step is orange. The lesson of Flash is that a feature built into HTML outlasts one added from outside. Plugins were also a frequent security risk, which helped speed their end.</aside>
+</section>
+<section id="web1" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:grid;grid-template-columns:1fr 1fr;gap:96px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">Looking back</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:6px 18px;border-radius:24px">HTML</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Web 1.0: a few people wrote, and many people read</h2>
+<p style="font-size:28px;color:#C9D2E3">Roughly 1991 to 2004</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;gap:24px;align-items:center;border-bottom:2px solid #3A4B6E;padding:0 0 24px 0">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#E8955C;width:56px;height:56px"><path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/></svg>
+<p style="font-size:32px;line-height:1.4">Pages were mostly fixed documents, like a brochure.</p>
+</div>
+<div style="display:flex;gap:24px;align-items:center;border-bottom:2px solid #3A4B6E;padding:0 0 24px 0">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#C9D2E3;width:56px;height:56px"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-3.6 3.2-6 6.5-6s6 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14c2.7.2 4.6 2.5 5 5.5"/></svg>
+<p style="font-size:32px;line-height:1.4">Most visitors could read, but not add anything.</p>
+</div>
+<div style="display:flex;gap:24px;align-items:center;border-bottom:2px solid #3A4B6E;padding:0 0 24px 0">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#E8955C;width:56px;height:56px"><path d="M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 0-2-2z"/></svg>
+<p style="font-size:32px;line-height:1.4">Layout was built from tables, and style was written into tags such as &lt;font&gt;.</p>
+</div>
+<div style="display:flex;gap:24px;align-items:center">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#8CC9A6;width:56px;height:56px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+<p style="font-size:32px;line-height:1.4">Most changes still meant loading a whole new page from the server.</p>
+</div>
+</div>
+<aside>The name Web 1.0 was given afterwards, to contrast with Web 2.0. Nobody called it that at the time. Ask: what sites today still work like Web 1.0? A restaurant menu page or a simple brochure site are good answers.</aside>
+</section>
+<section id="ch3" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<p style="font-size:32px;font-weight:700;color:#C9D2E3;letter-spacing:4px;text-transform:uppercase">Chapter 3 · 2005 to 2014</p>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:96px;font-weight:700;line-height:1.1">Web 2.0, HTML5 and every screen</h2>
+<p style="font-size:40px;line-height:1.4;color:#C9D2E3">Pages update without reloading, visitors write into the web, and HTML and CSS take on new jobs.</p>
+<div style="display:flex;gap:16px">
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:8px 24px;border-radius:24px">Scripts</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:8px 24px;border-radius:24px">HTML</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:8px 24px;border-radius:24px">CSS</p>
+</div>
+<aside>Chapter 3 runs in order: Ajax in 2005, jQuery in 2006, Web 2.0, responsive design in 2010, HTML5 in 2014, and then a look at how CSS versions work.</aside>
+</section>
+<section id="ajax" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">2005</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Ajax: update one part, not the whole page</h2>
+</div>
+<div style="display:flex;align-items:center;gap:40px;justify-content:center">
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF9;border:2px solid #1B2A4A;border-radius:16px;padding:32px;width:520px">
+<p style="font-size:28px;font-weight:700">The page</p>
+<div style="background:#E9E4DA;border-radius:8px;padding:16px"><p style="font-size:24px">Inbox</p></div>
+<div style="background:#E9C46A;border-radius:8px;padding:16px"><p style="font-size:24px;color:#1B2A4A;font-weight:700">The script puts a new message here</p></div>
+<div style="background:#E9E4DA;border-radius:8px;padding:16px"><p style="font-size:24px">The rest stays still</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;align-items:center">
+<p style="font-size:24px;color:#1B2A4A;font-weight:700">“anything new?”</p>
+<x-shape kind="arrow-right" style="background:#1B2A4A;width:200px;height:56px"></x-shape>
+<x-shape kind="arrow-left" style="background:#5A6478;width:200px;height:56px"></x-shape>
+<p style="font-size:24px;color:#5A6478;font-weight:700">a little data, as JSON</p>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px;background:#FFFDF9;border:2px solid #1B2A4A;border-top:12px solid #8CC9A6;border-radius:16px;padding:40px">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#1B2A4A;width:72px;height:72px"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+<p style="font-size:32px;font-weight:700">Server</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">A script asks the server for a little data in the background, and changes one part of the page. Gmail in 2004 and Google Maps in 2005 made the idea famous. Today the script uses fetch, and the data usually travels as JSON.</p>
+<aside>Compare this with the first-page diagram in chapter 1, where every answer was a whole page. Here, only the gold part changes, and gold means a script did it. The name Ajax comes from a 2005 essay by Jesse James Garrett. Ajax is still a job for a script today, because HTML and CSS cannot fetch data on their own.</aside>
+</section>
+<section id="jquery" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">2006</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">jQuery smooths over browser differences</h2>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">In the 2000s each browser ran JavaScript a little differently. John Resig released jQuery in 2006. It gave one short way to write a script, and that script worked in every browser.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<h3 style="font-size:32px;font-weight:700;color:#7A5D00">With jQuery, from 2006</h3>
+<div style="background:#1B2A4A;border-radius:16px;padding:32px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.6;color:#F4F1EA">$("#menu").slideToggle();<br>$.ajax({ url: "/news" });</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<h3 style="font-size:32px;font-weight:700;color:#1B2A4A">Built into every browser now</h3>
+<div style="background:#1B2A4A;border-radius:16px;padding:32px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.6;color:#F4F1EA">document.querySelector("#menu");<br>fetch("/news");</p>
+</div>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">Browsers now agree with each other, and they copied the best of jQuery’s ideas. New sites rarely need it, but many older sites still use it.</p>
+<aside>jQuery is a library: a ready-made set of functions written in JavaScript, which a page loads before its own script. It became one of the most widely used scripts on the web. Its story is the same pattern as Flash: once the browser can do the job itself, the add-on matters less. jQuery is still maintained today.</aside>
+</section>
+<section id="web2" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">Web 2.0, from about 2004</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Visitors start writing into the web</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:16px;border-top:8px solid #8CC9A6;padding:32px 0 0 0">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#8CC9A6;width:56px;height:56px"><path d="M4 5h16v11H9l-5 4z"/></svg>
+<h3 style="font-size:36px;font-weight:700">Comments and reviews</h3>
+<p style="font-size:28px;line-height:1.4;color:#C9D2E3">Anyone can add to a page, and the server stores it.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;border-top:8px solid #8CC9A6;padding:32px 0 0 0">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#8CC9A6;width:56px;height:56px"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-3.6 3.2-6 6.5-6s6 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14c2.7.2 4.6 2.5 5 5.5"/></svg>
+<h3 style="font-size:36px;font-weight:700">Social networks</h3>
+<p style="font-size:28px;line-height:1.4;color:#C9D2E3">The people are the content.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;border-top:8px solid #8CC9A6;padding:32px 0 0 0">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#8CC9A6;width:56px;height:56px"><path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/></svg>
+<h3 style="font-size:36px;font-weight:700">Wikis</h3>
+<p style="font-size:28px;line-height:1.4;color:#C9D2E3">Many people write one page together.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;border-top:8px solid #E9C46A;padding:32px 0 0 0">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#E9C46A;width:56px;height:56px"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
+<h3 style="font-size:36px;font-weight:700">Pages that update</h3>
+<p style="font-size:28px;line-height:1.4;color:#C9D2E3">Ajax keeps the page fresh without reloading.</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.45;color:#C9D2E3">Web 2.0 is less a technology than a change in who makes the web. Its tools were scripts, servers and databases working together.</p>
+<aside>Three of the four ideas lean on the server, which stores what visitors write, so they carry green. Pages that update lean on scripts, so that one is gold. A good answer to “what changed with Web 2.0?” names a difference and gives an example of each. Wikipedia (2001) and Facebook (2004) are useful examples of Web 2.0. Tim O’Reilly’s 2005 essay gave the idea its name.</aside>
+</section>
+<section id="responsive" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:grid;grid-template-columns:1fr 1fr;gap:96px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">2007 to 2010</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:6px 18px;border-radius:24px">CSS</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">One page, every screen</h2>
+<p style="font-size:30px;line-height:1.45;color:#C9D2E3">Phones made fixed-width pages hard to read. In 2010 Ethan Marcotte named the answer <b>responsive web design</b>: one page whose layout changes to fit its screen.</p>
+<p style="font-size:30px;line-height:1.45;color:#C9D2E3">It rests on three things: flexible layouts, flexible images, and CSS media queries.</p>
+</div>
+<div style="display:flex;gap:48px;align-items:end;justify-content:center">
+<div style="display:flex;flex-direction:column;gap:16px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:12px;background:#F4F1EA;border-radius:12px;padding:20px;width:440px">
+<div style="background:#5A6478;border-radius:6px;height:40px"></div>
+<div style="display:flex;gap:12px">
+<div style="flex:1;background:#8DB4E2;border-radius:6px;height:120px"></div>
+<div style="flex:1;background:#8DB4E2;border-radius:6px;height:120px"></div>
+<div style="flex:1;background:#8DB4E2;border-radius:6px;height:120px"></div>
+</div>
+</div>
+<p style="font-size:24px;color:#C9D2E3">A wide screen: three columns</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:12px;background:#F4F1EA;border-radius:12px;padding:16px;width:160px">
+<div style="background:#5A6478;border-radius:6px;height:32px"></div>
+<div style="background:#8DB4E2;border-radius:6px;height:72px"></div>
+<div style="background:#8DB4E2;border-radius:6px;height:72px"></div>
+<div style="background:#8DB4E2;border-radius:6px;height:72px"></div>
+</div>
+<p style="font-size:24px;color:#C9D2E3">A phone: one</p>
+</div>
+</div>
+<aside>The same HTML sits behind both screens, and only the CSS changes, which is why this slide is blue. A non-responsive page keeps one fixed layout, so a phone must zoom or scroll sideways. Also mention the older alternatives: an adaptive site switches between a few fixed layouts, and a separate mobile site serves different pages, often at an m. address.</aside>
+</section>
+<section id="html5" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">2014</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:6px 18px;border-radius:24px">HTML</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">HTML5 gives HTML new jobs</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+<div style="display:flex;flex-direction:column;gap:20px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:16px solid #E8955C;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700;color:#A24A18">What it added</h3>
+<ul style="font-size:28px;line-height:1.5;color:#3D4A63">
+<li>Semantic tags: &lt;header&gt;, &lt;nav&gt;, &lt;main&gt;, &lt;article&gt;, &lt;footer&gt;</li>
+<li>&lt;video&gt; and &lt;audio&gt;, in place of plugins</li>
+<li>Form rules: required, type="email", pattern</li>
+<li>&lt;canvas&gt;, for drawing with a script</li>
+</ul>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:16px solid #8DB4E2;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700;color:#24588F">What it retired, and CSS replaced</h3>
+<table style="font-size:28px;color:#3D4A63">
+<tr><th style="width:45%">Deprecated</th><th style="width:55%">Use instead</th></tr>
+<tr><td>&lt;font&gt;</td><td>CSS font and color</td></tr>
+<tr><td>&lt;center&gt;</td><td>CSS text-align</td></tr>
+<tr><td>&lt;frame&gt;</td><td>CSS layout</td></tr>
+<tr><td>&lt;big&gt;</td><td>CSS font-size</td></tr>
+</table>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">A semantic tag says what its content is. Screen readers, search engines and the next person who edits the page all depend on that.</p>
+<aside>The deprecated table is useful for revision. Each retired tag described how text looked, and that job moved to CSS, so the right-hand card is blue. A deprecated tag may still work in a browser, but it is no longer part of the standard, and a validator flags it.</aside>
+</section>
+<section id="css-versions" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">1996 to now</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:6px 18px;border-radius:24px">CSS</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">CSS versions: from three levels to many modules</h2>
+</div>
+<div style="display:flex;gap:0">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:16px solid #8DB4E2">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:56px;font-weight:700;color:#24588F">CSS1</p>
+<p style="font-size:26px;font-weight:700">1996</p>
+<p style="font-size:28px;line-height:1.4;color:#3D4A63">Fonts, colours, margins and spacing.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:16px solid #8DB4E2;border-left:none">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:56px;font-weight:700;color:#24588F">CSS2</p>
+<p style="font-size:26px;font-weight:700">1998</p>
+<p style="font-size:28px;line-height:1.4;color:#3D4A63">Positioning, :hover, and styles for print.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:16px solid #8DB4E2;border-left:none">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:56px;font-weight:700;color:#24588F">CSS3</p>
+<p style="font-size:26px;font-weight:700">from about 2011</p>
+<p style="font-size:28px;line-height:1.4;color:#3D4A63">Split into modules: media queries, transitions, animations, flexbox, grid.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#1B2A4A;padding:40px;border:2px solid #1B2A4A;border-top:16px solid #8DB4E2;border-left:none">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:56px;font-weight:700;color:#8DB4E2">Now</p>
+<p style="font-size:26px;font-weight:700;color:#F4F1EA">no CSS4</p>
+<p style="font-size:28px;line-height:1.4;color:#C9D2E3">Each module grows on its own. :has() and container queries arrived in 2023.</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">“CSS3” now means modern CSS in general. Each feature arrives when every major browser supports it.</p>
+<aside>The key point: after CSS2, CSS stopped having single numbered versions. It became a set of modules, each with its own level. This slide covers the whole span of CSS, so it reaches past chapter 3 into the present.</aside>
+</section>
+<section id="ch4" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<p style="font-size:32px;font-weight:700;color:#C9D2E3;letter-spacing:4px;text-transform:uppercase">Chapter 4 · 2009 to now</p>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:96px;font-weight:700;line-height:1.1">Scripts grow up</h2>
+<p style="font-size:40px;line-height:1.4;color:#C9D2E3">JavaScript moves onto the server, frameworks build whole pages, and TypeScript adds types.</p>
+<div style="display:flex;gap:16px">
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:8px 24px;border-radius:24px">Scripts</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:8px 24px;border-radius:24px">Server</p>
+</div>
+<aside>Chapter 4 overlaps chapter 3 in time. While HTML5 and responsive design were changing pages, JavaScript was turning from a small page language into one that runs whole applications.</aside>
+</section>
+<section id="node" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">2009</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">JavaScript moves onto the server</h2>
+</div>
+<div style="display:flex;align-items:center;gap:40px;justify-content:center">
+<div style="display:flex;flex-direction:column;align-items:center;gap:16px;background:#FFFDF9;border:2px solid #1B2A4A;border-top:12px solid #E9C46A;border-radius:16px;padding:32px 48px">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#1B2A4A;width:64px;height:64px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3z"/></svg>
+<p style="font-size:32px;font-weight:700">Browser</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#1B2A4A;background:#E9C46A;padding:6px 16px;border-radius:8px">script.js</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;align-items:center">
+<x-shape kind="arrow-right" style="background:#1B2A4A;width:160px;height:56px"></x-shape>
+<x-shape kind="arrow-left" style="background:#5A6478;width:160px;height:56px"></x-shape>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:16px;background:#FFFDF9;border:2px solid #1B2A4A;border-top:12px solid #8CC9A6;border-radius:16px;padding:32px 48px">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#1B2A4A;width:64px;height:64px"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+<p style="font-size:32px;font-weight:700">Server</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#1B2A4A;background:#E9C46A;padding:6px 16px;border-radius:8px">server.js</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">Ryan Dahl released Node.js in 2009. Node runs JavaScript outside the browser, so a developer can write the page’s scripts and the server’s program in one language. Its package registry, npm, lets developers share small pieces of code with each other.</p>
+<aside>Both boxes carry a gold file, because the same language now runs at both ends. Until 2009 the server side of this diagram would have been PHP, Java, Python or Ruby. Anyone who has started a server.js file with the node command has already used it.</aside>
+</section>
+<section id="frameworks" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">2010 to 2014</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Frameworks build whole pages in the browser</h2>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#C9D2E3">A framework builds the page from data inside the browser, and updates only the parts that change. A site built this way is called a single-page app, because the browser loads one page and the script does the rest.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px;border-top:8px solid #E9C46A;padding:28px 0 0 0">
+<h3 style="font-size:40px;font-weight:700">AngularJS</h3>
+<p style="font-size:28px;color:#C9D2E3">2010, from Google</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;border-top:8px solid #E9C46A;padding:28px 0 0 0">
+<h3 style="font-size:40px;font-weight:700">React</h3>
+<p style="font-size:28px;color:#C9D2E3">2013, from Facebook</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;border-top:8px solid #E9C46A;padding:28px 0 0 0">
+<h3 style="font-size:40px;font-weight:700">Vue</h3>
+<p style="font-size:28px;color:#C9D2E3">2014, from Evan You</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#C9D2E3">The cost is a large script to download before anything appears. Many sites now send ready-made HTML first, and add scripts only where they help.</p>
+<aside>Frameworks suit big applications such as email or maps, where the page changes all the time. They are heavy for a brochure site or a blog. The swing back to sending HTML first is the story of chapter 5 and chapter 7: let HTML and CSS do what they can, and use scripts for the rest. Nolan Lawson’s article in the notes shows what a framework does under the hood.</aside>
+</section>
+<section id="typescript" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">2012</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">TypeScript adds types to JavaScript</h2>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">Microsoft released TypeScript in 2012. A type says what kind of value something holds, such as a number or a piece of text. TypeScript checks the code against its types before it runs, then turns it into plain JavaScript for the browser.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="background:#1B2A4A;border-radius:16px;padding:40px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.6;color:#F4F1EA">function priceWithVat(<br>  price: <span style="color:#E9C46A">number</span><br>): <span style="color:#E9C46A">number</span> {<br>  return price * 1.23;<br>}<br><br>priceWithVat("ten");</p>
+</div>
+<p style="font-size:28px;line-height:1.4;color:#3D4A63">TypeScript stops at the last line before the code ever runs, because "ten" is text and not a number.</p>
+<p style="font-size:28px;line-height:1.4;color:#3D4A63">The browser still only runs JavaScript. TypeScript helps the person writing the code.</p>
+</div>
+<aside>Types matter most on big projects with many people, where a wrong kind of value can travel a long way before anything breaks.</aside>
+</section>
+<section id="ch5" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<p style="font-size:32px;font-weight:700;color:#C9D2E3;letter-spacing:4px;text-transform:uppercase">Chapter 5 · 2016 to 2022</p>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:96px;font-weight:700;line-height:1.1">The platform catches up</h2>
+<p style="font-size:40px;line-height:1.4;color:#C9D2E3">CSS gets real layout, every site gets a padlock, web apps work offline, and the browsers finally agree.</p>
+<div style="display:flex;gap:16px">
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:8px 24px;border-radius:24px">HTML</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:8px 24px;border-radius:24px">CSS</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:8px 24px;border-radius:24px">Scripts</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:8px 24px;border-radius:24px">Server</p>
+</div>
+<aside>Chapter 5 is the quiet revolution. Few of these changes made headlines, but together they are why building a site in 2026 is so different from 2014. The chapter runs in order: the server returns in 2016, CSS Grid in 2017, offline web apps and WebAssembly, HTTPS everywhere, cookie banners and dark mode, the living standard in 2019, and the end of Internet Explorer in 2022.</aside>
+</section>
+<section id="server-returns" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">2016 onwards</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">The server sends HTML first again</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:16px solid #8CC9A6;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700;color:#2E6B4A">Server rendering</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4A63">Next.js, released in 2016, builds a React page on the server, so the browser gets HTML it can show straight away.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:16px solid #8CC9A6;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700;color:#2E6B4A">Static site generators</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4A63">Tools such as Hugo build every page once, ahead of time, and a host like GitHub Pages simply sends the files.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #D9D3C7;border-top:16px solid #E9C46A;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700;color:#7A5D00">Scripts where they help</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4A63">The page arrives ready to read, and scripts wake up only the parts that need them.</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">The single-page apps of chapter 4 were slow to show anything. The answer was to go back to the oldest pattern on the web: the server sends a whole, finished page.</p>
+<aside>This closes a loop. Chapter 1 began with a server sending whole pages. Chapter 4 moved the work into the browser. From 2016 the work moved back to the server, now with modern tools. Anyone who publishes with GitHub Pages is already using a static site.</aside>
+</section>
+<section id="grid" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">March 2017</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:6px 18px;border-radius:24px">CSS</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">CSS Grid: real layout at last</h2>
+<p style="font-size:30px;line-height:1.45;color:#C9D2E3">In March 2017, Chrome, Firefox and Safari all shipped CSS Grid within a few weeks of each other. For the first time, CSS could lay out rows and columns together. Twenty years of tables, floats and workarounds came to an end.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="display:grid;grid-template-columns:1fr 2fr;grid-template-rows:64px 160px 56px;gap:12px">
+<div style="grid-column:span 2;background:#8DB4E2;border-radius:8px;display:flex;align-items:center;padding:0 0 0 20px"><p style="font-size:24px;font-weight:700;color:#1B2A4A">header</p></div>
+<div style="background:#C9D2E3;border-radius:8px;padding:16px"><p style="font-size:24px;font-weight:700;color:#1B2A4A">nav</p></div>
+<div style="background:#8DB4E2;border-radius:8px;padding:16px"><p style="font-size:24px;font-weight:700;color:#1B2A4A">main</p></div>
+<div style="grid-column:span 2;background:#C9D2E3;border-radius:8px;display:flex;align-items:center;padding:0 0 0 20px"><p style="font-size:24px;font-weight:700;color:#1B2A4A">footer</p></div>
+</div>
+<div style="background:#0F1A30;border-radius:16px;padding:28px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.6;color:#F4F1EA">grid-template-areas:<br>  "header header"<br>  "nav    main"<br>  "footer footer";</p>
+</div>
+</div>
+<aside>Compare this with the 1996 and 2001 pages, which used tables for exactly this layout. Grid does the same job in CSS, so the HTML can stay semantic. Jen Simmons’s “Variations on a Grid” experiments from 2017 are good to show the class.</aside>
+</section>
+<section id="pwa-wasm" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">2015 to 2018</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Web pages start to behave like apps</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+<div style="display:flex;flex-direction:column;gap:20px;background:#FFFDF9;padding:48px;border:2px solid #D9D3C7;border-top:16px solid #E9C46A;border-radius:16px">
+<h3 style="font-size:40px;font-weight:700;color:#7A5D00">Progressive web apps</h3>
+<p style="font-size:28px;line-height:1.45;color:#3D4A63">A service worker is a script that sits between the page and the network. It can keep copies of files, so the site still opens offline. Add a small manifest file, and a phone lets you install the site on its home screen like an app.</p>
+<p style="font-size:26px;color:#5A6478">Example: Squoosh, an image tool that works offline</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px;background:#FFFDF9;padding:48px;border:2px solid #D9D3C7;border-top:16px solid #E9C46A;border-radius:16px">
+<h3 style="font-size:40px;font-weight:700;color:#7A5D00">WebAssembly, 2017</h3>
+<p style="font-size:28px;line-height:1.45;color:#3D4A63">By November 2017 every major browser could run WebAssembly. It lets code written in languages such as C, C++ and Rust run inside a page at close to full speed.</p>
+<p style="font-size:26px;color:#5A6478">Example: Figma, a design tool, runs in the browser this way</p>
+</div>
+</div>
+<aside>Both changes made the browser a place to run real applications, not just show documents. The term progressive web app was coined in 2015. Safari added service workers in 2018, which made offline sites work on iPhones too.</aside>
+</section>
+<section id="https" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">2015 to 2018</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Every site gets a padlock</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;gap:16px;align-items:center;background:#F4F1EA;border-radius:40px;padding:16px 28px">
+<p style="font-size:26px;font-weight:700;color:#A3361F">Not secure</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#3D4A63">http://shop.example</p>
+</div>
+<div style="display:flex;gap:16px;align-items:center;background:#F4F1EA;border-radius:40px;padding:16px 28px">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#2E6B4A;width:36px;height:36px"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#1B2A4A">https://shop.example</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:8px;border-left:8px solid #8CC9A6;padding:0 0 0 28px">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:44px;font-weight:700;color:#8CC9A6">December 2015</p>
+<p style="font-size:28px;line-height:1.4">Let’s Encrypt starts giving out free certificates, so any site can use HTTPS.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-left:8px solid #8CC9A6;padding:0 0 0 28px">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:44px;font-weight:700;color:#8CC9A6">July 2018</p>
+<p style="font-size:28px;line-height:1.4">Chrome begins marking every plain HTTP page as “Not secure”.</p>
+</div>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#C9D2E3">HTTPS encrypts everything between the browser and the server, so nobody on the same Wi-Fi can read or change it on the way.</p>
+<aside>Before free certificates, HTTPS cost money and effort, so only banks and shops used it. Many new browser features, including service workers, only work on HTTPS pages. Most hosts now give every site HTTPS for free.</aside>
+</section>
+<section id="privacy-dark" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">2018 and 2019</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:6px 18px;border-radius:24px">CSS</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Cookie banners and dark mode</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+<div style="display:flex;flex-direction:column;gap:20px;background:#FFFDF9;padding:48px;border:2px solid #D9D3C7;border-top:16px solid #8CC9A6;border-radius:16px">
+<h3 style="font-size:40px;font-weight:700;color:#2E6B4A">GDPR, May 2018</h3>
+<p style="font-size:28px;line-height:1.45;color:#3D4A63">The EU’s data protection law began to apply on 25 May 2018. Sites that track visitors must ask first, and refusing has to be as easy as agreeing. The cookie banner became part of almost every page.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px;background:#FFFDF9;padding:48px;border:2px solid #D9D3C7;border-top:16px solid #8DB4E2;border-radius:16px">
+<h3 style="font-size:40px;font-weight:700;color:#24588F">Dark mode, 2019</h3>
+<p style="font-size:28px;line-height:1.45;color:#3D4A63">Phones and laptops gained a dark setting, and CSS gained a way to follow it. One media query lets a page pick its colours to match the device.</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#1B2A4A">@media (prefers-color-scheme: dark)</p>
+</div>
+</div>
+<aside>Two very different changes, both visible on nearly every site today. The first came from a law, and it touches the server, which stores visitor data. The second came from operating systems, and it touches CSS. Ask the class how many cookie banners they clicked this week, and whether the Reject button was as easy to find as Accept.</aside>
+</section>
+<section id="living" data-transition="fade" style="background:#E8955C;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:48px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase">2019</p>
+<p style="font-size:24px;font-weight:700;color:#F4F1EA;background:#1B2A4A;padding:6px 18px;border-radius:24px">HTML</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:96px;font-weight:700;line-height:1.1">HTML stopped having version numbers</h2>
+<p style="font-size:40px;line-height:1.4">HTML is now one living standard that grows a feature at a time. Many of the jobs that scripts did in 2005 are now done by HTML and CSS alone.</p>
+<aside>This slide is orange because it is about HTML. The W3C and the WHATWG agreed in 2019 to keep one HTML standard, the HTML Living Standard. So “HTML5” is the last numbered version, and people still use the name for modern HTML in general. Chapter 7 shows which jobs moved.</aside>
+</section>
+<section id="one-web" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">2022</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:6px 18px;border-radius:24px">HTML</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:6px 18px;border-radius:24px">CSS</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">The browsers finally agree</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px;border-top:8px solid #C9D2E3;padding:32px 0 0 0">
+<h3 style="font-size:40px;font-weight:700">Internet Explorer retires</h3>
+<p style="font-size:28px;line-height:1.45;color:#C9D2E3">Microsoft retired Internet Explorer on 15 June 2022. For years, sites had carried extra code just to work in it.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;border-top:8px solid #C9D2E3;padding:32px 0 0 0">
+<h3 style="font-size:40px;font-weight:700">Interop</h3>
+<p style="font-size:28px;line-height:1.45;color:#C9D2E3">Also in 2022, Apple, Google, Microsoft and Mozilla began Interop, a yearly project to make the same features work the same way in every browser.</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#C9D2E3">The browser wars of chapter 2 made jQuery necessary. Interop is why the new HTML features in chapter 7 now arrive in every browser at about the same time.</p>
+<aside>This slide closes the story of browser differences that started in the 1990s. Interop publishes a public dashboard each year showing how well each browser scores on the agreed features, which students can look up at wpt.fyi.</aside>
+</section>
+<section id="ch6" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<p style="font-size:32px;font-weight:700;color:#C9D2E3;letter-spacing:4px;text-transform:uppercase">Chapter 6 · 2023 to now</p>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:96px;font-weight:700;line-height:1.1">AI and the web</h2>
+<p style="font-size:40px;line-height:1.4;color:#C9D2E3">Machines start to write web pages, read them, summarise them and use them. The story is still being written.</p>
+<div style="display:flex;gap:16px">
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:8px 24px;border-radius:24px">HTML</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:8px 24px;border-radius:24px">Scripts</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:8px 24px;border-radius:24px">Server</p>
+</div>
+<aside>This chapter is different from the others, because nobody knows yet how it ends. Present the facts and dates, then let the class argue. The discussion questions at the end of the chapter have no right answers. ChatGPT launched on 30 November 2022, so the chapter starts there in practice, but its effects on the web began to show in 2023.</aside>
+</section>
+<section id="ai-writes" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">November 2022 onwards</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:6px 18px;border-radius:24px">HTML</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">AI starts writing the code</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+<div style="display:flex;flex-direction:column;gap:20px;background:#FFFDF9;padding:48px;border:2px solid #D9D3C7;border-top:16px solid #E9C46A;border-radius:16px">
+<h3 style="font-size:40px;font-weight:700;color:#7A5D00">Chat assistants</h3>
+<p style="font-size:28px;line-height:1.45;color:#3D4A63">ChatGPT launched on 30 November 2022. Within months, people were asking chat assistants to write whole pages of HTML, CSS and JavaScript from a description.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px;background:#FFFDF9;padding:48px;border:2px solid #D9D3C7;border-top:16px solid #E9C46A;border-radius:16px">
+<h3 style="font-size:40px;font-weight:700;color:#7A5D00">Assistants in the editor</h3>
+<p style="font-size:28px;line-height:1.45;color:#3D4A63">Code assistants now sit inside editors such as VS Code. They suggest the next lines, explain errors and can change many files at once.</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">A generated page can look right and still be wrong: missing labels, broken headings, an unescaped form. Someone still has to read the code, run the validator and test it. That someone is you.</p>
+<aside>Keep this practical. The skills from earlier chapters matter more, not less, when a machine writes the first draft, because you have to check what it produced. A good class exercise: ask an assistant for a contact form, then run it through the W3C validator and an accessibility checker and count the problems.</aside>
+</section>
+<section id="ai-search" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">May 2024</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Search starts answering for you</h2>
+<p style="font-size:30px;line-height:1.45;color:#C9D2E3">In May 2024, Google began showing AI Overviews in the United States: a written answer above the links. The answer is built from other people’s pages, and fewer searchers click through to read them.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px;background:#F4F1EA;border-radius:16px;padding:40px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#3D4A63">how do I centre a div</p>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFDF9;border:2px solid #8DB4E2;border-radius:12px;padding:24px">
+<p style="font-size:22px;font-weight:700;color:#24588F;letter-spacing:2px;text-transform:uppercase">AI overview</p>
+<p style="font-size:26px;line-height:1.4;color:#1B2A4A">Set the parent to display: grid and add place-items: center.</p>
+<div style="display:flex;gap:12px">
+<p style="font-size:20px;color:#1B2A4A;background:#E6ECF5;padding:4px 14px;border-radius:16px">mdn</p>
+<p style="font-size:20px;color:#1B2A4A;background:#E6ECF5;padding:4px 14px;border-radius:16px">css-tricks</p>
+</div>
+</div>
+<p style="font-size:24px;color:#24588F">Blue link 1 ↓</p>
+<p style="font-size:24px;color:#24588F">Blue link 2 ↓</p>
+</div>
+<aside>Since 1998 the deal was simple: a search engine sent visitors to your site, and your site got the readers. An answer at the top of the page changes that deal. Ask the class: if nobody visits the site that wrote the answer, how does that site keep paying to exist?</aside>
+</section>
+<section id="crawlers" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">1994, 2023 and 2025</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Who is allowed to read your site?</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="background:#1B2A4A;border-radius:16px;padding:32px">
+<p style="font-size:22px;font-weight:700;color:#C9D2E3">robots.txt</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:28px;line-height:1.6;color:#F4F1EA">User-agent: GPTBot<br>Disallow: /</p>
+</div>
+<p style="font-size:26px;line-height:1.45;color:#3D4A63">A file from 1994, at the root of a site, that asks robots to stay out. It is a request, not a lock.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:column;gap:6px;border-left:8px solid #8CC9A6;padding:0 0 0 24px">
+<p style="font-size:30px;font-weight:700;color:#2E6B4A">August 2023</p>
+<p style="font-size:26px;line-height:1.4;color:#3D4A63">OpenAI publishes the name of its crawler, GPTBot, so sites can block it.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;border-left:8px solid #8CC9A6;padding:0 0 0 24px">
+<p style="font-size:30px;font-weight:700;color:#2E6B4A">September 2024</p>
+<p style="font-size:26px;line-height:1.4;color:#3D4A63">A proposal called llms.txt suggests the opposite: a plain summary of a site, written for AI tools to read.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;border-left:8px solid #8CC9A6;padding:0 0 0 24px">
+<p style="font-size:30px;font-weight:700;color:#2E6B4A">July 2025</p>
+<p style="font-size:26px;line-height:1.4;color:#3D4A63">Cloudflare starts blocking AI crawlers by default on new sites it protects.</p>
+</div>
+</div>
+</div>
+<aside>robots.txt was proposed by Martijn Koster in 1994 and only became an internet standard, RFC 9309, in 2022. Well-behaved crawlers follow it; badly behaved ones ignore it, which is why Cloudflare blocks at the server instead. llms.txt is a proposal, not a standard, and few AI tools are known to read it.</aside>
+</section>
+<section id="agents" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">2024 onwards</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:6px 18px;border-radius:24px">HTML</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Some visitors are not people</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:64px">
+<div style="display:flex;flex-direction:column;gap:20px">
+<p style="font-size:30px;line-height:1.45;color:#F4F1EA">AI agents can now open a page, read it, click buttons and fill in forms for a person. They read the HTML much as a screen reader does.</p>
+<p style="font-size:30px;line-height:1.45;color:#C9D2E3">A real button, a labelled input and proper headings help a blind visitor, a search engine and an agent at the same time. A div pretending to be a button helps none of them.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:24px;background:#24365C;border-radius:16px;padding:40px">
+<p style="font-size:24px;font-weight:700;color:#E9C46A;letter-spacing:3px;text-transform:uppercase">Discuss</p>
+<p style="font-size:28px;line-height:1.4">Should a site be able to say no to AI crawlers? Who decides?</p>
+<p style="font-size:28px;line-height:1.4">If an AI answer uses your page, what do you think you are owed?</p>
+<p style="font-size:28px;line-height:1.4">Would you publish a site an AI wrote without reading the code?</p>
+</div>
+</div>
+<aside>The point for students: semantic HTML was always about accessibility, and it now also decides how well machines understand a site. Keep the discussion open. These questions are being argued in courts and parliaments right now, and reasonable people disagree. Give each side a fair hearing.</aside>
+</section>
+<section id="ch7" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<p style="font-size:32px;font-weight:700;color:#C9D2E3;letter-spacing:4px;text-transform:uppercase">Chapter 7 · Today</p>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:96px;font-weight:700;line-height:1.1">Putting it together</h2>
+<p style="font-size:40px;line-height:1.4;color:#C9D2E3">Which jobs moved from scripts to HTML and CSS, how the four parts fit, and how to keep a site safe.</p>
+<div style="display:flex;gap:16px">
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:8px 24px;border-radius:24px">HTML</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:8px 24px;border-radius:24px">CSS</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:8px 24px;border-radius:24px">Scripts</p>
+<p style="font-size:28px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:8px 24px;border-radius:24px">Server</p>
+</div>
+<aside>The last chapter brings the history back to the students’ own sites. Everything from here on applies to any site they build.</aside>
+</section>
+<section id="then-now-code" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">One job, two eras</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:6px 18px;border-radius:24px">CSS</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">A rollover, then and now</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+<div style="display:flex;flex-direction:column;gap:20px">
+<h3 style="font-size:36px;font-weight:700;color:#7A5D00">1999: a script in the tag</h3>
+<div style="background:#1B2A4A;border-radius:16px;padding:40px;border-top:12px solid #E9C46A">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.6;color:#F4F1EA">&lt;div<br>  <span style="color:#E9C46A">onmouseover="this.style</span><br><span style="color:#E9C46A">    .background='orange'"</span><br>  <span style="color:#E9C46A">onmouseout="this.style</span><br><span style="color:#E9C46A">    .background='navy'"</span>&gt;<br>  Point at me<br>&lt;/div&gt;</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px">
+<h3 style="font-size:36px;font-weight:700;color:#24588F">Today: one CSS rule</h3>
+<div style="background:#1B2A4A;border-radius:16px;padding:40px;border-top:12px solid #8DB4E2">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.6;color:#F4F1EA">&lt;div class="box"&gt;<br>  Point at me<br>&lt;/div&gt;<br><br><span style="color:#8DB4E2">.box:hover {</span><br><span style="color:#8DB4E2">  background: orange;</span><br><span style="color:#8DB4E2">}</span></p>
+</div>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">Both change colour when the pointer moves over the box. The CSS version is shorter, keeps the look in one place, and still works if scripts are switched off.</p>
+<aside>The gold code is a script, and the blue code is CSS: the job moved from one colour to the other. Ask which one would be easier to change across a whole site.</aside>
+</section>
+<section id="then-now-table" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">Then and now</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:6px 18px;border-radius:24px">HTML</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:6px 18px;border-radius:24px">CSS</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:64px;font-weight:700;line-height:1.1">Jobs that moved from scripts to HTML and CSS</h2>
+</div>
+<table style="font-size:26px;color:#1B2A4A">
+<tr><th style="width:30%">What the page does</th><th style="width:25%">Then: a script</th><th style="width:30%">Now: HTML or CSS</th><th style="width:15%">Everywhere since</th></tr>
+<tr><td>Change on hover</td><td>onmouseover</td><td>:hover</td><td>long ago</td></tr>
+<tr><td>Open and close a panel</td><td>a click handler</td><td>&lt;details&gt;</td><td>2020</td></tr>
+<tr><td>A box over the page</td><td>a pop-up script</td><td>&lt;dialog&gt;, popover</td><td>2022, 2024</td></tr>
+<tr><td>Open a dialog from a button</td><td>showModal()</td><td>commandfor</td><td>2025</td></tr>
+<tr><td>Check a form</td><td>a submit handler</td><td>required, pattern</td><td>about 2012</td></tr>
+<tr><td>Style from the page’s state</td><td>adding classes</td><td>:has()</td><td>2023</td></tr>
+<tr><td>Play a video</td><td>Flash</td><td>&lt;video&gt;</td><td>about 2012</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.45;color:#3D4A63">Scripts still do what HTML and CSS cannot: add up an order, remember a visitor, and fetch data without reloading the page.</p>
+<aside>The years are when the feature worked in every major browser, not when it was first proposed.</aside>
+</section>
+<section id="tiers" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">Putting it together</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:6px 18px;border-radius:24px">HTML</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:6px 18px;border-radius:24px">CSS</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Three tiers, three jobs</h2>
+</div>
+<div style="display:flex;align-items:center;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #1B2A4A;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700">Presentation</h3>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E8955C;padding:4px 14px;border-radius:24px">HTML</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8DB4E2;padding:4px 14px;border-radius:24px">CSS</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:4px 14px;border-radius:24px">Scripts</p>
+</div>
+<p style="font-size:26px;line-height:1.4;color:#3D4A63">The client, which is the browser. It shows the page and sends requests.</p>
+</div>
+<x-shape kind="arrow-right" style="background:#1B2A4A;width:96px;height:48px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #1B2A4A;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700">Application</h3>
+<div style="display:flex;gap:8px">
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:4px 14px;border-radius:24px">Server</p>
+</div>
+<p style="font-size:26px;line-height:1.4;color:#3D4A63">The server’s program, in PHP, Node or Python. It checks each request and decides what to do.</p>
+</div>
+<x-shape kind="arrow-right" style="background:#1B2A4A;width:96px;height:48px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFDF9;padding:40px;border:2px solid #1B2A4A;border-radius:16px">
+<h3 style="font-size:36px;font-weight:700">Data</h3>
+<div style="display:flex;gap:8px">
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:4px 14px;border-radius:24px">Server</p>
+</div>
+<p style="font-size:26px;line-height:1.4;color:#3D4A63">A database server. It stores the data and answers many users at once.</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">Keeping the tiers apart means each one can be changed, secured or made bigger without rebuilding the others. A desktop database, by contrast, serves one person on one machine.</p>
+<aside>The application tier is sometimes called middleware. Walk a search through it: the visitor types in the browser, the application tier checks the request and asks the database, the database returns rows, and the application sends them back, often as JSON.</aside>
+</section>
+<section id="security" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">Keeping a dynamic site safe</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">The browser helps. The server protects.</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:16px;border-top:8px solid #8CC9A6;padding:32px 0 0 0">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#8CC9A6;width:56px;height:56px"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+<h3 style="font-size:36px;font-weight:700">SQL injection</h3>
+<p style="font-size:28px;line-height:1.4;color:#C9D2E3">An attacker types SQL into a form to change the query. The defence is a parameterised query, which keeps what they typed apart from the SQL.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;border-top:8px solid #E9C46A;padding:32px 0 0 0">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#E9C46A;width:56px;height:56px"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg>
+<h3 style="font-size:36px;font-weight:700">Cross-site scripting</h3>
+<p style="font-size:28px;line-height:1.4;color:#C9D2E3">An attacker gets a script into a page that other visitors see. The defence is to escape output, so text never runs as code.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;border-top:8px solid #8CC9A6;padding:32px 0 0 0">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:#8CC9A6;width:56px;height:56px"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+<h3 style="font-size:36px;font-weight:700">Passwords</h3>
+<p style="font-size:28px;line-height:1.4;color:#C9D2E3">Store a hash, never the password. A hash cannot be turned back into the password if the database leaks.</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#C9D2E3">A form that checks itself with required and pattern helps the visitor. Anyone can bypass it, so the server must check every request again.</p>
+<aside>Two of the three attacks target the server and its database, so they are green. Cross-site scripting turns a page’s own scripts against its visitors, so it is gold. The last line matters most now that HTML does so much checking: browser checks are a convenience for the visitor, never a defence.</aside>
+</section>
+<section id="beyond" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">Beyond Web 2.0</p>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">What came next, and what it raises</h2>
+</div>
+<table style="font-size:28px;color:#1B2A4A">
+<tr><th style="width:34%">A change</th><th style="width:66%">A question it raises</th></tr>
+<tr><td>Phones and apps</td><td>Is a website or an app the better choice for a given job?</td></tr>
+<tr><td>The cloud</td><td>Who owns the servers our data lives on, and where are they?</td></tr>
+<tr><td>A few very large platforms</td><td>What happens when a handful of companies host most of what we read?</td></tr>
+<tr><td>Tracking and advertising</td><td>How much does a site learn about its visitors, and who decides?</td></tr>
+<tr><td>AI-generated content</td><td>How can a reader tell who, or what, wrote a page?</td></tr>
+</table>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">There is no single agreed name for this period. Some people call it Web 3.0, and they mean different things by it.</p>
+<aside>This slide is for discussion, not for memorising, so it carries no colour tag. A good answer names one change since Web 2.0 and one concern it raises, in the speaker’s own words. Encourage people to choose a change they care about.</aside>
+</section>
+<section id="recap" data-transition="fade" style="background:#1B2A4A;color:#F4F1EA;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:grid;grid-template-columns:1fr 1fr;gap:96px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:32px">
+<p style="font-size:24px;font-weight:700;color:#C9D2E3;letter-spacing:3px;text-transform:uppercase">To take away</p>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Questions to talk over</h2>
+<p style="font-size:30px;line-height:1.45;color:#C9D2E3">Each question has more than one good answer. Pick one, and back it up with an example from the talk.</p>
+</div>
+<ol style="font-size:30px;line-height:1.45;color:#F4F1EA">
+<li>Pick a site you use every day. Which parts feel like Web 1.0, and which like Web 2.0?</li>
+<li>Why might a job move from a script into HTML?</li>
+<li>For a small site, would you choose plain HTML and CSS, WordPress, or a framework? Why?</li>
+<li>What can a server do that a browser never should?</li>
+<li>Open a site on your phone and on a laptop. Is it responsive? How can you tell?</li>
+</ol>
+<aside>These five questions cover the main threads of the talk: Web 1.0 and 2.0, the development of HTML, server languages and frameworks, security, and responsive design. They work well in pairs for five minutes, then shared with the room.</aside>
+</section>
+</div></div>
+<div class="notes" id="notes" hidden></div>
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.stage > section'));
+  var stage = document.querySelector('.stage'), wrap = document.querySelector('.stage-wrap');
+  var notes = document.getElementById('notes'), count = document.getElementById('count'), jump = document.getElementById('jump');
+  var i = 0;
+  function fit() {
+    var s = Math.min(wrap.clientWidth / 1920, wrap.clientHeight / 1080);
+    stage.style.transform = 'scale(' + s + ') translate(-50%, -50%)';
+  }
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) { s.classList.toggle('on', k === i); s.setAttribute('aria-hidden', k === i ? 'false' : 'true'); });
+    var aside = slides[i].querySelector('aside');
+    notes.textContent = aside ? aside.textContent : '';
+    count.textContent = (i + 1) + ' / ' + slides.length;
+    var best = 0;
+    Array.prototype.forEach.call(jump.options, function (o, k) { if (+o.value <= i) best = k; });
+    jump.selectedIndex = best;
+    if (location.hash !== '#' + (i + 1)) history.replaceState(null, '', '#' + (i + 1));
+  }
+  document.getElementById('prev').onclick = function () { show(i - 1); };
+  document.getElementById('next').onclick = function () { show(i + 1); };
+  document.getElementById('toggle-notes').onclick = function () {
+    notes.hidden = !notes.hidden; this.setAttribute('aria-pressed', String(!notes.hidden)); fit();
+  };
+  jump.onchange = function () { show(+jump.value); };
+  document.addEventListener('keydown', function (e) {
+    if (e.target.tagName === 'SELECT') return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); show(i + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(i - 1); }
+    if (e.key === 'Home') show(0);
+    if (e.key === 'End') show(slides.length - 1);
+    if (e.key === 'n' || e.key === 'N') document.getElementById('toggle-notes').click();
+  });
+  window.addEventListener('resize', fit);
+  var start = parseInt(location.hash.slice(1), 10);
+  fit(); show(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+</body>
+</html>

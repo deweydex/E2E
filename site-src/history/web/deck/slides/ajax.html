@@ -1,0 +1,30 @@
+<section id="ajax" data-transition="fade" style="background:#F7F5F0;color:#1B2A4A;font-family:'Public Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">2005</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#E9C46A;padding:6px 18px;border-radius:24px">Scripts</p>
+<p style="font-size:24px;font-weight:700;color:#1B2A4A;background:#8CC9A6;padding:6px 18px;border-radius:24px">Server</p>
+</div>
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1">Ajax: update one part, not the whole page</h2>
+</div>
+<div style="display:flex;align-items:center;gap:40px;justify-content:center">
+<div style="display:flex;flex-direction:column;gap:16px;background:#FFFDF9;border:2px solid #1B2A4A;border-radius:16px;padding:32px;width:520px">
+<p style="font-size:28px;font-weight:700">The page</p>
+<div style="background:#E9E4DA;border-radius:8px;padding:16px"><p style="font-size:24px">Inbox</p></div>
+<div style="background:#E9C46A;border-radius:8px;padding:16px"><p style="font-size:24px;color:#1B2A4A;font-weight:700">The script puts a new message here</p></div>
+<div style="background:#E9E4DA;border-radius:8px;padding:16px"><p style="font-size:24px">The rest stays still</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;align-items:center">
+<p style="font-size:24px;color:#1B2A4A;font-weight:700">“anything new?”</p>
+<x-shape kind="arrow-right" style="background:#1B2A4A;width:200px;height:56px"></x-shape>
+<x-shape kind="arrow-left" style="background:#5A6478;width:200px;height:56px"></x-shape>
+<p style="font-size:24px;color:#5A6478;font-weight:700">a little data, as JSON</p>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px;background:#FFFDF9;border:2px solid #1B2A4A;border-top:12px solid #8CC9A6;border-radius:16px;padding:40px">
+<x-icon name="Database" style="color:#1B2A4A;width:72px;height:72px"></x-icon>
+<p style="font-size:32px;font-weight:700">Server</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3D4A63">A script asks the server for a little data in the background, and changes one part of the page. Gmail in 2004 and Google Maps in 2005 made the idea famous. Today the script uses fetch, and the data usually travels as JSON.</p>
+<aside>Compare this with the first-page diagram in chapter 1, where every answer was a whole page. Here, only the gold part changes, and gold means a script did it. The name Ajax comes from a 2005 essay by Jesse James Garrett. Ajax is still a job for a script today, because HTML and CSS cannot fetch data on their own.</aside>
+</section>

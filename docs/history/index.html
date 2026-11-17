@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two histories of the web</title>
+<style>
+:root { --bg: #f7f5f0; --fg: #1b2a4a; --muted: #5a6478; --card: #fffdf9; --line: #d9d3c7; }
+@media (prefers-color-scheme: dark) { :root { --bg: #131b2e; --fg: #f4f1ea; --muted: #c9d2e3; --card: #1b2a4a; --line: #33456b; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.6 system-ui, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 48px 16px 80px; }
+h1 { font: 700 clamp(30px, 6vw, 44px)/1.1 Georgia, serif; margin: 0 0 12px; }
+.lede { color: var(--muted); max-width: 62ch; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 28px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+.card h2 { margin: 0 0 6px; font-size: 1.3rem; }
+.card p { color: var(--muted); margin: 0 0 12px; }
+a { color: inherit; text-underline-offset: 3px; }
+.key { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+.key li { color: #1b2a4a; font-weight: 700; font-size: 14px; padding: 3px 12px; border-radius: 999px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Two histories of the web</h1>
+<p class="lede">The same thirty-odd years, told twice. The first history watches from the browser: HTML, CSS and scripts. The second watches from behind the page: the servers that answer and the databases that remember. Both use the same colours for the four parts of a website.</p>
+<ul class="key"><li style="background:#E8955C">HTML</li><li style="background:#8DB4E2">CSS</li><li style="background:#E9C46A">Scripts</li><li style="background:#8CC9A6">Server</li></ul>
+<div class="cards">
+<div class="card"><h2>The Web Rebuilds Itself</h2><p>The front end&#x27;s story: HTML, CSS and scripts, from the first page in 1991 to AI.</p><p><a href="web/index.html">The era-by-era page</a><br><a href="web/slides.html">The slides, with notes</a><br><a href="web/how-the-web-learned-to-respond.pptx" download>The slides as PowerPoint</a></p></div>
+<div class="card"><h2>The Server Remembers</h2><p>The back end&#x27;s story: servers and databases, from punched cards to vector search.</p><p><a href="server/index.html">The era-by-era page</a><br><a href="server/slides.html">The slides, with notes</a><br><a href="server/behind-the-page.pptx" download>The slides as PowerPoint</a></p></div>
+</div>
+<p style="margin-top:32px"><a href="../index.html">Back to From a click to a database row and back</a></p>
+</main>
+</body>
+</html>
