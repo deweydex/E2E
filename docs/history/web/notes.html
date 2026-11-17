@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How the Web Learned to Respond · notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Public+Sans:wght@400;700&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+:root { --bg: #fbfaf7; --fg: #1b2a4a; --muted: #4a5568; --line: #ddd6c8; --card: #fff; --code: #f1eee6;
+  --html: #E8955C; --css: #8DB4E2; --scripts: #E9C46A; --server: #8CC9A6; --db: #B9A6E0; --plugin: #C9D2E3; }
+@media (prefers-color-scheme: dark) { :root { --bg: #131b2e; --fg: #eef0f5; --muted: #c4cbda; --line: #33456b; --card: #1b2a4a; --code: #0f1729; } }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.65 "Public Sans", system-ui, sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 32px 16px 80px; }
+h1 { font: 700 clamp(32px, 6vw, 48px)/1.1 "Libre Baskerville", Georgia, serif; margin: 12px 0 10px; }
+h2 { font: 700 clamp(24px, 4vw, 30px)/1.2 "Libre Baskerville", Georgia, serif; margin: 56px 0 8px; padding-top: 18px; border-top: 3px solid var(--line); }
+h3 { font: 700 21px/1.3 "Public Sans", system-ui, sans-serif; margin: 34px 0 6px; }
+.lede { font-size: 19px; color: var(--muted); }
+a { color: inherit; text-underline-offset: 3px; }
+code, pre { font: 14px/1.55 "JetBrains Mono", ui-monospace, Menlo, monospace; }
+code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; white-space: pre-wrap; overflow-wrap: anywhere; margin: 10px 0 14px; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0 16px; font-size: 15px; display: block; overflow-x: auto; }
+th, td { text-align: left; vertical-align: top; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+th { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.t { display: inline-block; font: 700 12px "Public Sans", sans-serif; color: #1b2a4a; padding: 2px 10px; border-radius: 999px; vertical-align: middle; white-space: nowrap; }
+[data-part="html"].t { background: var(--html); } [data-part="css"].t { background: var(--css); } [data-part="scripts"].t { background: var(--scripts); }
+[data-part="server"].t { background: var(--server); } [data-part="db"].t { background: var(--db); } [data-part="plugin"].t { background: var(--plugin); }
+.parts { display: grid; gap: 10px; margin: 12px 0; }
+.parts > div, .node { background: var(--card); border: 1px solid var(--line); border-left: 8px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+[data-part="html"].node, .parts [data-part="html"] { border-left-color: var(--html); } [data-part="css"].node, .parts [data-part="css"] { border-left-color: var(--css); }
+[data-part="scripts"].node, .parts [data-part="scripts"] { border-left-color: var(--scripts); } [data-part="server"].node, .parts [data-part="server"] { border-left-color: var(--server); }
+[data-part="db"].node, .parts [data-part="db"] { border-left-color: var(--db); }
+figure { margin: 14px 0 16px; }
+.flow { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+.flow.three { grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; }
+.flow .arrow { text-align: center; color: var(--muted); font-size: 14px; align-self: center; }
+@media (max-width: 640px) { .flow, .flow.three { grid-template-columns: 1fr; } .flow .arrow { transform: none; } }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .pair { grid-template-columns: 1fr; } }
+.pair pre { margin-top: 2px; }
+.cap { font-size: 13px; font-weight: 700; color: var(--muted); margin: 6px 0 0; text-transform: uppercase; letter-spacing: .04em; }
+.dates { list-style: none; padding: 0; }
+.dates li { border-left: 4px solid var(--line); padding: 2px 0 2px 12px; margin: 8px 0; }
+.discuss { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin: 14px 0; }
+.screens { display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap; }
+.screens > div { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px; display: grid; gap: 6px; }
+.screens .wide { width: min(300px, 100%); } .screens .narrow { width: 110px; }
+.screens span { display: block; height: 14px; background: var(--muted); opacity: .5; border-radius: 3px; }
+.screens i { display: block; height: 40px; background: var(--css); border-radius: 4px; }
+.screens .wide > div { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.screens small { font-size: 12px; color: var(--muted); }
+.gridfig { display: grid; grid-template-columns: 1fr 2fr; grid-template-rows: 36px 90px 32px; gap: 6px; grid-template-areas: "h h" "n m" "f f"; max-width: 420px; }
+.gridfig div { background: var(--css); color: #1b2a4a; border-radius: 5px; padding: 6px 10px; font: 600 13px "JetBrains Mono", monospace; }
+.gridfig div:nth-child(2n) { background: var(--plugin); }
+.bars p { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; margin: 6px 0; width: fit-content; }
+.bars .bad { color: #b3261e; } .bars .good { color: #2e6b4a; }
+.search { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; max-width: 520px; }
+.search .q { border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; margin: 0 0 10px; }
+.search .aio { border: 2px solid var(--css); border-radius: 10px; padding: 8px 12px; }
+.search .aio p { margin: 4px 0; } .search small { color: var(--muted); }
+.search .link { color: #1a0dab; margin: 6px 0 0; }
+@media (prefers-color-scheme: dark) { .search .link { color: #8ab4f8; } }
+.map { position: relative; height: 240px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+.map span { position: absolute; font-size: 13px; line-height: 1.25; color: var(--muted); max-width: 36%; }
+.map span::before { content: "● "; color: var(--db); }
+.map span.q { color: var(--fg); font-weight: 700; } .map span.q::before { content: ""; }
+.toc { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 18px; margin: 18px 0; }
+.toc ol { margin: 6px 0 0; padding-left: 1.3em; }
+.top { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--muted); }
+.sources li { margin: 6px 0; }
+@media print { .top, .toc { display: none; } h2 { break-before: page; border: 0; } pre, figure, table { break-inside: avoid; } body { background: #fff; color: #000; } }
+</style>
+</head>
+<body>
+<main>
+<p class="top"><a href="slides.html">The slides</a> · <a href="index.html">The era-by-era page</a> · <a href="how-the-web-learned-to-respond.pptx" download>The slides as PowerPoint</a> · <a href="../index.html">All history pages</a></p>
+<h1>How the Web Learned to Respond</h1>
+<p class="lede">Notes on a history of the web from 1991 to now, told through four parts: HTML, CSS, scripts and the server. The headings follow the slides in order, and each section reads on its own.</p>
+
+<nav class="toc" aria-label="Contents"><b>Contents</b><ol><li><a href="#intro">Introduction</a></li><li><a href="#ch1">Chapter 1 · 1991 to 1995: Documents and forms</a></li><li><a href="#ch2">Chapter 2 · 1995 to 2004: Scripts, styles and server languages</a></li><li><a href="#ch3">Chapter 3 · 2005 to 2014: Web 2.0, HTML5 and every screen</a></li><li><a href="#ch4">Chapter 4 · 2009 to now: Scripts grow up</a></li><li><a href="#ch5">Chapter 5 · 2016 to 2022: The platform catches up</a></li><li><a href="#ch6">Chapter 6 · 2023 to now: AI and the web</a></li><li><a href="#ch7">Chapter 7 · Today: Putting it together</a></li><li><a href="#sources">Sources</a></li></ol></nav>
+<h2 id="intro">Introduction</h2>
+
+<h3>How the web learned to respond</h3>
+<p>This history follows the web from its first page in 1991 to the browser you are using today. It looks at four parts that every website is made of, asks what each part does and when it arrived, and follows how its jobs changed over thirty years.</p>
+
+<h3>Four parts, four jobs, four colours</h3>
+<p>Every website is built from the same four parts. Each one has a colour, and each section of these notes carries a tag in that colour for every part it is about. Each tag also carries its name, so nobody has to rely on colour alone.</p>
+<div class="parts">
+<div data-part="html"><b>HTML</b> is the structure. It says what each part of the page is: a heading, a list, a link.</div>
+<div data-part="css"><b>CSS</b> is the look. It sets colours, fonts, spacing and layout.</div>
+<div data-part="scripts"><b>Scripts</b> are the behaviour. JavaScript runs in the visitor's browser and changes the page.</div>
+<div data-part="server"><b>Server</b> is the computer that sends the page, runs programs and keeps the data.</div>
+</div>
+<p>Over thirty years, jobs moved between these four parts. A job that needed a script in 2000 might need only a line of CSS today. That movement is the story.</p>
+
+<h3>Seven chapters, from 1991 to now</h3>
+<p>The history runs in seven chapters. They overlap a little in time, because the four parts changed at different speeds: chapter 4 starts in 2009, before chapter 3 ends.</p>
+<table>
+<tr><th>Chapter</th><th>Years</th><th>Title</th><th>Parts</th></tr>
+<tr><td>1</td><td>1991 to 1995</td><td>Documents and forms</td><td><span class="t" data-part="html">HTML</span> <span class="t" data-part="server">Server</span></td></tr>
+<tr><td>2</td><td>1995 to 2004</td><td>Scripts, styles and server languages</td><td><span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="css">CSS</span> <span class="t" data-part="server">Server</span></td></tr>
+<tr><td>3</td><td>2005 to 2014</td><td>Web 2.0, HTML5 and every screen</td><td><span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="html">HTML</span> <span class="t" data-part="css">CSS</span></td></tr>
+<tr><td>4</td><td>2009 to now</td><td>Scripts grow up</td><td><span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="server">Server</span></td></tr>
+<tr><td>5</td><td>2016 to 2022</td><td>The platform catches up</td><td><span class="t" data-part="css">CSS</span> <span class="t" data-part="server">Server</span> <span class="t" data-part="scripts">Scripts</span></td></tr>
+<tr><td>6</td><td>2023 to now</td><td>AI and the web</td><td><span class="t" data-part="html">HTML</span> <span class="t" data-part="server">Server</span></td></tr>
+<tr><td>7</td><td>Today</td><td>Putting it together</td><td>all four</td></tr>
+</table>
+
+<h2 id="ch1">Chapter 1 · 1991 to 1995: Documents and forms</h2>
+<p>The web begins as pages of text and links, and forms let readers write back.</p>
+
+<h3>The first page was text and links <span class="t" data-part="html">HTML</span> <span class="t" data-part="server">Server</span></h3>
+<p>Tim Berners-Lee put the first web page online at CERN, the physics laboratory near Geneva, in 1991. The page held only text and links. It could not respond to anything except a click on a link, and each click asked the server for a whole new page. That first page is still online at <a href="https://info.cern.ch/hypertext/WWW/TheProject.html">info.cern.ch</a>.</p>
+<figure class="flow"><div class="node" data-part="html"><b>Browser</b><br>shows HTML</div><div class="arrow">asks for a page →<br>← sends the whole page</div><div class="node" data-part="server"><b>Server</b><br>stores files</div></figure>
+<p>Each request brings back one whole page, and every website still starts this way.</p>
+
+<h3>Forms let readers write back <span class="t" data-part="html">HTML</span> <span class="t" data-part="server">Server</span></h3>
+<p>Forms became part of HTML 2.0 in 1995. A form turns a page from something you read into something you can answer, and it works in three steps.</p>
+<ol>
+<li>A visitor fills in a form on an HTML page and presses Send.</li>
+<li>A program on the server reads what they typed. Early programs used a system called CGI, the Common Gateway Interface.</li>
+<li>The program builds a brand new page as its answer and sends it back.</li>
+</ol>
+<p>Here the server becomes more than a file cabinet, because it now runs a program. The cost is in step 3. Every answer, even "please fill in your email", meant a trip to the server and a whole new page. Scripts arrived partly to fix that.</p>
+
+<h2 id="ch2">Chapter 2 · 1995 to 2004: Scripts, styles and server languages</h2>
+<p>Browsers and servers both learn to run programs, and plugins fill the gaps.</p>
+
+<h3>Scripts and CSS arrive within a year <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="css">CSS</span></h3>
+<p><b>JavaScript, 1995.</b> The Netscape browser added a language that runs inside the page. For the first time, a page could change without asking the server.</p>
+<p><b>CSS, 1996.</b> Style sheets moved colours and fonts out of the HTML. Browsers supported CSS unevenly for years, so many sites kept using tables and scripts for layout and effects.</p>
+<p>Through the early 2000s, scripts did jobs that CSS and HTML do today: changing a picture when the pointer moved over it, opening and closing panels, checking forms and opening pop-up windows. Chapter 7 shows those jobs moving back.</p>
+
+<h3>Servers learn to build pages from data <span class="t" data-part="server">Server</span></h3>
+<p>PHP was first released in 1995. A PHP file looks like HTML with small pieces of code inside. The server runs that code, fills in the gaps from a database, and sends plain HTML to the browser.</p>
+<div class="pair"><div><p class="cap">On the server</p><pre>&lt;p&gt;Hello, &lt;?php echo $name; ?&gt;&lt;/p&gt;</pre></div><div><p class="cap">What the browser receives</p><pre>&lt;p&gt;Hello, Aoife&lt;/p&gt;</pre></div></div>
+<table>
+<tr><th>Language or tool</th><th>What it was</th></tr>
+<tr><td>PHP, 1995</td><td>Code mixed into the page itself</td></tr>
+<tr><td>ASP, 1996</td><td>Microsoft's version of the same idea</td></tr>
+<tr><td>WordPress, 2003</td><td>A publishing system written in PHP, still behind a large share of sites</td></tr>
+<tr><td>Ruby on Rails, 2004, and Django, 2005</td><td>Frameworks for Ruby and Python</td></tr>
+</table>
+<p>A common setup was called LAMP: Linux, Apache, MySQL and PHP. Each request runs the PHP again, so the same file can show a different page to every visitor. WordPress still works this way: when someone saves a post, PHP stores it in a database and builds the page from it each time someone visits. The browser never sees PHP. It only ever receives the HTML that the server built.</p>
+
+<h3>Plugins filled the gaps <span class="t" data-part="plugin">Plugins</span> <span class="t" data-part="html">HTML</span></h3>
+<p>A plugin is a program added to the browser to do what HTML could not. Flash was the best known. For over a decade it played video, animation and games on the web.</p>
+<ul class="dates">
+<li><b>2007.</b> The first iPhone arrives without Flash.</li>
+<li><b>2014.</b> HTML5 adds <code>&lt;video&gt;</code> and <code>&lt;audio&gt;</code>, so a page can play a clip on its own.</li>
+<li><b>2020.</b> Flash reaches its official end in December.</li>
+</ul>
+<p>Plugins are not one of the four parts, so their tag is grey. The lesson of Flash is that a feature built into HTML outlasts one added from outside. Plugins were also a frequent security risk, which helped speed their end.</p>
+
+<h3>Web 1.0: a few people wrote, and many people read <span class="t" data-part="html">HTML</span> <span class="t" data-part="server">Server</span></h3>
+<p>Looking back, people now call the web of roughly 1991 to 2004 <b>Web 1.0</b>. It had four features.</p>
+<ul>
+<li>Pages were mostly fixed documents, like a brochure.</li>
+<li>Most visitors could read, but not add anything.</li>
+<li>Layout was built from tables, and style was written into tags such as <code>&lt;font&gt;</code>.</li>
+<li>Most changes still meant loading a whole new page from the server.</li>
+</ul>
+
+<h2 id="ch3">Chapter 3 · 2005 to 2014: Web 2.0, HTML5 and every screen</h2>
+<p>Pages update without reloading, visitors write into the web, and HTML and CSS take on new jobs.</p>
+
+<h3>Ajax: update one part, not the whole page <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="server">Server</span></h3>
+<p>With Ajax, a script asks the server for a little data in the background and changes one part of the page, while the rest stays still. Gmail in 2004 and Google Maps in 2005 made the idea famous.</p>
+<figure class="flow"><div class="node" data-part="scripts"><b>The page</b><br>Inbox: the script puts a new message here, and the rest stays still</div><div class="arrow">"anything new?" →<br>← a little data, as JSON</div><div class="node" data-part="server"><b>Server</b></div></figure>
+<p>Today the script uses <code>fetch</code>, and the data usually travels as JSON, a plain text format for lists and records.</p>
+
+<h3>jQuery smooths over browser differences <span class="t" data-part="scripts">Scripts</span></h3>
+<p>In the 2000s each browser ran JavaScript a little differently. John Resig released jQuery in 2006. It gave one short way to write a script, and that script worked in every browser.</p>
+<div class="pair"><div><p class="cap">With jQuery, from 2006</p><pre>$("#menu").slideToggle();
+$.ajax({ url: "/news" });</pre></div><div><p class="cap">Built into every browser now</p><pre>document.querySelector("#menu");
+fetch("/news");</pre></div></div>
+<p>Browsers now agree with each other, and they copied the best of jQuery's ideas. New sites rarely need it, but many older sites still use it.</p>
+
+<h3>Visitors start writing into the web <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="server">Server</span></h3>
+<p>From about 2004, the web changed in who made it. Tim O'Reilly's 2005 essay gave this change its name, <b>Web 2.0</b>. Four ideas mark it out.</p>
+<table>
+<tr><th>Idea</th><th>What it means</th><th>Leans on</th></tr>
+<tr><td>Comments and reviews</td><td>Anyone can add to a page, and the server stores it.</td><td><span class="t" data-part="server">Server</span></td></tr>
+<tr><td>Social networks</td><td>The people are the content.</td><td><span class="t" data-part="server">Server</span></td></tr>
+<tr><td>Wikis</td><td>Many people write one page together.</td><td><span class="t" data-part="server">Server</span></td></tr>
+<tr><td>Pages that update</td><td>Ajax keeps the page fresh without reloading.</td><td><span class="t" data-part="scripts">Scripts</span></td></tr>
+</table>
+<p>Web 2.0 is less a technology than a change in who makes the web. Its tools were scripts, servers and databases working together. Wikipedia (2001) and Facebook (2004) are useful examples. A good answer to "what changed with Web 2.0?" names a difference and gives an example of each side.</p>
+
+<h3>One page, every screen <span class="t" data-part="css">CSS</span></h3>
+<p>Phones made fixed-width pages hard to read. In 2010 Ethan Marcotte named the answer <b>responsive web design</b>: one page whose layout changes to fit its screen. It rests on three things: flexible layouts, flexible images and CSS media queries.</p>
+<figure class="screens"><div class="wide"><span></span><div><i></i><i></i><i></i></div><small>A wide screen: three columns</small></div><div class="narrow"><span></span><i></i><i></i><i></i><small>A phone: one column</small></div></figure>
+<pre>.cards { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+@media (max-width: 600px) {
+  .cards { grid-template-columns: 1fr; }
+}</pre>
+<p>The same HTML sits behind both screens, and only the CSS changes. A non-responsive page keeps one fixed layout, so a phone must zoom or scroll sideways. Two older alternatives also existed: an adaptive site switches between a few fixed layouts, and a separate mobile site serves different pages, often at an address beginning with m.</p>
+
+<h3>HTML5 gives HTML new jobs <span class="t" data-part="html">HTML</span></h3>
+<p>HTML5 became a finished standard in 2014. It added new tags and retired old ones whose jobs had moved to CSS.</p>
+<p><b>What it added:</b></p>
+<ul>
+<li>Semantic tags: <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;footer&gt;</code></li>
+<li><code>&lt;video&gt;</code> and <code>&lt;audio&gt;</code>, in place of plugins</li>
+<li>Form rules: <code>required</code>, <code>type="email"</code>, <code>pattern</code></li>
+<li><code>&lt;canvas&gt;</code>, for drawing with a script</li>
+</ul>
+<table>
+<tr><th>Deprecated</th><th>Use instead</th></tr>
+<tr><td><code>&lt;font&gt;</code></td><td>CSS <code>font</code> and <code>color</code></td></tr>
+<tr><td><code>&lt;center&gt;</code></td><td>CSS <code>text-align</code></td></tr>
+<tr><td><code>&lt;frame&gt;</code></td><td>CSS layout</td></tr>
+<tr><td><code>&lt;big&gt;</code></td><td>CSS <code>font-size</code></td></tr>
+</table>
+<p>A semantic tag says what its content is. Screen readers, search engines and the next person who edits the page all depend on that. Each retired tag described how text looked, and that job moved to CSS. A deprecated tag may still work in a browser, but it is no longer part of the standard, and a validator flags it.</p>
+
+<h3>CSS versions: from three levels to many modules <span class="t" data-part="css">CSS</span></h3>
+<table>
+<tr><th>Version</th><th>Year</th><th>What it brought</th></tr>
+<tr><td>CSS1</td><td>1996</td><td>Fonts, colours, margins and spacing</td></tr>
+<tr><td>CSS2</td><td>1998</td><td>Positioning, <code>:hover</code>, and styles for print</td></tr>
+<tr><td>CSS3</td><td>from about 2011</td><td>Split into modules: media queries, transitions, animations, flexbox, grid</td></tr>
+<tr><td>Now</td><td>no CSS4</td><td>Each module grows on its own. <code>:has()</code> and container queries arrived in 2023.</td></tr>
+</table>
+<p>After CSS2, CSS stopped having single numbered versions. It became a set of modules, each with its own level. "CSS3" now means modern CSS in general, and each feature arrives when every major browser supports it.</p>
+
+<h2 id="ch4">Chapter 4 · 2009 to now: Scripts grow up</h2>
+<p>JavaScript moves onto the server, frameworks build whole pages, and TypeScript adds types.</p>
+
+<h3>JavaScript moves onto the server <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="server">Server</span></h3>
+<p>Ryan Dahl released Node.js in 2009. Node runs JavaScript outside the browser, so a developer can write the page's scripts and the server's program in one language. Its package registry, npm, lets developers share small pieces of code with each other.</p>
+<figure class="flow"><div class="node" data-part="scripts"><b>Browser</b><br><code>script.js</code></div><div class="arrow">requests →<br>← answers</div><div class="node" data-part="server"><b>Server</b><br><code>server.js</code></div></figure>
+<p>Until 2009, the server side of this picture would have been PHP, Java, Python or Ruby. Now the same language can run at both ends.</p>
+
+<h3>Frameworks build whole pages in the browser <span class="t" data-part="scripts">Scripts</span></h3>
+<p>A framework builds the page from data inside the browser, and updates only the parts that change. A site built this way is called a <b>single-page app</b>, because the browser loads one page and the script does the rest.</p>
+<table>
+<tr><th>Framework</th><th>Year</th><th>From</th></tr>
+<tr><td>AngularJS</td><td>2010</td><td>Google</td></tr>
+<tr><td>React</td><td>2013</td><td>Facebook</td></tr>
+<tr><td>Vue</td><td>2014</td><td>Evan You</td></tr>
+</table>
+<p>Frameworks suit big applications such as email or maps, where the page changes all the time. The cost is a large script to download before anything appears, which makes them heavy for a brochure site or a blog. Many sites now send ready-made HTML first, and add scripts only where they help.</p>
+
+<h3>TypeScript adds types to JavaScript <span class="t" data-part="scripts">Scripts</span></h3>
+<p>Microsoft released TypeScript in 2012. A type says what kind of value something holds, such as a number or a piece of text. TypeScript checks the code against its types before it runs, then turns it into plain JavaScript for the browser.</p>
+<pre>function priceWithVat(price: number): number {
+  return price * 1.23;
+}
+
+priceWithVat("ten");   // stopped here: "ten" is text, not a number</pre>
+<p>The browser still only runs JavaScript. TypeScript helps the person writing the code, and it matters most on big projects with many people, where a wrong kind of value can travel a long way before anything breaks.</p>
+
+<h2 id="ch5">Chapter 5 · 2016 to 2022: The platform catches up</h2>
+<p>CSS gets real layout, every site gets a padlock, web apps work offline, and the browsers finally agree. Few of these changes made headlines, but together they are why building a site today is so different from 2014.</p>
+
+<h3>The server sends HTML first again <span class="t" data-part="server">Server</span> <span class="t" data-part="scripts">Scripts</span></h3>
+<p>The single-page apps of chapter 4 were slow to show anything. The answer was to go back to the oldest pattern on the web: the server sends a whole, finished page.</p>
+<ul>
+<li><b>Server rendering.</b> Next.js, released in 2016, builds a React page on the server, so the browser gets HTML it can show straight away.</li>
+<li><b>Static site generators.</b> Tools such as Hugo build every page once, ahead of time, and a host like GitHub Pages sends the files as they are.</li>
+<li><b>Scripts where they help.</b> The page arrives ready to read, and scripts wake up only the parts that need them.</li>
+</ul>
+<div class="pair"><div><p class="cap">View source on a single-page app</p><pre>&lt;div id="root"&gt;&lt;/div&gt;
+&lt;script src="app.js"&gt;&lt;/script&gt;</pre></div><div><p class="cap">View source on a page rendered by the server</p><pre>&lt;h1&gt;Timeline&lt;/h1&gt;
+&lt;ul&gt;&lt;li&gt;1991: the first page&lt;/li&gt;…&lt;/ul&gt;</pre></div></div>
+<p>This closes a loop. Chapter 1 began with a server sending whole pages, chapter 4 moved the work into the browser, and from 2016 the work moved back to the server with modern tools.</p>
+
+<h3>CSS Grid: real layout at last <span class="t" data-part="css">CSS</span></h3>
+<p>In March 2017, Chrome, Firefox and Safari all shipped CSS Grid within a few weeks of each other. For the first time, CSS could lay out rows and columns together. Twenty years of tables, floats and workarounds came to an end.</p>
+<figure class="gridfig"><div style="grid-area:h">header</div><div style="grid-area:n">nav</div><div style="grid-area:m">main</div><div style="grid-area:f">footer</div></figure>
+<pre>.page {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-areas:
+    "header header"
+    "nav    main"
+    "footer footer";
+}</pre>
+<p>Pages in 1996 and 2001 used tables for exactly this layout. Grid does the same job in CSS, so the HTML can stay semantic.</p>
+
+<h3>Web pages start to behave like apps <span class="t" data-part="scripts">Scripts</span></h3>
+<p><b>Progressive web apps.</b> A service worker is a script that sits between the page and the network. It can keep copies of files, so the site still opens offline. Add a small manifest file, and a phone lets you install the site on its home screen like an app. The term was coined in 2015, and Safari added service workers in 2018. Squoosh, an image tool that works offline, is an example.</p>
+<p><b>WebAssembly, 2017.</b> By November 2017 every major browser could run WebAssembly. It lets code written in languages such as C, C++ and Rust run inside a page at close to full speed. Figma, a design tool, runs in the browser this way.</p>
+<p>Both changes made the browser a place to run real applications, not just show documents.</p>
+
+<h3>Every site gets a padlock <span class="t" data-part="server">Server</span></h3>
+<p>HTTPS encrypts everything between the browser and the server, so nobody on the same Wi-Fi can read or change it on the way.</p>
+<figure class="bars"><p><b class="bad">Not secure</b> <code>http://shop.example</code></p><p><b class="good">🔒</b> <code>https://shop.example</code></p></figure>
+<ul class="dates">
+<li><b>December 2015.</b> Let's Encrypt starts giving out free certificates, so any site can use HTTPS.</li>
+<li><b>July 2018.</b> Chrome begins marking every plain HTTP page as "Not secure".</li>
+</ul>
+<p>Before free certificates, HTTPS cost money and effort, so mainly banks and shops used it. Many newer browser features, including service workers, only work on HTTPS pages, and most hosts now give every site HTTPS for free.</p>
+
+<h3>Cookie banners and dark mode <span class="t" data-part="server">Server</span> <span class="t" data-part="css">CSS</span></h3>
+<p><b>GDPR, May 2018.</b> The EU's data protection law began to apply on 25 May 2018. Sites that track visitors must ask first, and refusing has to be as easy as agreeing. The cookie banner became part of almost every page. This change came from a law, and it touches the server, which stores visitor data.</p>
+<p><b>Dark mode, 2019.</b> Phones and laptops gained a dark setting, and CSS gained a way to follow it. One media query lets a page pick its colours to match the device. This change came from operating systems, and it touches CSS.</p>
+<pre>@media (prefers-color-scheme: dark) {
+  body { background: #111; color: #eee; }
+}</pre>
+
+<h3>HTML stopped having version numbers <span class="t" data-part="html">HTML</span></h3>
+<p>In 2019 the W3C and the WHATWG, the two groups that had each published an HTML standard, agreed to keep one: the <b>HTML Living Standard</b>. HTML now grows a feature at a time, and a feature counts once every major browser supports it. "HTML5" was the last numbered version, and people still use the name for modern HTML in general. Many of the jobs that scripts did in 2005 are now done by HTML and CSS alone; chapter 7 shows which.</p>
+
+<h3>The browsers finally agree <span class="t" data-part="html">HTML</span> <span class="t" data-part="css">CSS</span> <span class="t" data-part="scripts">Scripts</span></h3>
+<p><b>Internet Explorer retires.</b> Microsoft retired Internet Explorer on 15 June 2022. For years, sites had carried extra code just to work in it.</p>
+<p><b>Interop.</b> Also in 2022, Apple, Google, Microsoft and Mozilla began Interop, a yearly project to make the same features work the same way in every browser. Its public dashboard at <a href="https://wpt.fyi/interop">wpt.fyi</a> shows how well each browser scores.</p>
+<p>The browser wars of chapter 2 made jQuery necessary. Interop is why the new HTML features in chapter 7 now arrive in every browser at about the same time.</p>
+
+<h2 id="ch6">Chapter 6 · 2023 to now: AI and the web</h2>
+<p>Machines start to write web pages, read them, summarise them and use them. This chapter differs from the others, because nobody knows yet how it ends, so it closes with questions instead of a verdict.</p>
+
+<h3>AI starts writing the code <span class="t" data-part="html">HTML</span> <span class="t" data-part="scripts">Scripts</span></h3>
+<p><b>Chat assistants.</b> ChatGPT launched on 30 November 2022. Within months, people were asking chat assistants to write whole pages of HTML, CSS and JavaScript from a description.</p>
+<p><b>Assistants in the editor.</b> Code assistants now sit inside editors such as VS Code. They suggest the next lines, explain errors and can change many files at once.</p>
+<p>A generated page can look right and still be wrong. Here is the kind of contact form an assistant might produce:</p>
+<pre>&lt;form&gt;
+  &lt;input type="text" placeholder="Name"&gt;
+  &lt;input type="email" placeholder="Email"&gt;
+  &lt;button&gt;Send&lt;/button&gt;
+&lt;/form&gt;</pre>
+<p>It has no <code>&lt;label&gt;</code> elements, and placeholder text disappears as soon as you type. It has no <code>action</code> or <code>method</code>, so it sends nothing anywhere, and nothing checks what arrives. Someone still has to read the code, run the validator and test it. The skills from earlier chapters matter more, not less, when a machine writes the first draft.</p>
+
+<h3>Search starts answering for you <span class="t" data-part="server">Server</span></h3>
+<p>In May 2024, Google began showing AI Overviews in the United States: a written answer above the links.</p>
+<figure class="search"><p class="q">how do I centre a div</p><div class="aio"><b>AI overview</b><p>Set the parent to <code>display: grid</code> and add <code>place-items: center</code>.</p><small>Sources: MDN · CSS-Tricks</small></div><p class="link">Blue link 1</p><p class="link">Blue link 2</p></figure>
+<p>Since the late 1990s the deal was simple: a search engine sent visitors to your site, and your site got the readers. An answer at the top of the page changes that deal. The answer is built from other people's pages, and fewer searchers click through to read them. If nobody visits the site that wrote the answer, how does that site keep paying to exist?</p>
+
+<h3>Who is allowed to read your site? <span class="t" data-part="server">Server</span></h3>
+<p>A file called <code>robots.txt</code>, at the root of a site, asks robots to stay out of some or all of it. It is a request, not a lock. These two lines ask OpenAI's crawler to stay away from the whole site:</p>
+<pre>User-agent: GPTBot
+Disallow: /</pre>
+<ul class="dates">
+<li><b>1994.</b> Martijn Koster proposes robots.txt for the first web crawlers. It becomes an internet standard, RFC 9309, only in 2022.</li>
+<li><b>August 2023.</b> OpenAI publishes the name of its crawler, GPTBot, so sites can block it.</li>
+<li><b>September 2024.</b> A proposal called llms.txt suggests the opposite: a plain summary of a site, written for AI tools to read. It is a proposal, not a standard.</li>
+<li><b>July 2025.</b> Cloudflare starts blocking AI crawlers by default on new sites it protects. Well-behaved crawlers follow robots.txt, and badly behaved ones ignore it, which is why Cloudflare blocks at the server instead.</li>
+</ul>
+
+<h3>Some visitors are not people <span class="t" data-part="html">HTML</span></h3>
+<p>AI agents can now open a page, read it, click buttons and fill in forms for a person. They read the HTML much as a screen reader does. Two buttons that look the same on screen can read very differently to a machine:</p>
+<pre>&lt;button&gt;Send&lt;/button&gt;              → button "Send"
+&lt;div class="btn"&gt;Send&lt;/div&gt;      → text "Send" (not a button)</pre>
+<p>A real button, a labelled input and proper headings help a blind visitor, a search engine and an agent at the same time. A <code>div</code> pretending to be a button helps none of them. Semantic HTML was always about accessibility, and it now also decides how well machines understand a site.</p>
+<div class="discuss"><b>Discuss</b>
+<ol>
+<li>Should a site be able to say no to AI crawlers? Who decides?</li>
+<li>If an AI answer uses your page, what do you think you are owed?</li>
+<li>Would you publish a site an AI wrote without reading the code?</li>
+</ol>
+<p>These questions are being argued in courts and parliaments now, and reasonable people disagree on each one.</p></div>
+
+<h2 id="ch7">Chapter 7 · Today: Putting it together</h2>
+<p>Which jobs moved from scripts to HTML and CSS, how the four parts fit, and how to keep a site safe. Everything in this chapter applies to any site you build.</p>
+
+<h3>A rollover, then and now <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="css">CSS</span></h3>
+<p>Both versions below change a box's colour when the pointer moves over it. The first uses a script written into the tag, as pages did around 1999. The second uses one CSS rule.</p>
+<div class="pair"><div><p class="cap">1999: a script in the tag</p><pre>&lt;div
+  onmouseover="this.style.background='orange'"
+  onmouseout="this.style.background='navy'"&gt;
+  Point at me
+&lt;/div&gt;</pre></div><div><p class="cap">Today: one CSS rule</p><pre>&lt;div class="box"&gt;Point at me&lt;/div&gt;
+
+.box:hover {
+  background: orange;
+}</pre></div></div>
+<p>The CSS version is shorter, keeps the look in one place, and still works if scripts are switched off. It is also far easier to change across a whole site. The job moved from scripts to CSS.</p>
+
+<h3>Jobs that moved from scripts to HTML and CSS <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="html">HTML</span> <span class="t" data-part="css">CSS</span></h3>
+<table>
+<tr><th>What the page does</th><th>Then: a script</th><th>Now: HTML or CSS</th><th>Everywhere since</th></tr>
+<tr><td>Change on hover</td><td><code>onmouseover</code></td><td><code>:hover</code></td><td>long ago</td></tr>
+<tr><td>Open and close a panel</td><td>a click handler</td><td><code>&lt;details&gt;</code></td><td>2020</td></tr>
+<tr><td>A box over the page</td><td>a pop-up script</td><td><code>&lt;dialog&gt;</code>, <code>popover</code></td><td>2022, 2024</td></tr>
+<tr><td>Open a dialog from a button</td><td><code>showModal()</code></td><td><code>commandfor</code></td><td>2025</td></tr>
+<tr><td>Check a form</td><td>a submit handler</td><td><code>required</code>, <code>pattern</code></td><td>about 2012</td></tr>
+<tr><td>Style from the page's state</td><td>adding classes</td><td><code>:has()</code></td><td>2023</td></tr>
+<tr><td>Play a video</td><td>Flash</td><td><code>&lt;video&gt;</code></td><td>about 2012</td></tr>
+</table>
+<p>The years are when the feature worked in every major browser, not when it was first proposed. Scripts still do what HTML and CSS cannot: add up an order, remember a visitor, and fetch data without reloading the page.</p>
+
+<h3>Three tiers, three jobs <span class="t" data-part="html">HTML</span> <span class="t" data-part="css">CSS</span> <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="server">Server</span></h3>
+<figure class="flow three"><div class="node" data-part="scripts"><b>Presentation</b><br>The client, which is the browser. It shows the page and sends requests.<br><span class="t" data-part="html">HTML</span> <span class="t" data-part="css">CSS</span> <span class="t" data-part="scripts">Scripts</span></div><div class="arrow">→</div><div class="node" data-part="server"><b>Application</b><br>The server's program, in PHP, Node or Python. It checks each request and decides what to do.</div><div class="arrow">→</div><div class="node" data-part="server"><b>Data</b><br>A database server. It stores the data and answers many users at once.</div></figure>
+<p>A dynamic site splits its work into three tiers. The application tier is sometimes called middleware. Follow a search through it: the visitor types in the browser, the application tier checks the request and asks the database, the database returns rows, and the application sends them back, often as JSON. Keeping the tiers apart means each one can be changed, secured or made bigger without rebuilding the others. A desktop database, by contrast, serves one person on one machine.</p>
+
+<h3>The browser helps. The server protects. <span class="t" data-part="server">Server</span> <span class="t" data-part="scripts">Scripts</span></h3>
+<table>
+<tr><th>Attack</th><th>What happens</th><th>The defence</th></tr>
+<tr><td>SQL injection <span class="t" data-part="server">Server</span></td><td>An attacker types SQL into a form to change the query the server runs.</td><td>A parameterised query, which keeps what they typed apart from the SQL.</td></tr>
+<tr><td>Cross-site scripting <span class="t" data-part="scripts">Scripts</span></td><td>An attacker gets a script into a page that other visitors see.</td><td>Escape all output, so text never runs as code.</td></tr>
+<tr><td>Stolen passwords <span class="t" data-part="server">Server</span></td><td>A database leaks, and every password in it is readable.</td><td>Store a hash, never the password. A hash cannot be turned back into the password.</td></tr>
+</table>
+<pre>-- unsafe: the input is glued into the SQL
+"SELECT * FROM users WHERE name = '" + name + "'"
+
+-- safe: the input travels separately, as a parameter
+SELECT * FROM users WHERE name = ?</pre>
+<p>A form that checks itself with <code>required</code> and <code>pattern</code> helps the visitor. Anyone can bypass it, so the server must check every request again. Browser checks are a convenience for the visitor, never a defence.</p>
+
+<h3>What came next, and what it raises</h3>
+<p>There is no single agreed name for the period after Web 2.0. Some people call it Web 3.0, and they mean different things by it. Each change below raises a question worth talking over.</p>
+<table>
+<tr><th>A change</th><th>A question it raises</th></tr>
+<tr><td>Phones and apps</td><td>Is a website or an app the better choice for a given job?</td></tr>
+<tr><td>The cloud</td><td>Who owns the servers our data lives on, and where are they?</td></tr>
+<tr><td>A few very large platforms</td><td>What happens when a handful of companies host most of what we read?</td></tr>
+<tr><td>Tracking and advertising</td><td>How much does a site learn about its visitors, and who decides?</td></tr>
+<tr><td>AI-generated content</td><td>How can a reader tell who, or what, wrote a page?</td></tr>
+</table>
+
+<h3>Questions to talk over</h3>
+<p>Each question has more than one good answer. Pick one, and back it up with an example from these notes.</p>
+<ol>
+<li>Pick a site you use every day. Which parts feel like Web 1.0, and which like Web 2.0?</li>
+<li>Why might a job move from a script into HTML?</li>
+<li>For a small site, would you choose plain HTML and CSS, WordPress, or a framework? Why?</li>
+<li>What can a server do that a browser never should?</li>
+<li>Open a site on your phone and on a laptop. Is it responsive? How can you tell?</li>
+</ol>
+
+<h2 id="sources">Sources</h2>
+<ul class="sources">
+<li>CERN, <a href="https://home.cern/science/computing/the-birth-of-the-web/short-history-web/">A short history of the Web</a>, and <a href="https://info.cern.ch/hypertext/WWW/TheProject.html">the first website</a></li>
+<li>W3C, <a href="https://www.w3.org/Style/CSS20/history.html">A brief history of CSS until 2016</a></li>
+<li>PHP manual, <a href="https://www.php.net/manual/en/history.php.php">History of PHP</a></li>
+<li>The History of the Web, <a href="https://thehistoryoftheweb.com/milestones/ajax/">Ajax</a></li>
+<li>Tim O'Reilly, <a href="https://www.oreilly.com/pub/a/web2/archive/what-is-web-20.html">What Is Web 2.0</a> (2005)</li>
+<li>jQuery blog, <a href="https://blog.jquery.com/2016/01/14/ten-years-of-jquery-and-beyond/">Ten years of jQuery and beyond</a></li>
+<li>Ethan Marcotte, <a href="https://alistapart.com/article/responsive-web-design/">Responsive Web Design</a>, A List Apart (2010)</li>
+<li>Computerworld, <a href="https://www.computerworld.com/article/1642841/adobe-lays-flash-to-rest.html">Adobe lays Flash to rest</a></li>
+<li>Flavio Copes, <a href="https://flaviocopes.com/node-history/">A brief history of Node.js</a></li>
+<li>eWeek, <a href="https://www.eweek.com/development/microsoft-delivers-typescript-a-better-javascript-for-big-apps/">Microsoft delivers TypeScript</a> (2012)</li>
+<li>Vercel, <a href="https://vercel.com/blog/next">Next.js</a> (2016)</li>
+<li>Igalia, <a href="https://www.igalia.com/2017/04/04/Shipping-CSS-Grid-Layout-in-major-browsers.html">Shipping CSS Grid Layout in major browsers</a> (2017)</li>
+<li>Mozilla, <a href="https://blog.mozilla.org/press/2017/11/webassembly-support-now-shipping-in-all-major-browsers/">WebAssembly support now shipping in all major browsers</a> (2017)</li>
+<li>Let's Encrypt, <a href="https://letsencrypt.org/2015/11/12/public-beta-timing.html">Public beta: December 3, 2015</a>, and Chromium blog, <a href="https://blog.chromium.org/2018/02/a-secure-web-is-here-to-stay.html">A secure web is here to stay</a> (2018)</li>
+<li>EUR-Lex, <a href="https://eur-lex.europa.eu/content/news/general-data-protection-regulation-GDPR-applies-from-25-May-2018.html">The GDPR applies from 25 May 2018</a></li>
+<li>W3C blog, <a href="https://www.w3.org/blog/2019/w3c-and-whatwg-to-work-together-to-advance-the-open-web-platform/">W3C and WHATWG to work together</a> (2019), and <a href="https://html.spec.whatwg.org/">the HTML Living Standard</a></li>
+<li>Windows blog, <a href="https://blogs.windows.com/windowsexperience/2022/06/15/internet-explorer-11-has-retired-and-is-officially-out-of-support-what-you-need-to-know/">Internet Explorer 11 has retired</a>, and WebKit blog, <a href="https://webkit.org/blog/12288/working-together-on-interop-2022/">Working together on Interop 2022</a></li>
+<li>Google, <a href="https://blog.google/products/search/generative-ai-google-search-may-2024/">Generative AI in Search</a> (May 2024)</li>
+<li>IETF, <a href="https://www.rfc-editor.org/rfc/rfc9309.html">RFC 9309: Robots Exclusion Protocol</a>; OpenAI, <a href="https://developers.openai.com/api/docs/bots">Overview of OpenAI crawlers</a>; <a href="https://llmstxt.org/">llmstxt.org</a>; Cloudflare, <a href="https://www.cloudflare.com/press-releases/2025/cloudflare-just-changed-how-ai-crawlers-scrape-the-internet-at-large/">AI crawler press release</a> (2025)</li>
+<li>OWASP, <a href="https://owasp.org/Top10/2025/">Top 10:2025</a>, and MDN, <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development">Learn web development</a></li>
+</ul>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<h1>Behind the Page</h1>
+<p class="lede">Notes on a history of the web told from behind the page: how servers learned to answer and databases learned to remember, from punched cards to vector search. The headings follow the slides in order, and each section reads on its own.</p>
+
+<h2 id="intro">Introduction</h2>
+
+<h3>Behind the Page</h3>
+<p>Most histories of the web watch from the browser. This one walks round to the back of the page and watches the computers that answer. Every chapter adds one stop on the road a click travels: the request, the route that handles it, the SQL that asks the database, and the rows that come back.</p>
+
+<h3>One green box, opened up</h3>
+<p>Every website is built from a few parts, and each part has a colour. Each section of these notes carries a tag in that colour for every part it is about, with the name written on it, so nobody has to rely on colour alone.</p>
+<div class="parts">
+<div data-part="html"><b>HTML</b> is the structure of the page the server sends back.</div>
+<div data-part="css"><b>CSS</b> is the look of that page. The server only delivers it.</div>
+<div data-part="scripts"><b>Scripts</b> are code in the browser that sends requests and shows replies.</div>
+<div data-part="server"><b>Server</b> is a program that listens for requests and decides what to send.</div>
+<div data-part="db"><b>Database</b> is the place that remembers data after every request has ended.</div>
+</div>
+<p>Seen from the browser, everything behind the page looks like one green box called the server. These notes open the box: the program that answers stays green, and the database that remembers is purple. Most of this history lives in green and purple, and the front-end colours appear only where the browser meets the server.</p>
+
+<h3>Seven chapters, from 1966 to now</h3>
+<p>The story starts before the web, because databases are older than web pages. Chapter 1 explains the tables and SQL that every later chapter relies on.</p>
+<table>
+<tr><th>Chapter</th><th>Years</th><th>Title</th><th>Parts</th></tr>
+<tr><td>1</td><td>1966 to 1986</td><td>Data learns to sit in tables</td><td><span class="t" data-part="db">Database</span></td></tr>
+<tr><td>2</td><td>1990 to 1995</td><td>The first servers hand out files</td><td><span class="t" data-part="server">Server</span> <span class="t" data-part="html">HTML</span></td></tr>
+<tr><td>3</td><td>1995 to 2004</td><td>Pages built from a database</td><td><span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></td></tr>
+<tr><td>4</td><td>2003 to 2010</td><td>Frameworks, caches and NoSQL</td><td><span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></td></tr>
+<tr><td>5</td><td>2006 to 2019</td><td>Someone else’s computer</td><td><span class="t" data-part="server">Server</span></td></tr>
+<tr><td>6</td><td>2020 to now</td><td>Data for AI</td><td><span class="t" data-part="db">Database</span> <span class="t" data-part="server">Server</span></td></tr>
+<tr><td>7</td><td>Today</td><td>Putting it together</td><td><span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></td></tr>
+</table>
+
+<h2 id="ch1">Chapter 1 · 1966 to 1986: Data learns to sit in tables</h2>
+<p>Before the web, banks and airlines already needed computers that remembered things. The answer they settled on was the table, and almost every web database still uses the ideas in this chapter: tables, rows, keys and SQL.</p>
+
+<h3>First, data lived in trees <span class="t" data-part="db">Database</span></h3>
+<p>IBM's IMS, built for the Apollo space programme in the late 1960s, stored data as a tree. A customer record held its orders, and each order held its items.</p>
+<pre>CUSTOMER  Aoife
+  ORDER 17
+    ITEM  Crisps  1.20
+    ITEM  Water   0.90
+  ORDER 18
+    ITEM  Apple   0.50</pre>
+<p>To find something, a program walked down the tree one level at a time: Customer, then Order 17, then Item 3. The data was fast to read along the paths the designers planned, and slow or impossible to read along any other path. A new kind of question often meant writing a new program, so the shape of the storage decided which questions you could ask. IMS is still in use in some banks.</p>
+
+<h3>Codd: put everything in tables <span class="t" data-part="db">Database</span></h3>
+<p>In June 1970 Edgar F. Codd, a mathematician at IBM, published "A Relational Model of Data for Large Shared Data Banks". Every fact goes in a table of rows and columns. A key links one table to another. You say <b>what</b> you want, and the database works out <b>how</b> to find it.</p>
+<div class="pair"><div><p class="cap">products</p><pre>id  name    price
+1   Crisps  1.20
+2   Water   0.90</pre></div><div><p class="cap">sales</p><pre>id  product_id  sold_at
+1   2           09:14</pre></div></div>
+<p>The number 2 in <code>sales</code> points at Water in <code>products</code>. That pointer is a <b>foreign key</b>. The two tables are the pattern for a shop: one table of things for sale and one of sales. IBM was slow to build Codd's idea because IMS made money, so other companies got there first.</p>
+
+<h3>SQL: one language for asking <span class="t" data-part="db">Database</span></h3>
+<p>Researchers at IBM wrote a language for Codd's tables, first called SEQUEL and later SQL. A question in SQL reads almost like English:</p>
+<pre>SELECT name, price FROM products WHERE price &lt; 1;</pre>
+<ul class="dates">
+<li><b>1974.</b> SEQUEL is described at IBM, as part of a research system called System R.</li>
+<li><b>1979.</b> The company that became Oracle sells the first commercial SQL database.</li>
+<li><b>1986.</b> SQL becomes an official standard, so the same language works across products.</li>
+</ul>
+<p>SQL is now over fifty years old, and anyone who builds a site with a database will write it. The standard is why SQL learned in SQLite mostly works in MySQL and PostgreSQL too, with small differences.</p>
+
+<h2 id="ch2">Chapter 2 · 1990 to 1995: The first servers hand out files</h2>
+<p>A web server begins as a simple program: it waits for a request, finds a file and sends it back. The browser asks for a page, and a program on another computer answers.</p>
+
+<h3>A server is a program that listens <span class="t" data-part="server">Server</span></h3>
+<p>Tim Berners-Lee wrote the first web server at CERN in 1990. It listened on a network port, read each request, found the matching file on its disk and sent it back. If the file was missing, it answered with a status code instead. 404 still means "Not Found".</p>
+<pre>GET /hypertext/WWW/TheProject.html HTTP/1.0
+
+HTTP/1.0 200 OK
+Content-Type: text/html
+
+&lt;h1&gt;World Wide Web&lt;/h1&gt;…</pre>
+<p>Every request since works this way: a method and a path go in, and a status and a body come back. The first server was called CERN httpd; the d stands for daemon, a program that runs in the background. Your browser's developer tools show these messages for any site: open the Network tab and reload the page.</p>
+
+<h3>CGI: the server runs a program <span class="t" data-part="server">Server</span> <span class="t" data-part="html">HTML</span></h3>
+<p>The Common Gateway Interface, from NCSA in 1993, let a server run a program and send back whatever that program printed, instead of a stored file. A form could now send data to a script on the server, often written in Perl. The script could search, count or save, then print a fresh HTML page.</p>
+<pre>#!/usr/bin/perl
+print "Content-Type: text/html\n\n";
+print "&lt;h1&gt;Hello, $name&lt;/h1&gt;";</pre>
+<p>For the first time the page did not exist until somebody asked for it. That is a <b>dynamic page</b>. The 1990s guestbook and hit counter worked this way. CGI started a new program for every request, which was slow when many people visited, and later server languages kept one program running to avoid that cost.</p>
+
+<h3>Apache, and the server log <span class="t" data-part="server">Server</span></h3>
+<p>In 1995 a group of webmasters collected their fixes, or patches, to the NCSA server and released them as Apache. It became the most used web server for many years. Like most servers, Apache writes one line to a log for every request:</p>
+<pre>203.0.113.7 - - [17/Nov/2026:09:14:02] "GET /index.html HTTP/1.1" 200 5120</pre>
+<p>Read it as: who asked, when, which method and path, the status code, and the size of the answer in bytes. The log is how you find out who asked for what and what went wrong, and it is the first place to look when something breaks. The name Apache is often explained as "a patchy server", which the Apache project itself has said is a story added afterwards.</p>
+
+<h2 id="ch3">Chapter 3 · 1995 to 2004: Pages built from a database</h2>
+<p>Cheap hosting and free software put a database behind ordinary websites, and the server now remembers. Many sites still follow this pattern: a server language, a SQL database and HTML built on each request.</p>
+
+<h3>LAMP: a free stack for everyone <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></h3>
+<table>
+<tr><th>Letter</th><th>Software</th><th>Its job</th></tr>
+<tr><td>L</td><td>Linux</td><td>A free operating system for the server</td></tr>
+<tr><td>A</td><td>Apache</td><td>The web server that receives each request</td></tr>
+<tr><td>M</td><td>MySQL</td><td>A free SQL database, first released in 1995</td></tr>
+<tr><td>P</td><td>PHP</td><td>A language mixed into HTML, also from 1995</td></tr>
+</table>
+<p>A German magazine named the four together LAMP in 1998. Shared hosting with LAMP cost a few euro a month, so blogs, forums and shops could all keep their data in a database. WordPress, which runs a large share of the web, is still a LAMP application. PostgreSQL, the other big free database, took its name in 1996, and Perl and Python also filled the P in some versions.</p>
+
+<h3>How the server remembers you <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></h3>
+<p>HTTP forgets each request as soon as it ends. Cookies and sessions are how a login or a shopping basket survives from one page to the next.</p>
+<ul>
+<li><b>Cookies.</b> From 1994, a server could hand the browser a small cookie, and the browser sent it back with every later request.</li>
+<li><b>Sessions.</b> The cookie holds only an id. The server keeps the real details, such as who you are and what is in your basket, in its own memory or database.</li>
+</ul>
+<pre>Set-Cookie: session=8f3a91c2; HttpOnly; Secure
+sessions:   8f3a91c2 → user 42, basket [2, 7]</pre>
+<p>If someone steals the session id, they become you. That is why session cookies should be marked <code>HttpOnly</code>, so scripts cannot read them, and sent only over HTTPS.</p>
+
+<h3>SQL injection: when input becomes code <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></h3>
+<p>In 1998 a security researcher called rain.forest.puppy described how text typed into a form could change the SQL a server ran. The attack is called SQL injection. The cause is building a query by gluing strings together:</p>
+<pre># glued together: unsafe
+sql = "SELECT * FROM users WHERE name = '" + name + "'"
+
+# typed into the form:
+' OR '1'='1
+
+# the query the database receives:
+SELECT * FROM users WHERE name = '' OR '1'='1'</pre>
+<p>The typed text closes the quote early, then adds a condition that is always true, so the query returns every user. The cure is a <b>parameterised query</b>, where the SQL and the data travel separately:</p>
+<pre>db.execute("SELECT * FROM users WHERE name = ?", [name])</pre>
+<p>With a parameter, the same text is only a strange name that matches nobody. Over twenty-five years later, injection is still on OWASP's list of the most common risks.</p>
+
+<h3>Servers start answering with data <span class="t" data-part="server">Server</span> <span class="t" data-part="scripts">Scripts</span></h3>
+<p>In 2000 Roy Fielding described REST in his PhD thesis: a way to design a server around resources, each with its own address, read and changed with the HTTP methods. Soon after, JSON gave servers a light way to send data instead of whole pages. A script in the browser then decides how to show it.</p>
+<table>
+<tr><th>Request</th><th>Meaning</th></tr>
+<tr><td><code>GET /api/products/2</code></td><td>Read one product.</td></tr>
+<tr><td><code>POST /api/sales</code></td><td>Record a new sale.</td></tr>
+</table>
+<pre>{ "id": 2, "name": "Water", "price": 0.9 }</pre>
+<p>Most web APIs today follow this design. On the browser side, a script sends the request and turns the JSON into part of the page.</p>
+
+<h2 id="ch4">Chapter 4 · 2003 to 2010: Frameworks, caches and NoSQL</h2>
+<p>Sites with millions of users push servers and databases to their limits, and new tools appear to cope. Three ideas mark this chapter: frameworks that write the repetitive code, caches that remember answers, and databases that give up some of SQL's rules to grow bigger.</p>
+
+<h3>Frameworks and the ORM <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></h3>
+<p>Ruby on Rails in 2004 and Django, in Python, in 2005 gave every new project the same folders, routes and database setup. An <b>ORM</b>, an object-relational mapper, lets the program treat rows as objects, and the framework writes the SQL.</p>
+<div class="pair"><div><p class="cap">With an ORM (Django)</p><pre>Product.objects.filter(price__lt=1)</pre></div><div><p class="cap">The SQL it writes for you</p><pre>SELECT * FROM products
+WHERE price &lt; 1;</pre></div></div>
+<p>An ORM saves typing and guards against injection. It also hides the SQL, so slow queries can go unnoticed. <b>Migrations</b> also came with these frameworks: small files that change the database's tables step by step, so every copy of the project has the same structure. Laravel later brought the same ideas to PHP.</p>
+
+<h3>Caching: remember the answer <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></h3>
+<p>A popular page asked the database the same question thousands of times a minute. memcached, written in 2003 for the LiveJournal blog site, kept recent answers in memory. The server checks the cache first and asks the database only when the cache has nothing.</p>
+<figure class="flow"><div class="node" data-part="server"><b>Server</b><br>Is the answer in the cache?</div><div class="arrow">yes → cache hit, fast<br>no → cache miss</div><div class="node" data-part="db"><b>Database</b><br>asked only on a miss</div></figure>
+<p>A cache trades freshness for speed. The hard part is knowing when a remembered answer has gone out of date: if a price changes in the database, the cache may keep serving the old one until it is cleared. Browsers cache too, which is why a hard refresh sometimes fixes a page.</p>
+
+<h3>NoSQL: bigger, with fewer rules <span class="t" data-part="db">Database</span></h3>
+<p>Google and Amazon described databases that spread data over thousands of machines: Bigtable in 2006 and Dynamo in 2007. To grow that big, they gave up some of what SQL databases promise, such as joins between tables. In 2009 a meetup in San Francisco gave the movement a name: NoSQL, later read as "not only SQL".</p>
+<div class="pair"><div><p class="cap">The same order as tables</p><pre>orders
+id  customer
+17  aoife
+
+order_items
+order_id  item    price
+17        crisps  1.20
+17        water   0.90</pre></div><div><p class="cap">The same order as a document</p><pre>{
+  "_id": 17,
+  "customer": "aoife",
+  "items": [
+    { "item": "crisps", "price": 1.20 },
+    { "item": "water",  "price": 0.90 }
+  ]
+}</pre></div></div>
+<ul>
+<li><b>MongoDB, 2009,</b> stores documents shaped like JSON, so one record can hold nested data.</li>
+<li><b>Redis, 2009,</b> keeps keys and values in memory and is very fast. It is often used as a cache.</li>
+<li><b>Still SQL, today.</b> Most new projects still choose a SQL database, and many SQL databases now store JSON too.</li>
+</ul>
+<p>NoSQL suits some jobs, such as huge volumes of simple records, and suits others badly, such as money, where every sale must add up. A document keeps the whole order in one place, which is quick to read. Tables keep each fact once, which is safer when the numbers must agree.</p>
+
+<h3>JavaScript on the server <span class="t" data-part="server">Server</span> <span class="t" data-part="scripts">Scripts</span></h3>
+<p>Node.js, from 2009, handles thousands of open connections in one program, because it never waits idle for the disk or the database. While one request waits for the database, Node works on another. The same JavaScript, or TypeScript, can now run in the browser and on the server. Python, PHP and Ruby servers can do the same with the right tools, but Node made this way of waiting the default.</p>
+
+<h2 id="ch5">Chapter 5 · 2006 to 2019: Someone else’s computer</h2>
+<p>Servers move out of the back room and into rented data centres, and you pay for what you use. The phrase "the cloud is just someone else's computer" is a joke, and it is also accurate.</p>
+
+<h3>Renting servers by the hour <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></h3>
+<p>Before 2006, a company that wanted a server bought one, installed it and kept it running. A busy day meant buying more, and a quiet month left them idle. Then Amazon began renting storage and computers over the internet, and a new server took minutes instead of weeks.</p>
+<ul class="dates">
+<li><b>March 2006.</b> Amazon S3 stores files for anyone, priced per gigabyte.</li>
+<li><b>August 2006.</b> Amazon EC2 rents whole virtual servers, priced by the hour.</li>
+<li><b>Later.</b> Google, Microsoft and others offer the same. Managed databases arrive, where the provider runs the database for you.</li>
+</ul>
+<p>This is when the server stopped being a box that a business owned. A site on GitHub Pages or a free hosted database is a descendant.</p>
+
+<h3>Containers: it works on my machine, and on yours <span class="t" data-part="server">Server</span></h3>
+<p>A container packs a program together with everything it needs to run, so the same container runs the same way on a laptop and in a data centre. Docker made containers easy in 2013. In 2014 Google released Kubernetes, a system for running many containers across many machines, restarting any that fail and adding more when traffic grows.</p>
+<pre># Dockerfile
+FROM python:3.12
+COPY . /app
+CMD python /app/server.py</pre>
+<p>Containers ended a long-running excuse: "it works on my machine". Anyone who works with servers will meet Docker sooner or later.</p>
+
+<h3>Serverless: just the function <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></h3>
+<ul>
+<li><b>Functions on demand.</b> AWS Lambda, announced in November 2014, runs one function each time a request arrives. Nobody keeps a server running between requests.</li>
+<li><b>Managed data.</b> Hosted databases and services such as Firebase let a small team store data without running a database server themselves.</li>
+</ul>
+<table>
+<tr><th>Way to run a site</th><th>What runs</th><th>What you pay for</th></tr>
+<tr><td>Own one server</td><td>One machine, all the time</td><td>Every hour, busy or not</td></tr>
+<tr><td>Rent and scale</td><td>More rented servers as traffic grows</td><td>The servers running each hour</td></tr>
+<tr><td>Serverless</td><td>A function per request, nothing in between</td><td>Each request</td></tr>
+</table>
+<p>There are still servers, of course. "Serverless" means that somebody else looks after them. Serverless is cheap for quiet sites and can be expensive for busy ones. It also brings back the CGI pattern from chapter 2 in a new form: start, answer one request, stop.</p>
+
+<h3>Data comes with rules <span class="t" data-part="db">Database</span> <span class="t" data-part="server">Server</span></h3>
+<p><b>Breaches.</b> In 2017 attackers took the personal data of about 147 million people from Equifax, through a server that had missed a security update. The flaw was in Apache Struts, a Java web framework, and a fix had been available for about two months.</p>
+<p><b>GDPR, 2018.</b> The EU's data protection law began to apply on 25 May 2018. A site must collect only the data it needs, protect it and delete it on request.</p>
+<p>A database is now a responsibility as well as a tool. Every column you add is data you must protect. A question worth asking about any form: does a small online shop need each buyer's date of birth?</p>
+
+<h2 id="ch6">Chapter 6 · 2020 to now: Data for AI</h2>
+<p>AI systems need data to learn from and data to look things up in, and databases learn to search by meaning. This chapter has no settled ending, so it closes with questions.</p>
+
+<h3>Meaning as a list of numbers <span class="t" data-part="db">Database</span></h3>
+<p>An <b>embedding</b> turns a piece of text into a long list of numbers, called a vector. Texts with similar meanings get similar vectors. A database can then find the rows closest in meaning to a question, even when they share no words with it.</p>
+<p>Real embeddings have hundreds or thousands of numbers. With only two numbers, each note can sit at a point on a flat map, and a question lands near the notes that mean something similar:</p>
+<figure class="map"><span style="left:8%;top:20%">How to reset a password</span><span style="left:12%;top:36%">Forgot my login details</span><span class="q" style="left:14%;top:28%">◆ "I can't sign in"</span><span style="left:60%;top:22%">Refunds take five working days</span><span style="left:58%;top:40%">Cancelling an order</span><span style="left:10%;top:76%">Is the shop open on Sunday?</span><span style="left:62%;top:74%">Tracking a parcel</span></figure>
+<pre>-- pgvector, an add-on for PostgreSQL
+SELECT title FROM notes
+ORDER BY embedding &lt;-&gt; :question
+LIMIT 3;</pre>
+<p>The <code>&lt;-&gt;</code> operator measures the distance between two vectors, and a smaller distance means closer in meaning. pgvector first appeared in 2021, and SQLite and MySQL now have similar features.</p>
+
+<h3>Look it up, then answer <span class="t" data-part="db">Database</span> <span class="t" data-part="server">Server</span></h3>
+<p>A language model only knows what was in its training data. To answer questions about your own documents, it needs to look them up first. This pattern is called <b>retrieval-augmented generation</b>, or RAG: a server finds the closest rows in a vector database, then hands them to the model along with the question.</p>
+<figure class="flow three"><div class="node" data-part="scripts"><b>Browser</b><br>asks a question</div><div class="arrow">→</div><div class="node" data-part="server"><b>Server program</b><br>finds the nearest notes, then asks the model</div><div class="arrow">→</div><div class="node" data-part="db"><b>Vector database</b><br>returns the three closest rows</div></figure>
+<ul class="dates">
+<li><b>2020.</b> Researchers at Facebook AI name and describe retrieval-augmented generation.</li>
+<li><b>2021.</b> pgvector adds vector search to PostgreSQL.</li>
+<li><b>2023.</b> Vector databases become a product category of their own, as chat assistants spread.</li>
+</ul>
+<p>RAG is a three-tier application in disguise: a front end asks, a server program decides, a database remembers. Only the kind of search is new.</p>
+
+<h3>The servers’ new visitors <span class="t" data-part="server">Server</span></h3>
+<p>AI companies send crawlers to read the web for training data. Many sites saw their server logs fill with bots and their hosting bills rise.</p>
+<pre>66.249.66.1  "GET /notes/12"  200  Googlebot
+20.15.240.9  "GET /notes/13"  200  GPTBot
+20.15.240.9  "GET /notes/14"  200  GPTBot
+20.15.240.9  "GET /notes/15"  429  GPTBot
+81.17.4.22   "GET /notes/12"  200  Firefox</pre>
+<p>A site has three defences. <code>robots.txt</code> asks crawlers to stay away. A rate limit slows down any visitor that asks too fast, answering with status 429, Too Many Requests, as in the fourth line above. Some hosts now block AI crawlers by default. The angle here is cost: every request uses the server's time, and someone pays for it. The log file from chapter 2 is where a site owner first notices.</p>
+
+<h3>Questions without settled answers <span class="t" data-part="db">Database</span> <span class="t" data-part="server">Server</span></h3>
+<div class="discuss">
+<ol>
+<li><b>Whose data?</b> If your writing helped train a model, should you have been asked? Should you be paid?</li>
+<li><b>Forgetting.</b> GDPR gives you a right to have your data deleted. How would anyone delete it from a trained model?</li>
+<li><b>Trust.</b> When an assistant answers from your own documents, how would you check that it read them correctly?</li>
+</ol>
+<p>Reasonable people disagree on all three, and these questions are being argued in courts and parliaments now.</p></div>
+
+<h2 id="ch7">Chapter 7 · Today: Putting it together</h2>
+<p>One click, followed all the way to a database row and back, and the habits that keep it safe.</p>
+
+<h3>The journey of one click <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></h3>
+<figure class="flow three"><div class="node" data-part="scripts"><b>Browser</b><br>A click runs a script, which sends a request.<br><code>POST /api/buy {"id": 2}</code></div><div class="arrow">→</div><div class="node" data-part="server"><b>Server program</b><br>A route checks the request and decides what to do.<br><code>if stock &gt; 0: sell</code></div><div class="arrow">→</div><div class="node" data-part="db"><b>Database</b><br>A parameterised UPDATE changes one row.</div></figure>
+<pre>UPDATE products SET stock = stock - 1
+WHERE id = ? AND stock &gt; 0;</pre>
+<p>Then the same road runs in reverse: the database reports how many rows changed, the server answers with JSON and a status code, and the script updates the page. Putting the stock check inside the UPDATE means two buyers at once cannot both take the last item. Every chapter of this history is one part of that road: the request from chapter 2, the SQL from chapter 1, the route and the JSON from chapter 3, and the framework habits from chapter 4.</p>
+
+<h3>Five habits that keep a server safe <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></h3>
+<table>
+<tr><th>Habit</th><th>What it means</th><th>The mistake it answers</th></tr>
+<tr><td>Parameters</td><td>Never glue input into SQL. Send it as a parameter.</td><td>SQL injection, 1998</td></tr>
+<tr><td>Hashes</td><td>Store a slow hash of each password, never the password.</td><td>Leaked databases full of readable passwords</td></tr>
+<tr><td>Check again</td><td>Check every request on the server, even if the page checked it first.</td><td>Trusting the browser, since the CGI forms of 1993</td></tr>
+<tr><td>HTTPS</td><td>Encrypt every request, so no one can read or change it on the way.</td><td>Plain HTTP, before free certificates in 2015</td></tr>
+<tr><td>Updates</td><td>Install security updates promptly.</td><td>Equifax, 2017</td></tr>
+</table>
+<p>A slow hash, such as bcrypt or Argon2, turns a password into a fixed string that cannot be turned back:</p>
+<pre>id  name   password_hash
+2   brian  $2b$12$Q9vWm0…   (60 characters, different for every user)</pre>
+<p>None of these habits is new. Each one answers a mistake from earlier in this history. The OWASP Top 10 is the list to read next.</p>
+
+<h3>SQL is still here <span class="t" data-part="db">Database</span></h3>
+<p><b>SQLite.</b> A whole SQL database in one file, first released in 2000. It is in every phone and every web browser, and it is probably the most used database in the world. SQLite needs no database server at all, which makes it a good first database, and it can even run inside a web page, compiled to WebAssembly.</p>
+<p><b>PostgreSQL and MySQL.</b> The free databases of chapter 3 still run a large share of the web, now with JSON and vector features added.</p>
+<p>Fifty years after Codd, the table and the SELECT statement are still the place to start.</p>
+
+<h3>Questions to talk over</h3>
+<p>Each question has more than one good answer. Pick one, and back it up with an example from these notes.</p>
+<ol>
+<li>Pick a site you use. What do you think lives on its server, and what in its database?</li>
+<li>What could happen if a visitor typed SQL into a site's search box?</li>
+<li>When would you choose a document database over SQL tables?</li>
+<li>What data does a site you use collect that it does not need?</li>
+<li>Find a status code in your browser's network tab. What does it mean? (Open the developer tools, choose the Network tab, reload a page and read the status column.)</li>
+</ol>
+
+<h2 id="sources">Sources</h2>
+<ul class="sources">
+<li>E. F. Codd, <a href="https://dl.acm.org/doi/10.1145/362384.362685">A Relational Model of Data for Large Shared Data Banks</a>, Communications of the ACM (1970), and <a href="https://www.historyofinformation.com/detail.php?id=94">a short account of its impact</a></li>
+<li>Cybercultural, <a href="https://cybercultural.com/p/1993-cgi-scripts-and-early-server-side-web-programming/">1993: CGI scripts and early server-side web programming</a></li>
+<li>Apache HTTP Server Project, <a href="https://httpd.apache.org/ABOUT_APACHE.html">About Apache</a></li>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/MySQL">MySQL</a> and <a href="https://en.wikipedia.org/wiki/LAMP_(software_bundle)">LAMP</a></li>
+<li>eSecurity Planet, <a href="https://www.esecurityplanet.com/networks/how-was-sql-injection-discovered/">How was SQL injection discovered?</a></li>
+<li>Roy Fielding, <a href="https://ics.uci.edu/~fielding/pubs/dissertation/top.htm">Architectural Styles and the Design of Network-based Software Architectures</a> (2000)</li>
+<li>Martin Fowler, <a href="https://www.martinfowler.com/bliki/NosqlDefinition.html">NoSQL definition</a>, and InfoQ, <a href="https://www.infoq.com/news/2009/08/NoSQL-and-the-End-of-RDBMS-Era/">NoSQL and the end of the RDBMS era</a> (2009)</li>
+<li>Amazon, <a href="https://press.aboutamazon.com/news-releases/news-release-details/amazon-web-services-launches-amazon-s3-simple-storage-service">Amazon S3 launch</a> (2006) and <a href="https://press.aboutamazon.com/2014/11/amazon-web-services-announces-aws-lambda">AWS Lambda announcement</a> (2014)</li>
+<li>Kubernetes blog, <a href="https://kubernetes.io/blog/2024/06/06/10-Years-of-Kubernetes/">10 years of Kubernetes</a></li>
+<li>EUR-Lex, <a href="https://eur-lex.europa.eu/content/news/general-data-protection-regulation-GDPR-applies-from-25-May-2018.html">The GDPR applies from 25 May 2018</a></li>
+<li>Patrick Lewis and others, <a href="https://arxiv.org/abs/2005.11401">Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</a> (2020), and <a href="https://github.com/pgvector/pgvector">pgvector</a></li>
+<li>OWASP, <a href="https://owasp.org/Top10/2025/">Top 10:2025</a></li>
+<li>SQLite, <a href="https://www.sqlite.org/mostdeployed.html">Most widely deployed and used database engine</a></li>
+</ul>

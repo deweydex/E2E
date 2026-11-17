@@ -986,7 +986,7 @@ text "Send"            ← a &lt;div&gt; styled to look like one</pre>
   });
   document.getElementById("gb-back").addEventListener("click", function () { gbForm.reset(); show("form"); });
 
-  /* ---- 1996: a hit counter, honest about counting this browser only ---- */
+  /* ---- 1996: a hit counter that admits it counts only this browser only ---- */
   var visits = 1;
   try { visits = (parseInt(localStorage.getItem("history-visits") || "0", 10) || 0) + 1; localStorage.setItem("history-visits", String(visits)); } catch (e) { visits = 1; }
   document.getElementById("counter").textContent = String(visits).padStart(6, "0");

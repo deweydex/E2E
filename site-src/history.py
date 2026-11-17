@@ -150,6 +150,7 @@ def build_deck(name, deck_title, out):
 <div class="bar">
 <span class="title">{html.escape(deck_title)}</span>
 <a href="index.html">The era-by-era page</a>
+<a href="notes.html">Notes</a>
 <a href="../index.html">All history pages</a>
 PPTX_LINK<label for="jump" class="count">Chapter</label> <select id="jump">{''.join(options)}</select>
 <button type="button" id="prev" aria-label="Previous slide">←</button>
@@ -182,6 +183,106 @@ def build_site(name, site_title, out):
             '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
             + head + "\n</head>\n<body>\n" + body + "\n</body>\n</html>\n")
     (out / "index.html").write_text(page)
+
+
+NOTES_CSS = """
+:root { --bg: #fbfaf7; --fg: #1b2a4a; --muted: #4a5568; --line: #ddd6c8; --card: #fff; --code: #f1eee6;
+  --html: #E8955C; --css: #8DB4E2; --scripts: #E9C46A; --server: #8CC9A6; --db: #B9A6E0; --plugin: #C9D2E3; }
+@media (prefers-color-scheme: dark) { :root { --bg: #131b2e; --fg: #eef0f5; --muted: #c4cbda; --line: #33456b; --card: #1b2a4a; --code: #0f1729; } }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.65 "Public Sans", system-ui, sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 32px 16px 80px; }
+h1 { font: 700 clamp(32px, 6vw, 48px)/1.1 "Libre Baskerville", Georgia, serif; margin: 12px 0 10px; }
+h2 { font: 700 clamp(24px, 4vw, 30px)/1.2 "Libre Baskerville", Georgia, serif; margin: 56px 0 8px; padding-top: 18px; border-top: 3px solid var(--line); }
+h3 { font: 700 21px/1.3 "Public Sans", system-ui, sans-serif; margin: 34px 0 6px; }
+.lede { font-size: 19px; color: var(--muted); }
+a { color: inherit; text-underline-offset: 3px; }
+code, pre { font: 14px/1.55 "JetBrains Mono", ui-monospace, Menlo, monospace; }
+code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; white-space: pre-wrap; overflow-wrap: anywhere; margin: 10px 0 14px; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0 16px; font-size: 15px; display: block; overflow-x: auto; }
+th, td { text-align: left; vertical-align: top; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+th { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.t { display: inline-block; font: 700 12px "Public Sans", sans-serif; color: #1b2a4a; padding: 2px 10px; border-radius: 999px; vertical-align: middle; white-space: nowrap; }
+[data-part="html"].t { background: var(--html); } [data-part="css"].t { background: var(--css); } [data-part="scripts"].t { background: var(--scripts); }
+[data-part="server"].t { background: var(--server); } [data-part="db"].t { background: var(--db); } [data-part="plugin"].t { background: var(--plugin); }
+.parts { display: grid; gap: 10px; margin: 12px 0; }
+.parts > div, .node { background: var(--card); border: 1px solid var(--line); border-left: 8px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+[data-part="html"].node, .parts [data-part="html"] { border-left-color: var(--html); } [data-part="css"].node, .parts [data-part="css"] { border-left-color: var(--css); }
+[data-part="scripts"].node, .parts [data-part="scripts"] { border-left-color: var(--scripts); } [data-part="server"].node, .parts [data-part="server"] { border-left-color: var(--server); }
+[data-part="db"].node, .parts [data-part="db"] { border-left-color: var(--db); }
+figure { margin: 14px 0 16px; }
+.flow { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+.flow.three { grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; }
+.flow .arrow { text-align: center; color: var(--muted); font-size: 14px; align-self: center; }
+@media (max-width: 640px) { .flow, .flow.three { grid-template-columns: 1fr; } .flow .arrow { transform: none; } }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .pair { grid-template-columns: 1fr; } }
+.pair pre { margin-top: 2px; }
+.cap { font-size: 13px; font-weight: 700; color: var(--muted); margin: 6px 0 0; text-transform: uppercase; letter-spacing: .04em; }
+.dates { list-style: none; padding: 0; }
+.dates li { border-left: 4px solid var(--line); padding: 2px 0 2px 12px; margin: 8px 0; }
+.discuss { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin: 14px 0; }
+.screens { display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap; }
+.screens > div { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px; display: grid; gap: 6px; }
+.screens .wide { width: min(300px, 100%); } .screens .narrow { width: 110px; }
+.screens span { display: block; height: 14px; background: var(--muted); opacity: .5; border-radius: 3px; }
+.screens i { display: block; height: 40px; background: var(--css); border-radius: 4px; }
+.screens .wide > div { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.screens small { font-size: 12px; color: var(--muted); }
+.gridfig { display: grid; grid-template-columns: 1fr 2fr; grid-template-rows: 36px 90px 32px; gap: 6px; grid-template-areas: "h h" "n m" "f f"; max-width: 420px; }
+.gridfig div { background: var(--css); color: #1b2a4a; border-radius: 5px; padding: 6px 10px; font: 600 13px "JetBrains Mono", monospace; }
+.gridfig div:nth-child(2n) { background: var(--plugin); }
+.bars p { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; margin: 6px 0; width: fit-content; }
+.bars .bad { color: #b3261e; } .bars .good { color: #2e6b4a; }
+.search { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; max-width: 520px; }
+.search .q { border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; margin: 0 0 10px; }
+.search .aio { border: 2px solid var(--css); border-radius: 10px; padding: 8px 12px; }
+.search .aio p { margin: 4px 0; } .search small { color: var(--muted); }
+.search .link { color: #1a0dab; margin: 6px 0 0; }
+@media (prefers-color-scheme: dark) { .search .link { color: #8ab4f8; } }
+.map { position: relative; height: 240px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+.map span { position: absolute; font-size: 13px; line-height: 1.25; color: var(--muted); max-width: 36%; }
+.map span::before { content: "● "; color: var(--db); }
+.map span.q { color: var(--fg); font-weight: 700; } .map span.q::before { content: ""; }
+.toc { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 18px; margin: 18px 0; }
+.toc ol { margin: 6px 0 0; padding-left: 1.3em; }
+.top { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--muted); }
+.sources li { margin: 6px 0; }
+@media print { .top, .toc { display: none; } h2 { break-before: page; border: 0; } pre, figure, table { break-inside: avoid; } body { background: #fff; color: #000; } }
+"""
+
+
+def build_notes(name, deck_title, out, pptx):
+    body = (SRC / name / "notes.html").read_text()
+    heads = re.findall(r'<h2 id="([^"]+)">(.*?)</h2>', body)
+    toc = "".join(f'<li><a href="#{i}">{t}</a></li>' for i, t in heads)
+    links = ['<a href="slides.html">The slides</a>', '<a href="index.html">The era-by-era page</a>']
+    links += [f'<a href="{f.name}" download>The slides as PowerPoint</a>' for f in pptx]
+    links.append('<a href="../index.html">All history pages</a>')
+    top = '<p class="top">' + " · ".join(links) + "</p>"
+    first_h2 = body.index("<h2")
+    body = body[:first_h2] + f'<nav class="toc" aria-label="Contents"><b>Contents</b><ol>{toc}</ol></nav>\n' + body[first_h2:]
+    page = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{html.escape(deck_title)} · notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Public+Sans:wght@400;700&family=JetBrains+Mono:wght@400&display=swap">
+<style>{NOTES_CSS}</style>
+</head>
+<body>
+<main>
+{top}
+{body}
+</main>
+</body>
+</html>
+"""
+    (out / "notes.html").write_text(page)
 
 
 HUB = """<!DOCTYPE html>
@@ -236,8 +337,10 @@ def build():
         pptx = sorted((SRC / name).glob("*.pptx"))
         for f in pptx:
             shutil.copy(f, out / f.name)
+        if (SRC / name / "notes.html").exists():
+            build_notes(name, deck_title, out, pptx)
         cards.append(f'<div class="card"><h2>{html.escape(site_title)}</h2><p>{html.escape(blurb)}</p>'
-                     f'<p><a href="{name}/index.html">The era-by-era page</a><br><a href="{name}/slides.html">The slides, with notes</a>'
+                     f'<p><a href="{name}/index.html">The era-by-era page</a><br><a href="{name}/slides.html">The slides</a><br><a href="{name}/notes.html">The notes, to read on their own</a>'
                      + "".join(f'<br><a href="{name}/{f.name}" download>The slides as PowerPoint</a>' for f in pptx) + '</p></div>')
     (DIST / "index.html").write_text(HUB.replace("CARDS", "\n".join(cards)))
 
