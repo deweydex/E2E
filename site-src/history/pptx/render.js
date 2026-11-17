@@ -1,6 +1,6 @@
 const {chromium}=require('playwright');const fs=require('fs');
 (async()=>{const b=await chromium.launch();
-for (const name of ['web','server']) {
+for (const name of ['web','server','network']) {
   fs.mkdirSync(name,{recursive:true});
   const p=await b.newPage({viewport:{width:1920,height:1080}});
   await p.goto(`http://localhost:8765/docs/history/${name}/slides.html`);

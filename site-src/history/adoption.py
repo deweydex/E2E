@@ -56,6 +56,28 @@ DATA = {
     },
 }
 
+NET_YEARS = list(range(1990, 2024))
+DATA["network"] = {
+    "title": "The curve has not reached the top",
+    "eyebrow": "1990 to 2023 · share of the world’s people using the internet",
+    "years": NET_YEARS,
+    "every": 5,
+    "series": [
+        ("Internet users", "#1F6B66", [0.05, 0.08, 0.13, 0.18, 0.36, 0.68, 1.33, 2.04, 3.14, 4.63, 6.72, 8.02, 10.48, 12.16, 14.04,
+                                       15.6, 17.3, 20.3, 22.8, 25.4, 28.5, 31.0, 33.5, 35.4, 37.5, 39.9, 42.9, 45.4, 48.6, 53.2, 59.3, 62.2, 64.4, 67.4]),
+    ],
+    "ymax": 100,
+    "points": [
+        "<b>A real S-curve.</b> Under 1 per cent of people were online in 1995, 16 per cent in 2005 and 67 per cent in 2023.",
+        "<b>Not finished.</b> About 2.6 billion people were still offline in 2024, so the curve is still climbing.",
+        "<b>Overlap.</b> HTTP/2 reached about half of all sites in 2021, then fell to about a third by 2025 as HTTP/3 took over, while older sites kept HTTP/1.1.",
+    ],
+    "source": "Sources: World Bank and ITU, internet users per 100 people; ITU Facts and Figures 2024; W3Techs, HTTP/2 and HTTP/3 usage.",
+    "intro": "The share of the world’s people using the internet follows Rogers’ S-curve closely, and it has not reached the top.",
+    "site_intro": "The share of the world’s people online follows the same S-curve, and it has not reached the top.",
+    "notes": "This chart is the same S-curve as the slide before, drawn from real numbers. It rose slowly through the 1990s, steeply in the 2000s and 2010s, and is now flattening below the top. A protocol date on a later slide marks the start of a curve like this one, which for HTTP/2 rose and then fell back as HTTP/3 replaced it.",
+}
+
 NAVY, CREAM = "#1B2A4A", "#F7F5F0"
 
 
@@ -104,24 +126,25 @@ def rogers_svg(width, height, labels, stroke="#1B2A4A", fill="#B9A6E0", s_colour
     return "".join(out)
 
 
-def lines_svg(series, ymax, width, height, labels, axis="#1B2A4A", text_colour="#1B2A4A", grid="#D9D3C7"):
+def lines_svg(series, ymax, width, height, labels, axis="#1B2A4A", text_colour="#1B2A4A", grid="#D9D3C7", years=None, every=2):
+    years = years or YEARS
     pad_l, pad_r, pad_t, pad_b = (44 if labels else 6), (150 if labels else 6), 10, (28 if labels else 6)
     w, h = width - pad_l - pad_r, height - pad_t - pad_b
 
     def X(i):
-        return pad_l + i / (len(YEARS) - 1) * w
+        return pad_l + i / (len(years) - 1) * w
 
     def Y(v):
         return pad_t + h - v / ymax * h
 
-    out = [f'<svg viewBox="0 0 {width} {height}" width="{width}" height="{height}" role="img" aria-label="Line chart of the share of websites using each technology from 2015 to 2025" style="max-width:100%;height:auto">']
+    out = [f'<svg viewBox="0 0 {width} {height}" width="{width}" height="{height}" role="img" aria-label="Line chart from {years[0]} to {years[-1]}" style="max-width:100%;height:auto">']
     for v in (0, 25, 50, 75, 100):
         out.append(f'<line x1="{pad_l}" y1="{Y(v):.1f}" x2="{pad_l + w}" y2="{Y(v):.1f}" stroke="{grid}" stroke-width="1"/>')
         if labels:
             out.append(f'<text x="{pad_l - 6}" y="{Y(v) + 4:.1f}" text-anchor="end" font-size="12" fill="{text_colour}">{v}%</text>')
     if labels:
-        for i, y in enumerate(YEARS):
-            if i % 2 == 0:
+        for i, y in enumerate(years):
+            if i % every == 0 or i == len(years) - 1:
                 out.append(f'<text x="{X(i):.1f}" y="{pad_t + h + 18}" text-anchor="middle" font-size="12" fill="{text_colour}">{y}</text>')
     placed = []
     for name, colour, vals in series:
@@ -169,7 +192,8 @@ def slide_messy(name):
         f'<div style="display:flex;gap:16px;align-items:center"><div style="width:40px;height:8px;background:{c};border-radius:4px"></div><p style="font-size:24px;color:{NAVY}"><b>{n}</b> {v[0]:g}% → {v[-1]:g}%</p></div>'
         for n, c, v in d["series"])
     points = "".join(f'<p style="font-size:26px;line-height:1.4;color:#3D4A63">{p}</p>' for p in d["points"])
-    years = "".join(f'<p style="font-size:22px;color:#5A6478">{y}</p>' for y in (2015, 2017, 2019, 2021, 2023, 2025))
+    ys = d.get("years", YEARS)
+    years = "".join(f'<p style="font-size:22px;color:#5A6478">{y}</p>' for y in (ys[::5] + [ys[-1]] if "years" in d else (2015, 2017, 2019, 2021, 2023, 2025)))
     return (f'<section id="messy" data-transition="fade" style="background:{CREAM};color:{NAVY};font-family:\'Public Sans\', Arial, sans-serif;padding:112px 128px;display:flex;flex-direction:column;gap:36px">'
             '<div style="display:flex;flex-direction:column;gap:12px">'
             f'<p style="font-size:24px;font-weight:700;color:#5A6478;letter-spacing:3px;text-transform:uppercase">{d["eyebrow"]}</p>'
@@ -178,7 +202,7 @@ def slide_messy(name):
             '<div style="display:flex;flex-direction:column;gap:12px">'
             '<div style="display:flex;gap:16px">'
             '<div style="display:flex;flex-direction:column;justify-content:space-between;height:420px"><p style="font-size:22px;color:#5A6478">100%</p><p style="font-size:22px;color:#5A6478">50%</p><p style="font-size:22px;color:#5A6478">0%</p></div>'
-            f'{lines_svg(d["series"], d["ymax"], 760, 420, False)}</div>'
+            f'{lines_svg(d["series"], d["ymax"], 760, 420, False, years=d.get("years"))}</div>'
             f'<div style="display:flex;justify-content:space-between;padding:0 0 0 88px">{years}</div>'
             f'<div style="display:flex;flex-direction:column;gap:10px">{legend}</div></div>'
             f'<div style="display:flex;flex-direction:column;gap:24px">{points}<p style="font-size:22px;color:#5A6478">{d["source"]}</p></div>'
@@ -205,9 +229,10 @@ def update_deck(name):
             (HERE / "server" / "make_deck.py").write_text(maker)
 
 
-def table_html(series):
+def table_html(series, years=None, every=2):
+    years = years or YEARS
     head = "<tr><th>Year</th>" + "".join(f"<th>{n}</th>" for n, _, _ in series) + "</tr>"
-    rows = "".join("<tr><td>" + str(y) + "</td>" + "".join(f"<td>{v[i]:g}%</td>" for _, _, v in series) + "</tr>" for i, y in enumerate(YEARS) if i % 2 == 0)
+    rows = "".join("<tr><td>" + str(y) + "</td>" + "".join(f"<td>{v[i]:g}%</td>" for _, _, v in series) + "</tr>" for i, y in enumerate(years) if i % every == 0 or i == len(years) - 1)
     return f"<details><summary>The numbers behind the chart</summary><table>{head}{rows}</table></details>"
 
 
@@ -231,9 +256,9 @@ def notes_section(name):
 <p>The bell curve shows how many people adopt in each period. Add them up, and the total so far follows an <b>S-curve</b>: slow at first, then steep, then flat. The percentages are idealised, and real technologies rarely follow the shape exactly.</p>
 
 <h3>{d["title"]}</h3>
-<p>Real numbers show how untidy the picture is. The chart below uses one survey, W3Techs, which checks the top ten million websites, so the lines can be compared with each other.</p>
-<figure class="chart">{lines_svg(d["series"], d["ymax"], 720, 300, True, axis="currentColor", text_colour="currentColor", grid="rgba(127,127,127,.3)")}</figure>
-{table_html(d["series"])}
+<p>{d.get("intro", "Real numbers show how untidy the picture is. The chart below uses one survey, W3Techs, which checks the top ten million websites, so the lines can be compared with each other.")}</p>
+<figure class="chart">{lines_svg(d["series"], d["ymax"], 720, 300, True, axis="currentColor", text_colour="currentColor", grid="rgba(127,127,127,.3)", years=d.get("years"), every=d.get("every", 2))}</figure>
+{table_html(d["series"], d.get("years"), d.get("every", 2))}
 <ul>{"".join(f"<li>{p}</li>" for p in d["points"])}</ul>
 <p class="cap">{d["source"]}</p>
 <!-- adoption:end -->
@@ -248,8 +273,8 @@ def site_section(name):
 <h2>Before we start: history is messy</h2>
 <p>The dates on this page mark when something appeared, not when everyone used it. In 1962 the sociologist Everett Rogers described how new ideas spread: a few innovators first, then early adopters, the majority, and last of all the laggards. Add them up and the total follows an S-curve, slow, then steep, then flat.</p>
 <figure class="adopt-fig">{rogers_svg(720, 330, True, stroke="currentColor", text_colour="currentColor")}</figure>
-<p>Real technologies are untidier than the curve. This chart comes from one survey of the top ten million websites, so the lines can be compared.</p>
-<figure class="adopt-fig">{lines_svg(d["series"], d["ymax"], 720, 300, True, axis="currentColor", text_colour="currentColor", grid="rgba(127,127,127,.3)")}</figure>
+<p>{d.get("site_intro", "Real technologies are untidier than the curve. This chart comes from one survey of the top ten million websites, so the lines can be compared.")}</p>
+<figure class="adopt-fig">{lines_svg(d["series"], d["ymax"], 720, 300, True, axis="currentColor", text_colour="currentColor", grid="rgba(127,127,127,.3)", years=d.get("years"), every=d.get("every", 2))}</figure>
 <ul>{"".join(f"<li>{p}</li>" for p in d["points"])}</ul>
 <p class="muted">{d["source"]} Rogers, <i>Diffusion of Innovations</i> (1962).</p>
 </div>
@@ -265,12 +290,14 @@ def splice(text, block, before):
 
 
 def main():
-    for name in ("web", "server"):
+    for name in ("web", "server", "network"):
+        if not (HERE / name / "notes.html").exists():
+            continue
         update_deck(name)
         notes = (HERE / name / "notes.html").read_text()
         (HERE / name / "notes.html").write_text(splice(notes, notes_section(name), '<h2 id="ch1">'))
         site = (HERE / name / "site.html").read_text()
-        first = '<section class="era e1991"' if name == "web" else '<section class="era e1970"'
+        first = {"web": '<section class="era e1991"', "server": '<section class="era e1970"', "network": '<section class="era e1969"'}[name]
         site = splice(site, site_section(name), first)
         if ".adopt-fig" not in site:
             site = site.replace("</style>", ".adopt-fig { margin: 18px 0; color: var(--fg); }\n.adopt-fig svg { display: block; width: 100%; height: auto; }\n</style>", 1)

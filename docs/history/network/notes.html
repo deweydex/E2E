@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Down the Wire · notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Public+Sans:wght@400;700&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+:root { --bg: #fbfaf7; --fg: #1b2a4a; --muted: #4a5568; --line: #ddd6c8; --card: #fff; --code: #f1eee6;
+  --html: #E8955C; --css: #8DB4E2; --scripts: #E9C46A; --server: #8CC9A6; --db: #B9A6E0; --plugin: #C9D2E3; --net: #7CC6C1; }
+@media (prefers-color-scheme: dark) { :root { --bg: #131b2e; --fg: #eef0f5; --muted: #c4cbda; --line: #33456b; --card: #1b2a4a; --code: #0f1729; } }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.65 "Public Sans", system-ui, sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 32px 16px 80px; }
+h1 { font: 700 clamp(32px, 6vw, 48px)/1.1 "Libre Baskerville", Georgia, serif; margin: 12px 0 10px; }
+h2 { font: 700 clamp(24px, 4vw, 30px)/1.2 "Libre Baskerville", Georgia, serif; margin: 56px 0 8px; padding-top: 18px; border-top: 3px solid var(--line); }
+h3 { font: 700 21px/1.3 "Public Sans", system-ui, sans-serif; margin: 34px 0 6px; }
+.lede { font-size: 19px; color: var(--muted); }
+a { color: inherit; text-underline-offset: 3px; }
+code, pre { font: 14px/1.55 "JetBrains Mono", ui-monospace, Menlo, monospace; }
+code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; white-space: pre-wrap; overflow-wrap: anywhere; margin: 10px 0 14px; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0 16px; font-size: 15px; display: block; overflow-x: auto; }
+th, td { text-align: left; vertical-align: top; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+th { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.t { display: inline-block; font: 700 12px "Public Sans", sans-serif; color: #1b2a4a; padding: 2px 10px; border-radius: 999px; vertical-align: middle; white-space: nowrap; }
+[data-part="html"].t { background: var(--html); } [data-part="css"].t { background: var(--css); } [data-part="scripts"].t { background: var(--scripts); }
+[data-part="server"].t { background: var(--server); } [data-part="db"].t { background: var(--db); } [data-part="net"].t { background: var(--net); } [data-part="plugin"].t { background: var(--plugin); }
+.parts { display: grid; gap: 10px; margin: 12px 0; }
+.parts > div, .node { background: var(--card); border: 1px solid var(--line); border-left: 8px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+[data-part="html"].node, .parts [data-part="html"] { border-left-color: var(--html); } [data-part="css"].node, .parts [data-part="css"] { border-left-color: var(--css); }
+[data-part="scripts"].node, .parts [data-part="scripts"] { border-left-color: var(--scripts); } [data-part="server"].node, .parts [data-part="server"] { border-left-color: var(--server); }
+[data-part="db"].node, .parts [data-part="db"] { border-left-color: var(--db); }
+[data-part="net"].node, .parts [data-part="net"] { border-left-color: var(--net); }
+figure { margin: 14px 0 16px; }
+.flow { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+.flow.three { grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; }
+.flow .arrow { text-align: center; color: var(--muted); font-size: 14px; align-self: center; }
+@media (max-width: 640px) { .flow, .flow.three { grid-template-columns: 1fr; } .flow .arrow { transform: none; } }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .pair { grid-template-columns: 1fr; } }
+.pair pre { margin-top: 2px; }
+.cap { font-size: 13px; font-weight: 700; color: var(--muted); margin: 6px 0 0; text-transform: uppercase; letter-spacing: .04em; }
+.dates { list-style: none; padding: 0; }
+.dates li { border-left: 4px solid var(--line); padding: 2px 0 2px 12px; margin: 8px 0; }
+.discuss { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin: 14px 0; }
+.screens { display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap; }
+.screens > div { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px; display: grid; gap: 6px; }
+.screens .wide { width: min(300px, 100%); } .screens .narrow { width: 110px; }
+.screens span { display: block; height: 14px; background: var(--muted); opacity: .5; border-radius: 3px; }
+.screens i { display: block; height: 40px; background: var(--css); border-radius: 4px; }
+.screens .wide > div { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.screens small { font-size: 12px; color: var(--muted); }
+.gridfig { display: grid; grid-template-columns: 1fr 2fr; grid-template-rows: 36px 90px 32px; gap: 6px; grid-template-areas: "h h" "n m" "f f"; max-width: 420px; }
+.gridfig div { background: var(--css); color: #1b2a4a; border-radius: 5px; padding: 6px 10px; font: 600 13px "JetBrains Mono", monospace; }
+.gridfig div:nth-child(2n) { background: var(--plugin); }
+.bars p { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; margin: 6px 0; width: fit-content; }
+.bars .bad { color: #b3261e; } .bars .good { color: #2e6b4a; }
+.search { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; max-width: 520px; }
+.search .q { border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; margin: 0 0 10px; }
+.search .aio { border: 2px solid var(--css); border-radius: 10px; padding: 8px 12px; }
+.search .aio p { margin: 4px 0; } .search small { color: var(--muted); }
+.search .link { color: #1a0dab; margin: 6px 0 0; }
+@media (prefers-color-scheme: dark) { .search .link { color: #8ab4f8; } }
+.map { position: relative; height: 240px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+.map span { position: absolute; font-size: 13px; line-height: 1.25; color: var(--muted); max-width: 36%; }
+.map span::before { content: "● "; color: var(--db); }
+.map span.q { color: var(--fg); font-weight: 700; } .map span.q::before { content: ""; }
+figure.chart { color: var(--fg); margin: 16px 0; }
+figure.chart svg { display: block; width: 100%; height: auto; }
+details { margin: 8px 0 14px; } summary { cursor: pointer; font-weight: 700; }
+.toc { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 18px; margin: 18px 0; }
+.toc ol { margin: 6px 0 0; padding-left: 1.3em; }
+.top { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--muted); }
+.sources li { margin: 6px 0; }
+@media print { .top, .toc { display: none; } h2 { break-before: page; border: 0; } pre, figure, table { break-inside: avoid; } body { background: #fff; color: #000; } }
+</style>
+</head>
+<body>
+<main>
+<p class="top"><a href="slides.html">The slides</a> · <a href="index.html">The era-by-era page</a> · <a href="down-the-wire.pptx" download>The slides as PowerPoint</a> · <a href="../index.html">All history pages</a></p>
+<h1>Down the Wire</h1>
+<p class="lede">Notes on a history of the networks and protocols under the web, and of how each faster, wider pipe changed what a website could be. The headings follow the slides in order, and each section reads on its own.</p>
+
+<nav class="toc" aria-label="Contents"><b>Contents</b><ol><li><a href="#intro">Introduction</a></li><li><a href="#before">Before we start: history is messy</a></li><li><a href="#ch1">Chapter 1 · 1969 to 1990: Packets find their way</a></li><li><a href="#ch2">Chapter 2 · 1991 to 1999: The web over a phone line</a></li><li><a href="#ch3">Chapter 3 · 1998 to 2007: Always on</a></li><li><a href="#ch4">Chapter 4 · 2007 to 2014: The web in your pocket</a></li><li><a href="#ch5">Chapter 5 · 2015 to 2022: Faster, and encrypted by default</a></li><li><a href="#ch6">Chapter 6 · 2014 to now: Heavier pages, uneven networks</a></li><li><a href="#ch7">Chapter 7 · Today: Putting it together</a></li><li><a href="#sources">Sources</a></li></ol></nav>
+<h2 id="intro">Introduction</h2>
+
+<h3>Down the Wire</h3>
+<p>Every page, script and database query travels over a network. These notes follow the wires, radios and rules that carry them, from a two-letter message in 1969 to 5G. The thread through the story is simple: each time the pipe got wider or faster, websites changed shape to fill it.</p>
+
+<h3>The road under every request</h3>
+<p>Each section carries a coloured tag for every part of a website it is about, with the name written on it, so nobody has to rely on colour alone.</p>
+<div class="parts">
+<div data-part="html"><b>HTML</b> is the page itself, which has to travel to the reader.</div>
+<div data-part="css"><b>CSS</b> is the look of the page, sent alongside it.</div>
+<div data-part="scripts"><b>Scripts</b> are code in the browser that opens connections and sends requests.</div>
+<div data-part="server"><b>Server</b> is the computer at the other end that answers.</div>
+<div data-part="net"><b>Network</b> is the wires, radios and agreed rules that carry every byte between them.</div>
+</div>
+<p>The agreed rules are called <b>protocols</b>: agreements about how two machines talk. Most of this history is about the network, and the other parts appear where a change in the network changed what pages, scripts or servers could do.</p>
+
+<h3>Seven chapters, from 1969 to now</h3>
+<p>The network is older than the web by twenty years, so the story starts in 1969. Chapters overlap, because new networks arrived in some places years before others.</p>
+<table>
+<tr><th>Chapter</th><th>Years</th><th>Title</th></tr>
+<tr><td>1</td><td>1969 to 1990</td><td>Packets find their way</td></tr>
+<tr><td>2</td><td>1991 to 1999</td><td>The web over a phone line</td></tr>
+<tr><td>3</td><td>1998 to 2007</td><td>Always on</td></tr>
+<tr><td>4</td><td>2007 to 2014</td><td>The web in your pocket</td></tr>
+<tr><td>5</td><td>2015 to 2022</td><td>Faster, and encrypted by default</td></tr>
+<tr><td>6</td><td>2014 to now</td><td>Heavier pages, uneven networks</td></tr>
+<tr><td>7</td><td>Today</td><td>Putting it together</td></tr>
+</table>
+
+<!-- adoption:start -->
+<h2 id="before">Before we start: history is messy</h2>
+<p>The dates in these notes mark when something appeared or became a standard. They do not mark when everyone used it. Every technology here spread at its own speed, overlapped with older ones for years, and depended on others that came before it.</p>
+
+<h3>How a new technology spreads</h3>
+<p>In 1962 the sociologist Everett Rogers described how new ideas spread through a group of people in his book <i>Diffusion of Innovations</i>. He sorted people into five groups by when they take up something new.</p>
+<figure class="chart"><svg viewBox="0 0 720 330" width="720" height="330" role="img" aria-label="A bell curve divided into innovators, early adopters, early majority, late majority and laggards, with an S-shaped curve of total adoption rising from 0 to 100 per cent" style="max-width:100%;height:auto"><path d="M48.0,290.0 L48.0,287.2 L53.5,286.8 L59.1,286.3 L64.6,285.7 L70.1,285.0 L75.7,284.3 L81.2,283.5 L86.7,282.5 L92.3,281.5 L97.8,280.3 L103.3,279.0 L108.9,277.6 L114.4,276.0 L119.9,274.2 L125.5,272.2 L131.0,270.1 L136.5,267.8 L142.1,265.2 L147.6,262.4 L153.1,259.4 L158.7,256.1 L158.7,290.0 Z" fill="#E6DFF7" stroke="currentColor" stroke-width="1.5"/><path d="M158.7,290.0 L158.7,256.1 L164.2,252.6 L169.7,248.8 L175.3,244.8 L180.8,240.5 L186.3,235.9 L191.9,231.0 L197.4,225.9 L202.9,220.4 L208.5,214.7 L214.0,208.8 L219.5,202.6 L225.1,196.1 L230.6,189.4 L236.1,182.5 L241.7,175.5 L247.2,168.2 L252.7,160.8 L258.3,153.4 L263.8,145.8 L269.3,138.2 L269.3,290.0 Z" fill="#D3C6F0" stroke="currentColor" stroke-width="1.5"/><path d="M269.3,290.0 L269.3,138.2 L274.9,130.7 L280.4,123.1 L285.9,115.7 L291.5,108.3 L297.0,101.1 L302.5,94.2 L308.1,87.4 L313.6,81.0 L319.1,74.9 L324.7,69.2 L330.2,63.9 L335.7,59.0 L341.3,54.7 L346.8,50.8 L352.3,47.5 L357.9,44.8 L363.4,42.6 L368.9,41.0 L374.5,40.1 L380.0,39.8 L380.0,290.0 Z" fill="#B9A6E0" stroke="currentColor" stroke-width="1.5"/><path d="M380.0,290.0 L380.0,39.8 L385.5,40.1 L391.1,41.0 L396.6,42.6 L402.1,44.8 L407.7,47.5 L413.2,50.8 L418.7,54.7 L424.3,59.0 L429.8,63.9 L435.3,69.2 L440.9,74.9 L446.4,81.0 L451.9,87.4 L457.5,94.2 L463.0,101.1 L468.5,108.3 L474.1,115.7 L479.6,123.1 L485.1,130.7 L490.7,138.2 L490.7,290.0 Z" fill="#9C86D0" stroke="currentColor" stroke-width="1.5"/><path d="M490.7,290.0 L490.7,138.2 L496.2,145.8 L501.7,153.4 L507.3,160.8 L512.8,168.2 L518.3,175.5 L523.9,182.5 L529.4,189.4 L534.9,196.1 L540.5,202.6 L546.0,208.8 L551.5,214.7 L557.1,220.4 L562.6,225.9 L568.1,231.0 L573.7,235.9 L579.2,240.5 L584.7,244.8 L590.3,248.8 L595.8,252.6 L601.3,256.1 L606.9,259.4 L612.4,262.4 L617.9,265.2 L623.5,267.8 L629.0,270.1 L634.5,272.2 L640.1,274.2 L645.6,276.0 L651.1,277.6 L656.7,279.0 L662.2,280.3 L667.7,281.5 L673.3,282.5 L678.8,283.5 L684.3,284.3 L689.9,285.0 L695.4,285.7 L700.9,286.3 L706.5,286.8 L712.0,287.2 L712.0,290.0 Z" fill="#7E66BC" stroke="currentColor" stroke-width="1.5"/><path d="M48.0,289.9 L53.5,289.9 L59.1,289.8 L64.6,289.7 L70.1,289.6 L75.7,289.5 L81.2,289.3 L86.7,289.1 L92.3,289.0 L97.8,288.7 L103.3,288.5 L108.9,288.2 L114.4,287.9 L119.9,287.6 L125.5,287.2 L131.0,286.7 L136.5,286.2 L142.1,285.7 L147.6,285.1 L153.1,284.4 L158.7,283.6 L164.2,282.8 L169.7,281.9 L175.3,280.9 L180.8,279.8 L186.3,278.6 L191.9,277.3 L197.4,275.8 L202.9,274.3 L208.5,272.6 L214.0,270.8 L219.5,268.9 L225.1,266.8 L230.6,264.5 L236.1,262.2 L241.7,259.6 L247.2,256.9 L252.7,254.0 L258.3,251.0 L263.8,247.8 L269.3,244.4 L274.9,240.9 L280.4,237.2 L285.9,233.3 L291.5,229.3 L297.0,225.1 L302.5,220.7 L308.1,216.2 L313.6,211.6 L319.1,206.8 L324.7,201.9 L330.2,196.9 L335.7,191.7 L341.3,186.5 L346.8,181.2 L352.3,175.8 L357.9,170.4 L363.4,164.9 L368.9,159.3 L374.5,153.8 L380.0,148.2 L385.5,142.7 L391.1,137.1 L396.6,131.6 L402.1,126.2 L407.7,120.8 L413.2,115.5 L418.7,110.3 L424.3,105.1 L429.8,100.1 L435.3,95.2 L440.9,90.4 L446.4,85.8 L451.9,81.3 L457.5,76.9 L463.0,72.7 L468.5,68.7 L474.1,64.8 L479.6,61.1 L485.1,57.6 L490.7,54.2 L496.2,51.0 L501.7,48.0 L507.3,45.1 L512.8,42.4 L518.3,39.8 L523.9,37.5 L529.4,35.2 L534.9,33.1 L540.5,31.2 L546.0,29.4 L551.5,27.7 L557.1,26.2 L562.6,24.7 L568.1,23.4 L573.7,22.2 L579.2,21.1 L584.7,20.1 L590.3,19.2 L595.8,18.4 L601.3,17.6 L606.9,16.9 L612.4,16.3 L617.9,15.8 L623.5,15.3 L629.0,14.8 L634.5,14.4 L640.1,14.1 L645.6,13.8 L651.1,13.5 L656.7,13.3 L662.2,13.0 L667.7,12.9 L673.3,12.7 L678.8,12.5 L684.3,12.4 L689.9,12.3 L695.4,12.2 L700.9,12.1 L706.5,12.1 L712.0,12.0" fill="none" stroke="#A24A18" stroke-width="4" stroke-linecap="round"/><line x1="48" y1="290" x2="712" y2="290" stroke="currentColor" stroke-width="1.5"/><line x1="48" y1="12" x2="48" y2="290" stroke="currentColor" stroke-width="1"/><text x="42" y="294.0" text-anchor="end" font-size="12" fill="currentColor">0%</text><text x="42" y="155.0" text-anchor="end" font-size="12" fill="currentColor">50%</text><text x="42" y="16.0" text-anchor="end" font-size="12" fill="currentColor">100%</text><text x="103.3" y="306.0" text-anchor="middle" font-size="12" fill="currentColor">Innovators</text><text x="103.3" y="321.0" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">2.5%</text><text x="214.0" y="306.0" text-anchor="middle" font-size="12" fill="currentColor">Early adopters</text><text x="214.0" y="321.0" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">13.5%</text><text x="324.7" y="306.0" text-anchor="middle" font-size="12" fill="currentColor">Early majority</text><text x="324.7" y="321.0" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">34%</text><text x="435.3" y="306.0" text-anchor="middle" font-size="12" fill="currentColor">Late majority</text><text x="435.3" y="321.0" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">34%</text><text x="557.1" y="306.0" text-anchor="middle" font-size="12" fill="currentColor">Laggards</text><text x="557.1" y="321.0" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">16%</text><text x="518.3" y="73.2" font-size="13" font-weight="700" fill="#A24A18">total adopted so far</text><text x="59.1" y="173.2" font-size="13" fill="currentColor">new adopters</text><text x="59.1" y="189.2" font-size="13" fill="currentColor">in each period</text></svg></figure>
+<table>
+<tr><th>Group</th><th>Share</th><th>Who they are</th></tr>
+<tr><td>Innovators</td><td>2.5%</td><td>Try something while it is still rough and risky</td></tr>
+<tr><td>Early adopters</td><td>13.5%</td><td>Take it up once it shows promise, and others watch them</td></tr>
+<tr><td>Early majority</td><td>34%</td><td>Wait until it works reliably</td></tr>
+<tr><td>Late majority</td><td>34%</td><td>Join once most people already use it</td></tr>
+<tr><td>Laggards</td><td>16%</td><td>Switch last, often only when the old way stops working</td></tr>
+</table>
+<p>The bell curve shows how many people adopt in each period. Add them up, and the total so far follows an <b>S-curve</b>: slow at first, then steep, then flat. The percentages are idealised, and real technologies rarely follow the shape exactly.</p>
+
+<h3>The curve has not reached the top</h3>
+<p>The share of the world’s people using the internet follows Rogers’ S-curve closely, and it has not reached the top.</p>
+<figure class="chart"><svg viewBox="0 0 720 300" width="720" height="300" role="img" aria-label="Line chart from 1990 to 2023" style="max-width:100%;height:auto"><line x1="44" y1="272.0" x2="570" y2="272.0" stroke="rgba(127,127,127,.3)" stroke-width="1"/><text x="38" y="276.0" text-anchor="end" font-size="12" fill="currentColor">0%</text><line x1="44" y1="206.5" x2="570" y2="206.5" stroke="rgba(127,127,127,.3)" stroke-width="1"/><text x="38" y="210.5" text-anchor="end" font-size="12" fill="currentColor">25%</text><line x1="44" y1="141.0" x2="570" y2="141.0" stroke="rgba(127,127,127,.3)" stroke-width="1"/><text x="38" y="145.0" text-anchor="end" font-size="12" fill="currentColor">50%</text><line x1="44" y1="75.5" x2="570" y2="75.5" stroke="rgba(127,127,127,.3)" stroke-width="1"/><text x="38" y="79.5" text-anchor="end" font-size="12" fill="currentColor">75%</text><line x1="44" y1="10.0" x2="570" y2="10.0" stroke="rgba(127,127,127,.3)" stroke-width="1"/><text x="38" y="14.0" text-anchor="end" font-size="12" fill="currentColor">100%</text><text x="44.0" y="290" text-anchor="middle" font-size="12" fill="currentColor">1990</text><text x="123.7" y="290" text-anchor="middle" font-size="12" fill="currentColor">1995</text><text x="203.4" y="290" text-anchor="middle" font-size="12" fill="currentColor">2000</text><text x="283.1" y="290" text-anchor="middle" font-size="12" fill="currentColor">2005</text><text x="362.8" y="290" text-anchor="middle" font-size="12" fill="currentColor">2010</text><text x="442.5" y="290" text-anchor="middle" font-size="12" fill="currentColor">2015</text><text x="522.2" y="290" text-anchor="middle" font-size="12" fill="currentColor">2020</text><text x="570.0" y="290" text-anchor="middle" font-size="12" fill="currentColor">2023</text><polyline points="44.0,271.9 59.9,271.8 75.9,271.7 91.8,271.5 107.8,271.1 123.7,270.2 139.6,268.5 155.6,266.7 171.5,263.8 187.5,259.9 203.4,254.4 219.3,251.0 235.3,244.5 251.2,240.1 267.2,235.2 283.1,231.1 299.0,226.7 315.0,218.8 330.9,212.3 346.8,205.5 362.8,197.3 378.7,190.8 394.7,184.2 410.6,179.3 426.5,173.8 442.5,167.5 458.4,159.6 474.4,153.1 490.3,144.7 506.2,132.6 522.2,116.6 538.1,109.0 554.1,103.3 570.0,95.4" fill="none" stroke="#1F6B66" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle cx="570.0" cy="95.4" r="4" fill="#1F6B66"/><text x="578.0" y="99.4" font-size="12" font-weight="700" fill="#1F6B66">Internet users 67.4%</text></svg></figure>
+<details><summary>The numbers behind the chart</summary><table><tr><th>Year</th><th>Internet users</th></tr><tr><td>1990</td><td>0.05%</td></tr><tr><td>1995</td><td>0.68%</td></tr><tr><td>2000</td><td>6.72%</td></tr><tr><td>2005</td><td>15.6%</td></tr><tr><td>2010</td><td>28.5%</td></tr><tr><td>2015</td><td>39.9%</td></tr><tr><td>2020</td><td>59.3%</td></tr><tr><td>2023</td><td>67.4%</td></tr></table></details>
+<ul><li><b>A real S-curve.</b> Under 1 per cent of people were online in 1995, 16 per cent in 2005 and 67 per cent in 2023.</li><li><b>Not finished.</b> About 2.6 billion people were still offline in 2024, so the curve is still climbing.</li><li><b>Overlap.</b> HTTP/2 reached about half of all sites in 2021, then fell to about a third by 2025 as HTTP/3 took over, while older sites kept HTTP/1.1.</li></ul>
+<p class="cap">Sources: World Bank and ITU, internet users per 100 people; ITU Facts and Figures 2024; W3Techs, HTTP/2 and HTTP/3 usage.</p>
+<!-- adoption:end -->
+<h2 id="ch1">Chapter 1 · 1969 to 1990: Packets find their way</h2>
+<p>Before the web, researchers built a network that could carry any message, by any route, between any computers. Packets, addresses and names, the ideas in this chapter, were not built for the web, which arrived twenty years later.</p>
+
+<h3>The first message, and the idea of a packet <span class="t" data-part="net">Network</span></h3>
+<p>A telephone call holds one line open for the whole conversation. <b>Packet switching</b> works differently: a message is cut into small packets, each packet carries the address it is going to, and each can take any free route there. The receiver puts them back in order.</p>
+<pre>HELLO  →  [H] [E] [L] [L] [O]  →  each by its own route  →  HELLO</pre>
+<p>On 29 October 1969 a student in Leonard Kleinrock's lab at UCLA tried to log in to a computer at Stanford Research Institute over ARPANET, a network funded by the US Department of Defense. The system crashed after two letters, so the first message was "LO". By the end of 1969 the network linked four universities. Because packets share the lines, a broken link only means a different route, which is why the internet keeps working around faults.</p>
+
+<h3>TCP/IP: one language for every network <span class="t" data-part="net">Network</span></h3>
+<p>By the 1970s there were many separate networks. Vint Cerf and Bob Kahn designed a way to join them.</p>
+<ul>
+<li><b>IP</b> gives every computer an address, such as <code>192.0.2.17</code>, and moves packets between networks.</li>
+<li><b>TCP</b> checks that every packet arrived, in order, and asks again for any that went missing.</li>
+</ul>
+<ul class="dates">
+<li><b>1974.</b> Cerf and Kahn publish their design for joining networks together.</li>
+<li><b>1 January 1983.</b> "Flag day": ARPANET switches to TCP/IP. Computers that had not changed over were cut off.</li>
+<li><b>Today.</b> Every device on the internet still speaks IP, from a phone to a fridge.</li>
+</ul>
+<p>A network of networks is what the word internet means. Flag day is a rare case of everyone switching at once, and it worked only because the network was still small, a few hundred computers.</p>
+
+<h3>DNS: names instead of numbers <span class="t" data-part="net">Network</span></h3>
+<p>People remember names, and computers route by numbers. In 1983 Paul Mockapetris designed the Domain Name System, which turns a name into an address. No single computer holds every name. Each level knows who to ask next:</p>
+<pre>looking up www.example.ie
+1  root:        ask the .ie servers
+2  .ie:         ask example.ie's servers
+3  example.ie:  www is 192.0.2.17
+
+then the browser connects to 192.0.2.17</pre>
+<p>Your computer remembers each answer for a while, set by a "time to live", so most lookups take a few milliseconds. DNS is the first step of almost every visit to a website, and when it breaks, sites seem to vanish even though their servers are fine.</p>
+
+<h2 id="ch2">Chapter 2 · 1991 to 1999: The web over a phone line</h2>
+<p>Most people reached the web through a modem that turned data into sound on a telephone line, and every byte counted. In this chapter the network shapes the page, and the protocol grows up to make each connection go further.</p>
+
+<h3>HTTP: the web’s own protocol <span class="t" data-part="net">Network</span> <span class="t" data-part="server">Server</span></h3>
+<p>HTTP is the protocol a browser and a web server use. It runs on top of TCP, so it can assume every byte arrives.</p>
+<pre>GET /index.html HTTP/1.1
+Host: www.example.ie</pre>
+<table>
+<tr><th>Version</th><th>What it added</th></tr>
+<tr><td>HTTP/0.9, 1991</td><td>One line: GET and a path. The answer was HTML and nothing else.</td></tr>
+<tr><td>HTTP/1.0, 1996</td><td>Status codes such as 404, and headers that describe the content, so images could travel too.</td></tr>
+<tr><td>HTTP/1.1, 1997</td><td>A connection kept open for several requests, and the <code>Host</code> header, so one server could hold many sites.</td></tr>
+</table>
+<p>The <code>Host</code> header changed the business of the web. Before it, every site needed its own IP address. After it, one cheap server could host hundreds of small sites, which is what made shared hosting so cheap.</p>
+
+<h3>How long did a page take? <span class="t" data-part="net">Network</span> <span class="t" data-part="html">HTML</span></h3>
+<table>
+<tr><th>Connection</th><th>Speed</th><th>A 100 KB page</th></tr>
+<tr><td>Modem, about 1994</td><td>14.4 kbit/s</td><td>about 56 s</td></tr>
+<tr><td>Modem, about 1996</td><td>28.8 kbit/s</td><td>about 28 s</td></tr>
+<tr><td>56k modem, 1998</td><td>56 kbit/s</td><td>about 14 s</td></tr>
+<tr><td>Early broadband, 2002</td><td>1 Mbit/s</td><td>under 1 s</td></tr>
+</table>
+<p>To work out a time, multiply kilobytes by 8 to get kilobits, then divide by the speed. 100 × 8 is 800 kilobits, and 800 ÷ 14.4 is about 56 seconds. These are nominal speeds that ignore overheads, so real pages took longer. The 56k standard, V.90, was agreed in 1998. A modem also tied up the phone line, so nobody could ring the house while someone was online.</p>
+<p>Pages were built for that wait: small GIF images, few colours, text that appeared first, and images that loaded in coarse stripes, then sharpened. The <code>alt</code> text on an image was often what a visitor read while the picture arrived, or instead of it.</p>
+
+<h3>A lock for the connection <span class="t" data-part="net">Network</span> <span class="t" data-part="server">Server</span></h3>
+<p><b>SSL, 1995.</b> Netscape added SSL to its browser so that a connection could be encrypted, and a card number could cross the internet without anyone on the way reading it. The address began with <code>https://</code> and the browser showed a padlock.</p>
+<p><b>TLS, 1999.</b> The standards body took SSL over and renamed it TLS. Every padlock in a browser today is TLS.</p>
+<p>Encryption made online shopping possible. It costs a little time at the start of each connection, for the two computers to agree on keys, and on 1990s hardware that cost was large. For years only payment pages used it.</p>
+
+<h2 id="ch3">Chapter 3 · 1998 to 2007: Always on</h2>
+<p>Broadband and Wi-Fi left the connection open all day, so sites could send more, more often, to more places. The shift from dialling in to always on changed habits as much as speed.</p>
+
+<h3>Broadband changes what a page can do <span class="t" data-part="net">Network</span> <span class="t" data-part="scripts">Scripts</span></h3>
+<ul>
+<li><b>Always on.</b> DSL over phone lines and cable modems over TV cables gave connections that stayed open, at a megabit or more.</li>
+<li><b>Scripts in the background.</b> With the connection always there, a page could ask the server for small updates every few seconds. That is the Ajax pattern, behind Gmail in 2004 and Google Maps in 2005.</li>
+<li><b>Video.</b> YouTube launched in 2005. Streaming video to anyone needed both broadband homes and cheap bandwidth for the server.</li>
+</ul>
+<p>Each of these was possible earlier in a lab. Broadband made it possible for ordinary visitors. Imagine Google Maps on a 28.8 modem: every drag of the map fetches new image tiles, so the design only works when fetching is cheap and quick.</p>
+
+<h3>Wi-Fi cuts the cable <span class="t" data-part="net">Network</span></h3>
+<p>Wi-Fi carries network packets over radio. The standard is called 802.11, and the name Wi-Fi came from the industry group that tests devices against it. A laptop could now be online anywhere in a building, and soon in cafés, stations and airports.</p>
+<ul class="dates">
+<li><b>1997.</b> The first 802.11 standard, at 2 Mbit/s.</li>
+<li><b>1999.</b> 802.11b reaches 11 Mbit/s, and the Wi-Fi Alliance forms to certify devices.</li>
+<li><b>2003.</b> Laptops start to include Wi-Fi as standard.</li>
+</ul>
+<p>Radio is shared and noisy, so Wi-Fi spends much of its time taking turns and resending lost packets. That is why it feels slower than its headline speed, and why a busy café network crawls.</p>
+
+<h3>Content delivery networks: copies near the reader <span class="t" data-part="net">Network</span> <span class="t" data-part="server">Server</span></h3>
+<p>Light in fibre travels at about 200,000 km a second, so it needs at least 80 milliseconds to go from Dublin to San Francisco and back. A page with many files makes that trip many times.</p>
+<figure class="flow three"><div class="node" data-part="net"><b>Reader in Dublin</b></div><div class="arrow">without a CDN →<br>8,200 km each way</div><div class="node" data-part="server"><b>Main server</b><br>California</div></figure>
+<figure class="flow"><div class="node" data-part="net"><b>Reader in Dublin</b></div><div class="arrow">with a CDN →<br>a few kilometres</div><div class="node" data-part="server"><b>CDN copy</b><br>Dublin</div></figure>
+<p>A content delivery network keeps copies of a site's images, styles and scripts on servers in many cities, and answers each visitor from the nearest one. Akamai, founded in 1998, was the first big one. This was the first big change to the shape of a site: the main server keeps the data and pages, and copies of the heavy files live all over the world. Bandwidth can grow, but nothing makes light faster.</p>
+
+<h2 id="ch4">Chapter 4 · 2007 to 2014: The web in your pocket</h2>
+<p>Phones put the web on slow, patchy radio links, and the same pages had to work on all of them. Mobile networks brought the web to billions of people, often as their only connection.</p>
+
+<h3>Mobile data grows up <span class="t" data-part="net">Network</span> <span class="t" data-part="css">CSS</span></h3>
+<p>The first iPhone, in 2007, showed full web pages on a phone, over a 2G network called EDGE at well under a megabit.</p>
+<ul class="dates">
+<li><b>2001.</b> The first 3G network opens, in Japan.</li>
+<li><b>2008.</b> The iPhone 3G brings faster mobile data to a mass audience.</li>
+<li><b>14 December 2009.</b> The first commercial 4G LTE networks open in Stockholm and Oslo.</li>
+</ul>
+<p>Two ideas need keeping apart. <b>Bandwidth</b> is how much arrives each second, like the width of a pipe. <b>Latency</b> is how long the first drop takes to arrive, like the length of the pipe. A phone often waits hundreds of milliseconds for the first byte, however fast the download, and mobile networks improved bandwidth faster than latency.</p>
+
+<h3>WebSocket: a line that stays open <span class="t" data-part="net">Network</span> <span class="t" data-part="scripts">Scripts</span></h3>
+<p>Ajax asks, the server answers, and the line closes. For a chat or a live score, a page had to keep asking "anything new?" every few seconds. That is called <b>polling</b>, and it sends hundreds of empty questions. WebSocket, standardised in 2011, keeps one connection open in both directions, so the server can send news the moment it happens.</p>
+<pre>const socket = new WebSocket("wss://chat.example.ie");
+
+socket.onmessage = (event) =&gt; {
+  showMessage(event.data);
+};</pre>
+<p>Live chat, shared documents and multiplayer games in the browser rely on this. On a phone it also saves battery, because the radio wakes up only when there is news.</p>
+
+<h3>Designing for the slowest likely connection <span class="t" data-part="net">Network</span> <span class="t" data-part="html">HTML</span> <span class="t" data-part="css">CSS</span></h3>
+<ul>
+<li><b>Responsive images.</b> HTML gained ways to offer several sizes of an image, so a phone downloads a small one: <code>&lt;img srcset="small.jpg 480w, big.jpg 1600w"&gt;</code></li>
+<li><b>Lazy loading.</b> Images further down the page wait until the reader scrolls near them: <code>&lt;img loading="lazy"&gt;</code>. This became a plain HTML attribute from 2019, as browsers added it one by one; before that it needed a script.</li>
+<li><b>Mobile first.</b> Designers start from the phone layout and add to it for wide screens.</li>
+</ul>
+<p>Each of these saves bytes on a slow or metered connection. The network had become part of the design brief.</p>
+
+<h2 id="ch5">Chapter 5 · 2015 to 2022: Faster, and encrypted by default</h2>
+<p>For twenty years HTTP barely changed. Between 2015 and 2022 it changed twice, and encryption went from optional to normal.</p>
+
+<h3>HTTP/2: many requests on one connection <span class="t" data-part="net">Network</span> <span class="t" data-part="html">HTML</span></h3>
+<p>With HTTP/1.1, browsers opened about six connections to a site and sent one request at a time on each, so pages with a hundred files waited in queues. HTTP/2, standardised in May 2015, sends many requests together on one connection, interleaved, so nothing waits for a slow file in front of it.</p>
+<pre>HTTP/1.1   connection 1: [file 1][file 7]
+           connection 2: [file 2][file 8]
+           …six connections, then wait in line
+HTTP/2     one connection: [1][2][3][4][5][6][7][8]… interleaved</pre>
+<p>Old speed tricks, such as joining every image into one big "sprite sheet", stopped being necessary. HTTP/2 grew from SPDY, an experiment Google began in 2009. The requests and answers look the same to a web developer; only the way they travel changed.</p>
+
+<h3>Encryption becomes the default <span class="t" data-part="net">Network</span> <span class="t" data-part="server">Server</span></h3>
+<p>Free certificates from Let's Encrypt, from December 2015, removed the cost of HTTPS, and browsers then began to warn about every plain HTTP page. TLS 1.3, in August 2018, cut the handshake from two round trips to one, so encryption barely slows the start of a visit.</p>
+<ul class="dates">
+<li><b>2015.</b> Let's Encrypt opens to the public with free certificates.</li>
+<li><b>2018.</b> TLS 1.3 is published. Chrome marks plain HTTP as "Not secure".</li>
+<li><b>2025.</b> About 88 per cent of sites send visitors to HTTPS by default, according to W3Techs.</li>
+</ul>
+<p>Encryption hides which page on a site someone reads from anyone on the same network. It does not hide which site they visit.</p>
+
+<h3>HTTP/3: a new road for mobile <span class="t" data-part="net">Network</span></h3>
+<p>TCP delivers bytes strictly in order, so one lost packet holds up everything behind it. On a patchy mobile signal that happens often. <b>QUIC</b> replaces TCP for the web: it runs over UDP, a simpler protocol, and handles each stream on its own, so one loss holds up only its own stream. <b>HTTP/3</b> is HTTP over QUIC.</p>
+<ul class="dates">
+<li><b>2013.</b> Google starts testing QUIC in Chrome.</li>
+<li><b>May 2021.</b> QUIC becomes a standard.</li>
+<li><b>June 2022.</b> HTTP/3 becomes a standard.</li>
+</ul>
+<p>QUIC also survives a change of network. A phone that walks out of Wi-Fi onto 4G can keep the same connection, where TCP would have to start again.</p>
+
+<h3>5G, fibre and Wi-Fi 6 <span class="t" data-part="net">Network</span></h3>
+<p>The last mile got much faster in the late 2010s. The first 5G phone networks opened in April 2019, in South Korea and the United States. Wi-Fi 6 devices arrived the same year, and fibre began to replace copper phone lines in many homes. Headline speeds now reach a gigabit or more. Web pages did not need that speed; video, games and large downloads used it. The pattern from chapter 3 repeats: a faster pipe arrives, and new uses fill it.</p>
+
+<h2 id="ch6">Chapter 6 · 2014 to now: Heavier pages, uneven networks</h2>
+<p>Pages grew as fast as connections did, and a third of the world is still not online. Faster networks did not make the web fast for everyone.</p>
+
+<h3>Pages grew to fill the pipe <span class="t" data-part="html">HTML</span> <span class="t" data-part="net">Network</span></h3>
+<table>
+<tr><th>Median page weight</th><th>2014</th><th>2024</th></tr>
+<tr><td>On a phone</td><td>505 KB</td><td>2,311 KB</td></tr>
+<tr><td>On a desktop</td><td>1,208 KB</td><td>2,652 KB</td></tr>
+</table>
+<p>The median page on a phone grew more than four times over in ten years, and most of the weight is images and scripts. The 2024 page would take about 5½ minutes on a 1998 modem: 2,311 KB is about 18,500 kilobits, and at 56 kilobits a second that is about 330 seconds. On a 20 megabit 4G link it takes just under a second. The point is not that pages must be tiny. Every byte is paid for by someone on a slow or metered connection.</p>
+<p class="cap">Source: HTTP Archive, Web Almanac 2024</p>
+
+<h3>Who is still offline? <span class="t" data-part="net">Network</span></h3>
+<ul>
+<li><b>Online.</b> About 5.5 billion people used the internet in 2024, 68 per cent of the world's population.</li>
+<li><b>Offline.</b> About 2.6 billion people did not. Most live in low-income countries and rural areas.</li>
+<li><b>Slow and metered.</b> Many people online pay for each gigabyte, or share one phone in a household.</li>
+</ul>
+<p>The S-curve from the start of these notes has not reached the top, and it is flattening slowly. A site that loads in a second in Dublin may take a minute, and cost real money, somewhere else.</p>
+<p class="cap">Source: International Telecommunication Union, Facts and Figures 2024</p>
+
+<h3>The server moves towards the reader <span class="t" data-part="net">Network</span> <span class="t" data-part="server">Server</span></h3>
+<ul>
+<li><b>Edge functions.</b> From about 2017, content delivery networks began to run small programs, not only to store copies. A request can be answered in the nearest city without reaching the main server.</li>
+<li><b>Caching rules.</b> Headers tell every browser and CDN how long a file may be kept, so most visits download only what changed: <code>Cache-Control: max-age=31536000</code> means "keep this for a year".</li>
+</ul>
+<p>The architecture keeps shifting to beat distance: data in one place, code and copies near every reader. That brings back an old question in a new form: if a page is built in two hundred cities, which copy is the true one, and how quickly do the others hear about a change?</p>
+
+<h2 id="ch7">Chapter 7 · Today: Putting it together</h2>
+<p>What happens between pressing Enter and seeing a page, and the habits that keep a site fast on every network.</p>
+
+<h3>What happens when you press Enter <span class="t" data-part="net">Network</span> <span class="t" data-part="server">Server</span> <span class="t" data-part="html">HTML</span></h3>
+<table>
+<tr><th>Step</th><th>What happens</th><th>Round trips</th><th>From chapter</th></tr>
+<tr><td>1 DNS</td><td>The name becomes an IP address.</td><td>1, unless remembered</td><td>1</td></tr>
+<tr><td>2 Connect</td><td>TCP or QUIC opens a connection to that address.</td><td>1 (QUIC shares it with step 3)</td><td>1 and 5</td></tr>
+<tr><td>3 Encrypt</td><td>TLS agrees keys, so nobody can read the traffic.</td><td>1</td><td>2 and 5</td></tr>
+<tr><td>4 Request</td><td>HTTP asks for the page, and the server answers.</td><td>1, plus server time</td><td>2</td></tr>
+<tr><td>5 Render</td><td>The browser builds the page, then fetches its images, styles and scripts.</td><td>1 or more</td><td>6</td></tr>
+</table>
+<p>A round trip is the time for a message to reach the server and an answer to come back. On home broadband that might be 40 milliseconds, so the five steps cost about a quarter of a second. On a weak 3G link it might be 300 milliseconds, and steps 1 to 3 alone take about a second before a single byte of the page arrives. Every browser can show this sequence: open the developer tools, choose the Network tab and reload, then hover over the timing bar of the first request.</p>
+
+<h3>Five habits for every network <span class="t" data-part="net">Network</span> <span class="t" data-part="html">HTML</span> <span class="t" data-part="server">Server</span></h3>
+<table>
+<tr><th>Habit</th><th>What to do</th></tr>
+<tr><td>Weigh the page</td><td>Check the total size in the developer tools. Images are usually the heaviest part.</td></tr>
+<tr><td>Right-size images</td><td>Serve small images to small screens, in modern formats.</td></tr>
+<tr><td>Load lazily</td><td>Let images and scripts further down the page wait.</td></tr>
+<tr><td>Cache</td><td>Tell browsers and CDNs how long each file can be kept.</td></tr>
+<tr><td>Test slow</td><td>Throttle the connection in the developer tools and watch the page load.</td></tr>
+</table>
+<p>Each habit answers a constraint from this history: the modem, the phone, the distance, and the page that grew.</p>
+
+<h3>Questions to talk over</h3>
+<p>Each question has more than one good answer. Pick one, and back it up with an example from these notes.</p>
+<ol>
+<li>Which change in this history most changed what a website could do?</li>
+<li>What is the difference between bandwidth and latency? Which matters more for a phone?</li>
+<li>Why did pages get heavier as networks got faster?</li>
+<li>Who pays for a heavy page, and how?</li>
+<li>Load a site with the network throttled. What appears first, and what makes you wait? (Open the developer tools, choose the Network tab, pick a slow preset and reload.)</li>
+</ol>
+
+<h2 id="sources">Sources</h2>
+<ul class="sources">
+<li>Leonard Kleinrock, <a href="https://www.lk.cs.ucla.edu/internet_first_words.html">The first words on the internet</a>, UCLA</li>
+<li>IETF, <a href="https://www.rfc-editor.org/rfc/rfc1945.html">RFC 1945: HTTP/1.0</a> (1996), <a href="https://www.rfc-editor.org/rfc/rfc9000.html">RFC 9000: QUIC</a> (2021) and <a href="https://www.rfc-editor.org/rfc/rfc9114.html">RFC 9114: HTTP/3</a> (2022)</li>
+<li>TidBITS, <a href="https://tidbits.com/1998/02/16/itu-delivers-56k-modem-accord-2/">ITU delivers 56K modem accord</a> (1998)</li>
+<li>Telecoms.com, <a href="https://www.telecoms.com/wireless-networking/teliasonera-launches-commercial-lte-in-stockholm-and-oslo">TeliaSonera launches commercial LTE in Stockholm and Oslo</a> (2009)</li>
+<li>Let's Encrypt, <a href="https://letsencrypt.org/2015/11/12/public-beta-timing.html">Public beta: December 3, 2015</a></li>
+<li>HTTP Archive, <a href="https://almanac.httparchive.org/en/2024/page-weight">Web Almanac 2024: Page weight</a></li>
+<li>W3Techs, <a href="https://w3techs.com/technologies/history_overview/site_element/all/y">Historical yearly trends in the usage of site elements</a></li>
+<li>ITU, <a href="https://www.itu.int/en/mediacentre/Pages/PR-2024-11-27-facts-and-figures.aspx">Facts and Figures 2024</a>, and World Bank data via <a href="https://fred.stlouisfed.org/series/ITNETUSERP2WLD">FRED: Internet users for the World</a></li>
+<li>Everett M. Rogers, <i>Diffusion of Innovations</i> (1962), summarised in <a href="https://courses.lumenlearning.com/suny-marketing-spring2016/chapter/reading-diffusion-of-innovation/">Principles of Marketing: Diffusion of innovation</a></li>
+</ul>
+
+</main>
+</body>
+</html>

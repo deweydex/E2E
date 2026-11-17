@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Wire Gets Wider</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Mono:wght@400;600&family=Roboto:wght@400;500&display=swap">
+<style>
+/* Layout: one long scroll. Each era is a band dressed like the way people got online at the time,
+   from a teleprinter to a phone. A sticky "link" bar on top names the connection of the era in view
+   and its speed. Only the frame and the present-day band follow the viewer's light or dark theme. */
+:root {
+  --bg: oklch(97.5% 0.006 200); --fg: oklch(24% 0.03 230); --muted: oklch(45% 0.025 230);
+  --line: oklch(86% 0.015 220); --card: oklch(99.5% 0.003 200); --focus: oklch(55% 0.15 200);
+  --html: #E8955C; --css: #8DB4E2; --scripts: #E9C46A; --server: #8CC9A6; --net: #7CC6C1;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --text: "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: oklch(19% 0.02 220); --fg: oklch(93% 0.01 200); --muted: oklch(75% 0.02 210);
+  --line: oklch(34% 0.025 220); --card: oklch(23% 0.022 220); --focus: oklch(75% 0.12 190); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: oklch(19% 0.02 220); --fg: oklch(93% 0.01 200); --muted: oklch(75% 0.02 210);
+  --line: oklch(34% 0.025 220); --card: oklch(23% 0.022 220); --focus: oklch(75% 0.12 190); color-scheme: dark }
+
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--fg); }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.era { scroll-margin-top: 64px; padding-block: 48px 56px; }
+.wrap { max-width: 960px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+pre, code { white-space: pre-wrap; overflow-wrap: anywhere; }
+button, input, select { font: inherit; }
+[hidden] { display: none !important; }
+.built { margin-top: 28px; }
+
+/* ---------- the link bar ---------- */
+.chrome { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; font: 13px/1.2 var(--mono);
+  padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px));
+  padding-block: 8px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; transition: background .4s, color .4s; }
+.chrome .who { font-weight: 600; white-space: nowrap; }
+.chrome .cmd { flex: 1 1 220px; min-width: 0; padding: 4px 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.chrome select, .chrome button { padding: 3px 8px; cursor: pointer; font: 13px var(--mono); }
+.progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: currentColor; transform-origin: 0 50%; transform: scaleX(0); opacity: .6; }
+@supports (animation-timeline: scroll()) { .progress { animation: grow linear both; animation-timeline: scroll(root); } }
+@keyframes grow { to { transform: scaleX(1); } }
+.chrome[data-era="1969"] { background: #f4f1e4; color: #222; border-bottom: 2px dashed #9a9a8a; }
+.chrome[data-era="1969"] .cmd, .chrome[data-era="1969"] select, .chrome[data-era="1969"] button { background: #fffef6; color: #222; border: 1px solid #888; border-radius: 0; }
+.chrome[data-era="1996"] { background: #008080; color: #fff; font-family: "MS Sans Serif", Tahoma, Arial, sans-serif; font-size: 12px; }
+.chrome[data-era="1996"] .cmd { background: #fff; color: #000; border: 2px inset #ddd; }
+.chrome[data-era="1996"] select, .chrome[data-era="1996"] button { background: #c0c0c0; color: #000; border: 2px outset #eee; border-radius: 0; font: 12px Tahoma, Arial, sans-serif; }
+.chrome[data-era="2004"] { background: linear-gradient(#fdfdfd, #dfe6ee); color: #234; border-bottom: 1px solid #a5b4c6; font-family: "Lucida Grande", "Trebuchet MS", sans-serif; }
+.chrome[data-era="2004"] .cmd { background: #fff; color: #234; border: 1px solid #9aa9bb; border-radius: 4px; }
+.chrome[data-era="2004"] select, .chrome[data-era="2004"] button { background: linear-gradient(#fff, #dde5ee); border: 1px solid #9aa9bb; border-radius: 12px; color: #234; }
+.chrome[data-era="2010"] { background: linear-gradient(#b4c3d6, #6d84a2); color: #fff; text-shadow: 0 -1px 0 rgb(0 0 0 / .35); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.chrome[data-era="2010"] .cmd { background: #fff; color: #333; border: 1px solid #4f6582; border-radius: 6px; text-shadow: none; }
+.chrome[data-era="2010"] select, .chrome[data-era="2010"] button { background: linear-gradient(#8ea3bf, #5a7395); color: #fff; border: 1px solid #415775; border-radius: 6px; }
+.chrome[data-era="2016"] { background: #00796b; color: #fff; font-family: "Roboto", sans-serif; box-shadow: 0 2px 4px rgb(0 0 0 / .3); }
+.chrome[data-era="2016"] .cmd { background: rgb(255 255 255 / .15); color: #fff; border: 0; border-radius: 2px; }
+.chrome[data-era="2016"] select, .chrome[data-era="2016"] button { background: #fff; color: #00796b; border: 0; border-radius: 2px; font-weight: 500; }
+.chrome[data-era="2023"] { background: #f2f6f6; color: #123; border-bottom: 1px solid #cfdcdc; }
+.chrome[data-era="2023"] .cmd, .chrome[data-era="2023"] select, .chrome[data-era="2023"] button { background: #fff; color: #123; border: 1px solid #b9cccc; border-radius: 8px; }
+.chrome[data-era="now"] { background: color-mix(in oklch, var(--bg) 82%, transparent); backdrop-filter: blur(12px); color: var(--fg); border-bottom: 1px solid var(--line); }
+.chrome[data-era="now"] .cmd, .chrome[data-era="now"] select, .chrome[data-era="now"] button { background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 999px; }
+
+/* ---------- tags ---------- */
+.tag { white-space: nowrap; display: inline-block; vertical-align: middle; color: #1b2a4a; }
+.tag[data-part="html"] { background: var(--html); } .tag[data-part="css"] { background: var(--css); } .tag[data-part="scripts"] { background: var(--scripts); }
+.tag[data-part="server"] { background: var(--server); } .tag[data-part="net"] { background: var(--net); }
+.e1969 .tag { background: none !important; font: 14px "Courier New", monospace; text-transform: uppercase; border: 1px solid #555; padding: 0 5px; }
+.e1996 .tag { font: bold 11px Tahoma, Arial, sans-serif; border: 1px solid #000; padding: 0 4px; }
+.e2004 .tag { font: bold 11px "Lucida Grande", Arial, sans-serif; padding: 2px 9px; border-radius: 10px; border: 1px solid rgb(0 0 0 / .2); }
+.e2010 .tag { font: bold 11px "Helvetica Neue", Arial, sans-serif; padding: 2px 8px; border-radius: 4px; box-shadow: inset 0 1px rgb(255 255 255 / .6); }
+.e2016 .tag { font: 500 12px "Roboto", sans-serif; padding: 3px 10px; border-radius: 16px; }
+.e2023 .tag, .enow .tag { font: 700 12px var(--text); padding: 3px 10px; border-radius: 999px; }
+
+/* ---------- 1969 to 1990: a teleprinter on green-bar paper ---------- */
+.e1969 { color: #1b1b1b; font: 16px/1.55 "Courier New", Courier, monospace;
+  background: repeating-linear-gradient(#f4f1e4 0 3em, #dfeedd 3em 6em); }
+.e1969 h2 { font: bold 20px "Courier New", monospace; text-transform: uppercase; margin: 28px 0 8px; letter-spacing: .05em; }
+.e1969 h2:first-child { margin-top: 0; }
+.e1969 a { color: #003a7a; }
+.e1969 .sheet { border-left: 14px dotted #b9b4a0; border-right: 14px dotted #b9b4a0; padding: 0 18px; }
+.e1969 button { font: bold 14px "Courier New", monospace; background: #fffef6; border: 1px solid #333; padding: 3px 10px; cursor: pointer; text-transform: uppercase; }
+.e1969 input { font: 15px "Courier New", monospace; border: 1px solid #333; background: #fffef6; padding: 3px 6px; width: min(260px, 100%); }
+.e1969 pre { font: 15px/1.5 "Courier New", monospace; background: rgb(255 255 255 / .6); border: 1px dashed #777; padding: 10px; margin: 8px 0; min-height: 5em; }
+.e1969 svg { width: 100%; height: auto; display: block; background: rgb(255 255 255 / .55); border: 1px solid #999; }
+
+/* ---------- 1991 to 1999: a dial-up window ---------- */
+.e1996 { background: #008080; color: #000; font: 13px/1.5 Tahoma, "MS Sans Serif", Arial, sans-serif; }
+.e1996 .win { background: #c0c0c0; border: 2px outset #fff; margin-bottom: 18px; box-shadow: 1px 1px 0 #000; }
+.e1996 .bar { background: linear-gradient(90deg, #000080, #1084d0); color: #fff; font-weight: bold; padding: 3px 6px; display: flex; justify-content: space-between; }
+.e1996 .body { padding: 12px 14px; }
+.e1996 h2 { font: bold 16px Tahoma, Arial, sans-serif; margin: 14px 0 6px; }
+.e1996 h2:first-child { margin-top: 0; }
+.e1996 button { font: 12px Tahoma, Arial, sans-serif; background: #c0c0c0; border: 2px outset #fff; padding: 3px 12px; cursor: pointer; }
+.e1996 button:active { border-style: inset; }
+.e1996 select { font: 12px Tahoma, Arial, sans-serif; }
+.e1996 table { border-collapse: collapse; background: #fff; margin: 6px 0; }
+.e1996 th, .e1996 td { border: 1px solid #808080; padding: 3px 8px; text-align: left; }
+.e1996 pre, .e1996 code { font: 12px "Courier New", monospace; }
+.e1996 pre { background: #fff; border: 2px inset #ddd; padding: 6px 8px; }
+.e1996 .meter { height: 18px; border: 2px inset #ddd; background: #fff; position: relative; margin: 6px 0; }
+.e1996 .meter span { position: absolute; inset: 0 auto 0 0; width: 0; background: repeating-linear-gradient(90deg, #000080 0 10px, #fff 10px 12px); }
+.e1996 .shot { position: relative; height: 180px; border: 2px inset #ddd; background: #fff; overflow: hidden; }
+.e1996 .shot .img { position: absolute; inset: 0; background:
+  radial-gradient(circle at 70% 35%, #ffd84d 0 22px, transparent 23px),
+  linear-gradient(#7fb7ff 0 55%, #3d8a3d 55% 100%); }
+.e1996 .shot .img.coarse { filter: blur(6px) saturate(.6); }
+.e1996 .shot .cover { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; }
+.e1996 .shot .alt { position: absolute; left: 8px; top: 8px; font: italic 12px Tahoma, sans-serif; color: #444; }
+.e1996 a { color: #0000ee; }
+
+/* ---------- 1998 to 2007: glossy, always on ---------- */
+.e2004 { background: #eef3f8; color: #223; font: 15px/1.6 "Lucida Grande", "Trebuchet MS", Arial, sans-serif; }
+.e2004 .box { background: linear-gradient(#fff, #f3f7fb); border: 1px solid #c4d1de; border-radius: 10px; padding: 16px 18px; margin-bottom: 18px; box-shadow: 0 1px 0 #fff inset, 0 2px 6px rgb(0 40 80 / .08); }
+.e2004 h2 { font: bold 22px "Trebuchet MS", Arial, sans-serif; color: #1a5a96; margin: 0 0 8px; text-shadow: 0 1px 0 #fff; }
+.e2004 button { font: bold 13px "Lucida Grande", Arial, sans-serif; background: linear-gradient(#9fd16a, #5aa52a); color: #fff; border: 1px solid #4a8a22; border-radius: 14px; padding: 5px 14px; cursor: pointer; text-shadow: 0 -1px 0 rgb(0 0 0 / .25); }
+.e2004 button[aria-pressed="true"] { background: linear-gradient(#6fa4e0, #2c6fbf); border-color: #245d9f; }
+.e2004 svg { width: 100%; height: auto; display: block; }
+.e2004 .bars { display: inline-flex; gap: 3px; align-items: flex-end; height: 20px; vertical-align: middle; }
+.e2004 .bars i { width: 5px; background: #1a5a96; border-radius: 1px; }
+.e2004 a { color: #1a5a96; }
+
+/* ---------- 2007 to 2014: a phone in your pocket ---------- */
+.e2010 { color: #222; font: 15px/1.55 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: #c5ccd4 repeating-linear-gradient(90deg, rgb(255 255 255 / .12) 0 2px, transparent 2px 6px); }
+.e2010 .phone { max-width: 420px; margin: 0 auto 22px; background: #111; border-radius: 40px; padding: 54px 14px 70px; box-shadow: 0 10px 30px rgb(0 0 0 / .35); position: relative; }
+.e2010 .phone::after { content: ""; position: absolute; left: 50%; bottom: 18px; width: 40px; height: 40px; margin-left: -20px; border-radius: 50%; border: 2px solid #444; }
+.e2010 .screen { background: #fff; border-radius: 4px; overflow: hidden; }
+.e2010 .status { background: #000; color: #fff; font: bold 11px "Helvetica Neue", sans-serif; display: flex; justify-content: space-between; padding: 2px 6px; }
+.e2010 .nav { background: linear-gradient(#b4c3d6, #6d84a2); color: #fff; text-align: center; font-weight: bold; padding: 8px; text-shadow: 0 -1px 0 rgb(0 0 0 / .35); }
+.e2010 .list { padding: 8px 10px; min-height: 130px; font-size: 14px; }
+.e2010 .list p { margin: 0; padding: 6px 0; border-bottom: 1px solid #e3e3e3; }
+.e2010 .card { background: #fff; border-radius: 10px; padding: 14px 16px; margin-bottom: 18px; box-shadow: 0 1px 2px rgb(0 0 0 / .2); }
+.e2010 h2 { font: bold 20px "Helvetica Neue", sans-serif; margin: 0 0 6px; }
+.e2010 button { font: bold 14px "Helvetica Neue", sans-serif; background: linear-gradient(#fdfdfd, #d5d9de); border: 1px solid #9aa2ac; border-radius: 8px; padding: 6px 14px; cursor: pointer; color: #234; }
+.e2010 button[aria-pressed="true"] { background: linear-gradient(#5a95e6, #2c69c9); color: #fff; border-color: #2a5cad; }
+.e2010 code { font: 13px Menlo, monospace; background: #eef1f4; padding: 1px 4px; border-radius: 3px; }
+.e2010 .count { font: bold 28px "Helvetica Neue", sans-serif; }
+
+/* ---------- 2015 to 2022: flat, fast, encrypted ---------- */
+.e2016 { background: #eceff1; color: #212121; font: 15px/1.6 "Roboto", "Helvetica Neue", Arial, sans-serif; }
+.e2016 .mcard { background: #fff; border-radius: 2px; padding: 18px 20px; box-shadow: 0 1px 3px rgb(0 0 0 / .2); margin-bottom: 16px; }
+.e2016 h2 { font: 400 23px "Roboto", sans-serif; margin: 0 0 8px; }
+.e2016 .mbtn { background: #00796b; color: #fff; border: 0; border-radius: 2px; padding: 8px 16px; font: 500 14px "Roboto", sans-serif; text-transform: uppercase; cursor: pointer; box-shadow: 0 2px 4px rgb(0 0 0 / .2); }
+.e2016 .lanes { display: grid; gap: 4px; margin: 10px 0; font: 12px var(--mono); }
+.e2016 .lane { display: grid; grid-template-columns: 70px 1fr; gap: 8px; align-items: center; }
+.e2016 .track { position: relative; height: 16px; background: #f1f3f4; border-radius: 2px; }
+.e2016 .seg { position: absolute; top: 2px; bottom: 2px; background: #00796b; border-radius: 2px; transform-origin: left; }
+.e2016 .seg.wait { background: #ffcc80; }
+.e2016 .time { font: 500 18px "Roboto", sans-serif; color: #00796b; }
+.e2016 code { font: 13px var(--mono); background: #eceff1; padding: 1px 4px; }
+.e2016 a { color: #00796b; }
+
+/* ---------- 2014 to now: weight and reach ---------- */
+.e2023 { background: #f7fafa; color: #10282a; font: 16px/1.65 var(--text); }
+.e2023 h2 { font: 800 26px/1.2 var(--display); margin: 30px 0 8px; }
+.e2023 h2:first-child { margin-top: 0; }
+.e2023 .wbar { box-sizing: border-box; height: 28px; background: #1f6b66; border-radius: 6px; color: #fff; font: 700 13px var(--text); display: flex; align-items: center; padding: 0 10px; white-space: nowrap; }
+.e2023 .wbar.light { background: #7cc6c1; color: #10282a; }
+.e2023 select { font: 15px var(--text); padding: 4px 8px; border-radius: 8px; border: 1px solid #b9cccc; background: #fff; }
+.e2023 .big { font: 800 40px/1 var(--display); color: #1f6b66; }
+.e2023 .people { display: grid; grid-template-columns: repeat(25, 1fr); gap: 3px; max-width: 520px; margin: 10px 0; }
+.e2023 .people i { aspect-ratio: 1; border-radius: 50%; background: #1f6b66; }
+.e2023 .people i.off { background: #d6e2e2; }
+.e2023 a { color: #1f6b66; }
+
+/* ---------- now ---------- */
+.enow { background: var(--bg); color: var(--fg); font: 17px/1.6 var(--text); }
+.enow h2 { font: 800 clamp(28px, 4.6vw, 42px)/1.08 var(--display); letter-spacing: -.02em; margin: 0 0 10px; text-wrap: balance; }
+.enow h3 { font: 500 20px/1.25 var(--display); margin: 0 0 6px; }
+.enow p { max-width: 68ch; }
+.enow a { color: var(--fg); text-decoration-color: var(--focus); text-underline-offset: 3px; }
+.enow .muted { color: var(--muted); }
+.enow code { font: 14px var(--mono); background: color-mix(in oklch, var(--fg) 8%, transparent); padding: 1px 5px; border-radius: 5px; }
+.enow .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 14px 0; }
+@media (max-width: 720px) { .enow .steps { grid-template-columns: 1fr; } }
+.enow .stp { background: var(--card); border: 1px solid var(--line); border-top: 6px solid var(--net); border-radius: 10px; padding: 10px; min-width: 0; transition: box-shadow .3s; }
+.enow .stp[data-part="server"] { border-top-color: var(--server); } .enow .stp[data-part="html"] { border-top-color: var(--html); }
+.enow .stp.on { box-shadow: 0 0 0 3px var(--focus); }
+.enow .stp .ms { font: 600 14px var(--mono); color: var(--muted); }
+.enow .ctl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0; }
+.enow button, .enow select { background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.enow button.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.enow .say { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; min-height: 4.5em; }
+.enow .habits { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.enow .habits > div { border-top: 6px solid var(--net); padding-top: 10px; min-width: 0; }
+.enow .sources li { margin: 6px 0; }
+.enow .built { border-left: 4px solid var(--focus); padding: 4px 0 4px 14px; color: var(--muted); }
+.key { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+
+html.calm *, html.calm *::before, html.calm *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+.adopt-fig { margin: 18px 0; color: var(--fg); }
+.adopt-fig svg { display: block; width: 100%; height: auto; }
+</style>
+</head>
+<body>
+
+
+<header class="chrome" id="chrome" data-era="1969" aria-label="The connection for the era on screen">
+  <span class="who" id="who">Teleprinter</span>
+  <span class="cmd" id="cmd">LOGIN</span>
+  <label for="jump" class="who" style="font-weight:400">Go to</label>
+  <select id="jump">
+    <option value="prologue">Before we start · History is messy</option>
+    <option value="y1969">1969 · Packets find their way</option>
+    <option value="y1996">1991 · The web over a phone line</option>
+    <option value="y2004">1998 · Always on</option>
+    <option value="y2010">2007 · The web in your pocket</option>
+    <option value="y2016">2015 · Faster and encrypted</option>
+    <option value="y2023">2014 · Heavier pages</option>
+    <option value="now">Today · Putting it together</option>
+    <option value="sources">Sources</option>
+  </select>
+  <button type="button" id="calm" aria-pressed="false">Calm mode</button>
+  <span class="progress" aria-hidden="true"></span>
+</header>
+
+<main>
+<!-- ===================== 1969 to 1990 ===================== -->
+<!-- adoption:start -->
+<section class="era enow" id="prologue" data-era="now" data-who="Before we start" data-url="https://w3techs.com/" data-cmd="history --is messy">
+<div class="wrap">
+<h2>Before we start: history is messy</h2>
+<p>The dates on this page mark when something appeared, not when everyone used it. In 1962 the sociologist Everett Rogers described how new ideas spread: a few innovators first, then early adopters, the majority, and last of all the laggards. Add them up and the total follows an S-curve, slow, then steep, then flat.</p>
+<figure class="adopt-fig"><svg viewBox="0 0 720 330" width="720" height="330" role="img" aria-label="A bell curve divided into innovators, early adopters, early majority, late majority and laggards, with an S-shaped curve of total adoption rising from 0 to 100 per cent" style="max-width:100%;height:auto"><path d="M48.0,290.0 L48.0,287.2 L53.5,286.8 L59.1,286.3 L64.6,285.7 L70.1,285.0 L75.7,284.3 L81.2,283.5 L86.7,282.5 L92.3,281.5 L97.8,280.3 L103.3,279.0 L108.9,277.6 L114.4,276.0 L119.9,274.2 L125.5,272.2 L131.0,270.1 L136.5,267.8 L142.1,265.2 L147.6,262.4 L153.1,259.4 L158.7,256.1 L158.7,290.0 Z" fill="#E6DFF7" stroke="currentColor" stroke-width="1.5"/><path d="M158.7,290.0 L158.7,256.1 L164.2,252.6 L169.7,248.8 L175.3,244.8 L180.8,240.5 L186.3,235.9 L191.9,231.0 L197.4,225.9 L202.9,220.4 L208.5,214.7 L214.0,208.8 L219.5,202.6 L225.1,196.1 L230.6,189.4 L236.1,182.5 L241.7,175.5 L247.2,168.2 L252.7,160.8 L258.3,153.4 L263.8,145.8 L269.3,138.2 L269.3,290.0 Z" fill="#D3C6F0" stroke="currentColor" stroke-width="1.5"/><path d="M269.3,290.0 L269.3,138.2 L274.9,130.7 L280.4,123.1 L285.9,115.7 L291.5,108.3 L297.0,101.1 L302.5,94.2 L308.1,87.4 L313.6,81.0 L319.1,74.9 L324.7,69.2 L330.2,63.9 L335.7,59.0 L341.3,54.7 L346.8,50.8 L352.3,47.5 L357.9,44.8 L363.4,42.6 L368.9,41.0 L374.5,40.1 L380.0,39.8 L380.0,290.0 Z" fill="#B9A6E0" stroke="currentColor" stroke-width="1.5"/><path d="M380.0,290.0 L380.0,39.8 L385.5,40.1 L391.1,41.0 L396.6,42.6 L402.1,44.8 L407.7,47.5 L413.2,50.8 L418.7,54.7 L424.3,59.0 L429.8,63.9 L435.3,69.2 L440.9,74.9 L446.4,81.0 L451.9,87.4 L457.5,94.2 L463.0,101.1 L468.5,108.3 L474.1,115.7 L479.6,123.1 L485.1,130.7 L490.7,138.2 L490.7,290.0 Z" fill="#9C86D0" stroke="currentColor" stroke-width="1.5"/><path d="M490.7,290.0 L490.7,138.2 L496.2,145.8 L501.7,153.4 L507.3,160.8 L512.8,168.2 L518.3,175.5 L523.9,182.5 L529.4,189.4 L534.9,196.1 L540.5,202.6 L546.0,208.8 L551.5,214.7 L557.1,220.4 L562.6,225.9 L568.1,231.0 L573.7,235.9 L579.2,240.5 L584.7,244.8 L590.3,248.8 L595.8,252.6 L601.3,256.1 L606.9,259.4 L612.4,262.4 L617.9,265.2 L623.5,267.8 L629.0,270.1 L634.5,272.2 L640.1,274.2 L645.6,276.0 L651.1,277.6 L656.7,279.0 L662.2,280.3 L667.7,281.5 L673.3,282.5 L678.8,283.5 L684.3,284.3 L689.9,285.0 L695.4,285.7 L700.9,286.3 L706.5,286.8 L712.0,287.2 L712.0,290.0 Z" fill="#7E66BC" stroke="currentColor" stroke-width="1.5"/><path d="M48.0,289.9 L53.5,289.9 L59.1,289.8 L64.6,289.7 L70.1,289.6 L75.7,289.5 L81.2,289.3 L86.7,289.1 L92.3,289.0 L97.8,288.7 L103.3,288.5 L108.9,288.2 L114.4,287.9 L119.9,287.6 L125.5,287.2 L131.0,286.7 L136.5,286.2 L142.1,285.7 L147.6,285.1 L153.1,284.4 L158.7,283.6 L164.2,282.8 L169.7,281.9 L175.3,280.9 L180.8,279.8 L186.3,278.6 L191.9,277.3 L197.4,275.8 L202.9,274.3 L208.5,272.6 L214.0,270.8 L219.5,268.9 L225.1,266.8 L230.6,264.5 L236.1,262.2 L241.7,259.6 L247.2,256.9 L252.7,254.0 L258.3,251.0 L263.8,247.8 L269.3,244.4 L274.9,240.9 L280.4,237.2 L285.9,233.3 L291.5,229.3 L297.0,225.1 L302.5,220.7 L308.1,216.2 L313.6,211.6 L319.1,206.8 L324.7,201.9 L330.2,196.9 L335.7,191.7 L341.3,186.5 L346.8,181.2 L352.3,175.8 L357.9,170.4 L363.4,164.9 L368.9,159.3 L374.5,153.8 L380.0,148.2 L385.5,142.7 L391.1,137.1 L396.6,131.6 L402.1,126.2 L407.7,120.8 L413.2,115.5 L418.7,110.3 L424.3,105.1 L429.8,100.1 L435.3,95.2 L440.9,90.4 L446.4,85.8 L451.9,81.3 L457.5,76.9 L463.0,72.7 L468.5,68.7 L474.1,64.8 L479.6,61.1 L485.1,57.6 L490.7,54.2 L496.2,51.0 L501.7,48.0 L507.3,45.1 L512.8,42.4 L518.3,39.8 L523.9,37.5 L529.4,35.2 L534.9,33.1 L540.5,31.2 L546.0,29.4 L551.5,27.7 L557.1,26.2 L562.6,24.7 L568.1,23.4 L573.7,22.2 L579.2,21.1 L584.7,20.1 L590.3,19.2 L595.8,18.4 L601.3,17.6 L606.9,16.9 L612.4,16.3 L617.9,15.8 L623.5,15.3 L629.0,14.8 L634.5,14.4 L640.1,14.1 L645.6,13.8 L651.1,13.5 L656.7,13.3 L662.2,13.0 L667.7,12.9 L673.3,12.7 L678.8,12.5 L684.3,12.4 L689.9,12.3 L695.4,12.2 L700.9,12.1 L706.5,12.1 L712.0,12.0" fill="none" stroke="#A24A18" stroke-width="4" stroke-linecap="round"/><line x1="48" y1="290" x2="712" y2="290" stroke="currentColor" stroke-width="1.5"/><line x1="48" y1="12" x2="48" y2="290" stroke="currentColor" stroke-width="1"/><text x="42" y="294.0" text-anchor="end" font-size="12" fill="currentColor">0%</text><text x="42" y="155.0" text-anchor="end" font-size="12" fill="currentColor">50%</text><text x="42" y="16.0" text-anchor="end" font-size="12" fill="currentColor">100%</text><text x="103.3" y="306.0" text-anchor="middle" font-size="12" fill="currentColor">Innovators</text><text x="103.3" y="321.0" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">2.5%</text><text x="214.0" y="306.0" text-anchor="middle" font-size="12" fill="currentColor">Early adopters</text><text x="214.0" y="321.0" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">13.5%</text><text x="324.7" y="306.0" text-anchor="middle" font-size="12" fill="currentColor">Early majority</text><text x="324.7" y="321.0" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">34%</text><text x="435.3" y="306.0" text-anchor="middle" font-size="12" fill="currentColor">Late majority</text><text x="435.3" y="321.0" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">34%</text><text x="557.1" y="306.0" text-anchor="middle" font-size="12" fill="currentColor">Laggards</text><text x="557.1" y="321.0" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">16%</text><text x="518.3" y="73.2" font-size="13" font-weight="700" fill="#A24A18">total adopted so far</text><text x="59.1" y="173.2" font-size="13" fill="currentColor">new adopters</text><text x="59.1" y="189.2" font-size="13" fill="currentColor">in each period</text></svg></figure>
+<p>The share of the world’s people online follows the same S-curve, and it has not reached the top.</p>
+<figure class="adopt-fig"><svg viewBox="0 0 720 300" width="720" height="300" role="img" aria-label="Line chart from 1990 to 2023" style="max-width:100%;height:auto"><line x1="44" y1="272.0" x2="570" y2="272.0" stroke="rgba(127,127,127,.3)" stroke-width="1"/><text x="38" y="276.0" text-anchor="end" font-size="12" fill="currentColor">0%</text><line x1="44" y1="206.5" x2="570" y2="206.5" stroke="rgba(127,127,127,.3)" stroke-width="1"/><text x="38" y="210.5" text-anchor="end" font-size="12" fill="currentColor">25%</text><line x1="44" y1="141.0" x2="570" y2="141.0" stroke="rgba(127,127,127,.3)" stroke-width="1"/><text x="38" y="145.0" text-anchor="end" font-size="12" fill="currentColor">50%</text><line x1="44" y1="75.5" x2="570" y2="75.5" stroke="rgba(127,127,127,.3)" stroke-width="1"/><text x="38" y="79.5" text-anchor="end" font-size="12" fill="currentColor">75%</text><line x1="44" y1="10.0" x2="570" y2="10.0" stroke="rgba(127,127,127,.3)" stroke-width="1"/><text x="38" y="14.0" text-anchor="end" font-size="12" fill="currentColor">100%</text><text x="44.0" y="290" text-anchor="middle" font-size="12" fill="currentColor">1990</text><text x="123.7" y="290" text-anchor="middle" font-size="12" fill="currentColor">1995</text><text x="203.4" y="290" text-anchor="middle" font-size="12" fill="currentColor">2000</text><text x="283.1" y="290" text-anchor="middle" font-size="12" fill="currentColor">2005</text><text x="362.8" y="290" text-anchor="middle" font-size="12" fill="currentColor">2010</text><text x="442.5" y="290" text-anchor="middle" font-size="12" fill="currentColor">2015</text><text x="522.2" y="290" text-anchor="middle" font-size="12" fill="currentColor">2020</text><text x="570.0" y="290" text-anchor="middle" font-size="12" fill="currentColor">2023</text><polyline points="44.0,271.9 59.9,271.8 75.9,271.7 91.8,271.5 107.8,271.1 123.7,270.2 139.6,268.5 155.6,266.7 171.5,263.8 187.5,259.9 203.4,254.4 219.3,251.0 235.3,244.5 251.2,240.1 267.2,235.2 283.1,231.1 299.0,226.7 315.0,218.8 330.9,212.3 346.8,205.5 362.8,197.3 378.7,190.8 394.7,184.2 410.6,179.3 426.5,173.8 442.5,167.5 458.4,159.6 474.4,153.1 490.3,144.7 506.2,132.6 522.2,116.6 538.1,109.0 554.1,103.3 570.0,95.4" fill="none" stroke="#1F6B66" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle cx="570.0" cy="95.4" r="4" fill="#1F6B66"/><text x="578.0" y="99.4" font-size="12" font-weight="700" fill="#1F6B66">Internet users 67.4%</text></svg></figure>
+<ul><li><b>A real S-curve.</b> Under 1 per cent of people were online in 1995, 16 per cent in 2005 and 67 per cent in 2023.</li><li><b>Not finished.</b> About 2.6 billion people were still offline in 2024, so the curve is still climbing.</li><li><b>Overlap.</b> HTTP/2 reached about half of all sites in 2021, then fell to about a third by 2025 as HTTP/3 took over, while older sites kept HTTP/1.1.</li></ul>
+<p class="muted">Sources: World Bank and ITU, internet users per 100 people; ITU Facts and Figures 2024; W3Techs, HTTP/2 and HTTP/3 usage. Rogers, <i>Diffusion of Innovations</i> (1962).</p>
+</div>
+</section>
+<!-- adoption:end -->
+<section class="era e1969" id="y1969" data-era="1969" data-who="Teleprinter · 110 bit/s" data-cmd="LOGIN">
+<div class="wrap"><div class="sheet">
+<h2>The Wire Gets Wider</h2>
+<p>This page is a history of the networks and protocols under the web, and of how each faster, wider pipe changed what a website could be. It rebuilds itself as you scroll, in the look of each way people got online, from a teleprinter to the phone in your pocket.</p>
+<ul class="key">
+<li><span class="tag" data-part="net">Network</span> the wires, radios and protocols</li>
+<li><span class="tag" data-part="server">Server</span> the computer that answers</li>
+<li><span class="tag" data-part="html">HTML</span> the page that travels</li>
+<li><span class="tag" data-part="scripts">Scripts</span> code that opens connections</li>
+</ul>
+
+<h2>29 October 1969: the first message <span class="tag" data-part="net">Network</span></h2>
+<p>A student at UCLA tried to log in to a computer at Stanford Research Institute over ARPANET, a new network funded by the US Department of Defense. The system crashed after two letters, so the first message was "LO". The idea behind ARPANET was <b>packet switching</b>: cut each message into small packets, let each one find its own route, and put them back in order at the far end.</p>
+<p><button type="button" id="pk-send">Send HELLO as packets</button> <button type="button" id="pk-break">Break a link, then send</button></p>
+<svg id="pk-map" viewBox="0 0 640 220" role="img" aria-label="A small network of five nodes between UCLA and SRI, with packets travelling along the links"></svg>
+<pre id="pk-out" aria-live="polite">Packets will be listed here as they arrive.</pre>
+
+<h2>1974 to 1983: TCP/IP <span class="tag" data-part="net">Network</span></h2>
+<p>Vint Cerf and Bob Kahn designed a way to join separate networks into one internet. <b>IP</b> gives every computer an address and moves packets between networks. <b>TCP</b> checks that every packet arrived, in order, and asks again for any that went missing. On 1 January 1983, "flag day", ARPANET switched to TCP/IP all at once.</p>
+
+<h2>1983: DNS, names instead of numbers <span class="tag" data-part="net">Network</span></h2>
+<p>People remember names, and computers route by numbers. Paul Mockapetris designed the Domain Name System, which turns a name into an address. No single computer knows every name, so each level points to the next.</p>
+<p><label for="dns-name">Name:</label> <input id="dns-name" value="www.example.ie"> <button type="button" id="dns-go">Look it up</button></p>
+<pre id="dns-out" aria-live="polite"></pre>
+<p class="built"><b>HOW THIS PART IS BUILT:</b> COURIER ON STRIPED "GREEN-BAR" PRINTER PAPER, DRAWN WITH ONE REPEATING GRADIENT, AND TRACTOR-FEED HOLES MADE FROM A DOTTED BORDER. THE PACKETS ARE CIRCLES IN AN SVG, MOVED BY A SCRIPT.</p>
+</div></div>
+</section>
+
+<!-- ===================== 1991 to 1999 ===================== -->
+<section class="era e1996" id="y1996" data-era="1996" data-who="Dial-Up Networking · 28.8 kbit/s" data-cmd="ATDT 1891 555 0123">
+<div class="wrap">
+<div class="win"><div class="bar"><span>Connect To</span><span>_ □ ×</span></div><div class="body">
+<h2>1991 to 1997: HTTP, the web's own protocol <span class="tag" data-part="net">Network</span> <span class="tag" data-part="server">Server</span></h2>
+<p>HTTP is how a browser and a web server talk. It runs on top of TCP, so it can assume every byte arrives.</p>
+<table>
+<tr><th>Version</th><th>What it added</th></tr>
+<tr><td>HTTP/0.9, 1991</td><td>One line, <code>GET /page</code>, and the answer was HTML only.</td></tr>
+<tr><td>HTTP/1.0, 1996</td><td>Status codes such as 404, and headers that describe the content, so images could travel too.</td></tr>
+<tr><td>HTTP/1.1, 1997</td><td>Connections kept open for several requests, and the <code>Host</code> header, so one server could hold many sites.</td></tr>
+</table>
+<p>The <code>Host</code> header changed the business of the web. Before it, every site needed its own IP address. After it, one cheap server could host hundreds of small sites, which made shared hosting cheap.</p>
+</div></div>
+
+<div class="win"><div class="bar"><span>Loading a page over a modem</span><span>_ □ ×</span></div><div class="body">
+<h2>How long did a page take? <span class="tag" data-part="net">Network</span> <span class="tag" data-part="html">HTML</span></h2>
+<p>A modem turned data into sound on a telephone line. Choose a speed and load a 100 KB page. The time here is shortened ten times, so a minute becomes six seconds.</p>
+<p><label for="modem">Modem:</label> <select id="modem"><option value="14.4">14.4 kbit/s (about 1994)</option><option value="28.8" selected>28.8 kbit/s (about 1996)</option><option value="56">56 kbit/s (1998)</option><option value="1000">1 Mbit/s broadband (2002)</option></select> <button type="button" id="dial">Load the page</button></p>
+<div class="meter"><span id="dial-bar"></span></div>
+<p id="dial-note" aria-live="polite">Not connected.</p>
+<div class="shot" aria-hidden="true"><div class="img coarse" id="dial-img"></div><div class="cover" id="dial-cover" style="top:0"></div><div class="alt" id="dial-alt">[Image: the hills behind the school]</div></div>
+<p>Pages were built for that wait: small GIF images, few colours, and text that appeared first. Images arrived in coarse stripes, then sharpened, and the <code>alt</code> text was often what people read while they waited.</p>
+</div></div>
+
+<div class="win"><div class="bar"><span>Security Information</span><span>_ □ ×</span></div><div class="body">
+<h2>1995 to 1999: a lock for the connection <span class="tag" data-part="net">Network</span></h2>
+<p>Netscape added SSL to its browser in 1995 so that a connection could be encrypted, and a card number could cross the internet without anyone on the way reading it. In 1999 the standards body took it over and renamed it TLS. Encryption was slow on the computers of the time, so for years only payment pages used it.</p>
+</div></div>
+<p class="built" style="color:#fff"><b>How this part is built:</b> windows made of grey boxes with raised and sunken borders (<code>outset</code> and <code>inset</code>), a blue gradient title bar, and a teal desktop. The picture is two CSS gradients, blurred while it "loads" and uncovered from the top down.</p>
+</div>
+</section>
+
+<!-- ===================== 1998 to 2007 ===================== -->
+<section class="era e2004" id="y2004" data-era="2004" data-who="Broadband · always on" data-cmd="DSL 2 Mbit/s · Wi-Fi 802.11g">
+<div class="wrap">
+<div class="box">
+<h2>Always on <span class="tag" data-part="net">Network</span> <span class="tag" data-part="scripts">Scripts</span></h2>
+<p>From about 1999, DSL over phone lines and cable modems over TV cables gave homes connections that stayed open all day at a megabit or more. That changed what a page could do. A script could ask the server for small updates every few seconds, which is the Ajax pattern behind Gmail in 2004 and Google Maps in 2005. YouTube launched in 2005, because streaming video to anyone needed broadband homes and cheap bandwidth.</p>
+</div>
+<div class="box">
+<h2>Wi-Fi cuts the cable <span class="bars" aria-hidden="true"><i style="height:6px"></i><i style="height:10px"></i><i style="height:14px"></i><i style="height:19px"></i></span> <span class="tag" data-part="net">Network</span></h2>
+<p>Wi-Fi carries packets over radio. The 802.11 standard appeared in 1997 at 2 Mbit/s, 802.11b reached 11 Mbit/s in 1999, and laptops began to include Wi-Fi as standard around 2003. Radio is shared and noisy, so Wi-Fi spends much of its time taking turns and resending lost packets, which is why a busy café network crawls.</p>
+</div>
+<div class="box">
+<h2>Content delivery networks: copies near the reader <span class="tag" data-part="net">Network</span> <span class="tag" data-part="server">Server</span></h2>
+<p>Light in fibre needs at least 80 milliseconds to go from Dublin to San Francisco and back, and a page with many files makes that trip many times. A content delivery network keeps copies of a site's heavy files in many cities. Akamai, founded in 1998, was the first big one. Pick where the reader is, then compare.</p>
+<p><button type="button" data-city="dublin" aria-pressed="true">Reader in Dublin</button> <button type="button" data-city="ny" aria-pressed="false">New York</button> <button type="button" data-city="sydney" aria-pressed="false">Sydney</button> &nbsp; <button type="button" id="cdn-toggle" aria-pressed="false">Use a CDN</button></p>
+<svg id="cdn-map" viewBox="0 0 640 260" role="img" aria-label="A world map sketch showing the route from the reader to the server"></svg>
+<p id="cdn-out" aria-live="polite"></p>
+</div>
+<p class="built"><b>How this part is built:</b> soft gradients, rounded boxes and glossy green buttons, as on mid-2000s sites. The round-trip times are worked out from the straight-line distance and the speed of light in glass, about 200,000 km a second, so real routes are slower.</p>
+</div>
+</section>
+
+<!-- ===================== 2007 to 2014 ===================== -->
+<section class="era e2010" id="y2010" data-era="2010" data-who="3G · 2 Mbit/s · 300 ms" data-cmd="iPhone OS 4 · Mobile Safari">
+<div class="wrap">
+<div class="card">
+<h2>Mobile data grows up <span class="tag" data-part="net">Network</span></h2>
+<p>The first iPhone, in 2007, showed full web pages over a slow 2G network. The first 3G network had opened in Japan in 2001, and the first commercial 4G LTE networks opened in Stockholm and Oslo on 14 December 2009. Mobile networks add <b>latency</b>: a phone often waits hundreds of milliseconds before the first byte arrives, however fast the download. Bandwidth is the width of the pipe; latency is its length.</p>
+</div>
+<div class="phone"><div class="screen">
+<div class="status"><span>3G ▮▮▮▯</span><span id="clock">10:10</span><span>▭</span></div>
+<div class="nav">Match Centre</div>
+<div class="list" id="feed" aria-live="polite"><p>Kick-off. Waiting for news…</p></div>
+</div></div>
+<div class="card">
+<h2>2011: WebSocket, a line that stays open <span class="tag" data-part="net">Network</span> <span class="tag" data-part="scripts">Scripts</span></h2>
+<p>For live scores, a page used to ask "anything new?" every few seconds. That is called <b>polling</b>. WebSocket, standardised in 2011, keeps one connection open both ways, so the server sends news the moment it happens. Watch the requests the phone above sends while goals go in.</p>
+<p><button type="button" data-mode="poll" aria-pressed="true">Polling every 2 s</button> <button type="button" data-mode="socket" aria-pressed="false">WebSocket</button></p>
+<p>Requests sent: <span class="count" id="req-count">0</span> &nbsp; Messages with news: <span class="count" id="news-count">0</span></p>
+<p><code>const socket = new WebSocket("wss://scores.example.ie");</code></p>
+</div>
+<div class="card">
+<h2>Designing for the slowest likely connection <span class="tag" data-part="html">HTML</span> <span class="tag" data-part="css">CSS</span></h2>
+<p>HTML gained ways to offer several sizes of an image, so a phone downloads a small one, and to wait for images further down the page:</p>
+<p><code>&lt;img srcset="small.jpg 480w, big.jpg 1600w" loading="lazy" alt="…"&gt;</code></p>
+<p>Designers began "mobile first": start from the phone layout and add to it for wide screens.</p>
+</div>
+<p class="built"><b>How this part is built:</b> a linen background from a repeating gradient, a phone drawn with rounded boxes, and a glossy blue bar with an inset text shadow, in the style phones used around 2010. A timer plays the match; the phone counts every request it would send.</p>
+</div>
+</section>
+
+<!-- ===================== 2015 to 2022 ===================== -->
+<section class="era e2016" id="y2016" data-era="2016" data-who="HTTP/2 · TLS 1.3" data-cmd="curl --http2 -I https://www.example.ie">
+<div class="wrap">
+<div class="mcard">
+<h2>May 2015: HTTP/2, many requests on one connection <span class="tag" data-part="net">Network</span></h2>
+<p>With HTTP/1.1, a browser opened about six connections to a site and sent one request at a time on each, so a page with many files waited in queues. HTTP/2 sends many requests together on one connection, interleaved. Load the same twelve files both ways. Orange is time spent waiting in a queue.</p>
+<p><button type="button" class="mbtn" id="h-run">Load twelve files</button></p>
+<div class="lanes" id="h1-lanes"></div><p>HTTP/1.1: <span class="time" id="h1-time">–</span></p>
+<div class="lanes" id="h2-lanes"></div><p>HTTP/2: <span class="time" id="h2-time">–</span></p>
+<p>Old speed tricks, such as joining every image into one big "sprite sheet", stopped being necessary.</p>
+</div>
+<div class="mcard">
+<h2>Encryption becomes the default <span class="tag" data-part="net">Network</span> <span class="tag" data-part="server">Server</span></h2>
+<p>Free certificates from Let's Encrypt, from December 2015, removed the cost of HTTPS, and browsers began to warn about plain HTTP pages. <b>TLS 1.3</b>, in August 2018, cut the encryption handshake from two round trips to one. By 2025, about 88 per cent of sites sent visitors to HTTPS by default.</p>
+</div>
+<div class="mcard">
+<h2>2021 and 2022: QUIC and HTTP/3 <span class="tag" data-part="net">Network</span></h2>
+<p>TCP delivers bytes strictly in order, so one lost packet holds up everything behind it, and on a patchy phone signal that happens often. <b>QUIC</b>, standardised in May 2021, runs over UDP and handles each stream on its own. <b>HTTP/3</b>, in June 2022, is HTTP over QUIC. It also survives a change of network, so a phone walking out of Wi-Fi onto 4G keeps the same connection.</p>
+</div>
+<div class="mcard">
+<h2>2019 onwards: 5G, fibre and Wi-Fi 6 <span class="tag" data-part="net">Network</span></h2>
+<p>The first 5G phone networks opened in April 2019, in South Korea and the United States. Fibre to the home and Wi-Fi 6 arrived in the same few years. Headline speeds reached a gigabit or more, and video, games and large downloads filled them.</p>
+</div>
+<p class="built"><b>How this part is built:</b> flat cards with a soft shadow, Roboto and a teal app bar, as in the Material Design years. The timings use a made-up 100 ms per file and a limit of six connections for HTTP/1.1, so compare the shapes rather than the numbers.</p>
+</div>
+</section>
+
+<!-- ===================== 2014 to now ===================== -->
+<section class="era e2023" id="y2023" data-era="2023" data-who="4G · 20 Mbit/s · 60 ms" data-cmd="lighthouse --throttling 4g">
+<div class="wrap">
+<h2>Pages grew to fill the pipe <span class="tag" data-part="html">HTML</span> <span class="tag" data-part="net">Network</span></h2>
+<p>Faster networks did not make the web fast for everyone, because pages grew as quickly as connections did. According to the HTTP Archive, the median page on a phone weighed 505 KB in 2014 and 2,311 KB in 2024. Most of the weight is images and scripts.</p>
+<div style="display:grid;gap:8px;max-width:640px">
+<div class="wbar light" style="width:22%">2014 · 505 KB</div>
+<div class="wbar" style="width:100%">2024 · 2,311 KB</div>
+</div>
+<p><label for="net-pick">How long does the 2024 page take on</label> <select id="net-pick"><option value="56">a 56k modem (1998)</option><option value="384">early 3G (384 kbit/s)</option><option value="2000">3G (2 Mbit/s)</option><option value="20000" selected>4G (20 Mbit/s)</option><option value="100000">fibre (100 Mbit/s)</option></select>?</p>
+<p class="big" id="net-time" aria-live="polite"></p>
+<p class="muted" id="net-cost"></p>
+
+<h2>Who is still offline? <span class="tag" data-part="net">Network</span></h2>
+<p>In 2024, about 5.5 billion people used the internet, 68 per cent of the world's population. About 2.6 billion did not, most of them in low-income countries and rural areas. Each dot below is one per cent of the world.</p>
+<div class="people" id="people" role="img" aria-label="100 dots, 68 filled for people online and 32 empty for people offline"></div>
+<p>Many people who are online pay for each gigabyte, or share one phone in a household. A site that loads in a second in Dublin may take a minute, and cost real money, somewhere else.</p>
+
+<h2>The server moves towards the reader <span class="tag" data-part="server">Server</span> <span class="tag" data-part="net">Network</span></h2>
+<p>From about 2017, content delivery networks began to run small programs as well as store copies, so a request can be answered in the nearest city. Headers such as <code>Cache-Control: max-age=31536000</code> tell every browser and CDN how long a file may be kept, so a returning visitor downloads only what changed.</p>
+<p class="built"><b>How this part is built:</b> plain bars sized with percentages, a grid of a hundred dots for the world, and a few lines of arithmetic: kilobytes times 8, divided by the speed in kilobits a second, plus the latency of each network.</p>
+</div>
+</section>
+
+<!-- ===================== now ===================== -->
+<section class="era enow" id="now" data-era="now" data-who="your connection, today" data-cmd="ping example.ie">
+<div class="wrap">
+<h2>What happens when you press Enter <span class="tag" data-part="net">Network</span> <span class="tag" data-part="server">Server</span> <span class="tag" data-part="html">HTML</span></h2>
+<p>Five steps happen before you see a page, and the first three are about the network alone. Choose a connection and step through them. Each step costs one or more <b>round trips</b>, the time for a message to reach the server and an answer to come back.</p>
+<div class="ctl"><label for="rtt">Connection:</label> <select id="rtt"><option value="10">Fibre, nearby server (10 ms)</option><option value="40" selected>Home broadband (40 ms)</option><option value="80">Good 4G (80 ms)</option><option value="300">Weak 3G (300 ms)</option><option value="600">Satellite, older kind (600 ms)</option></select>
+<label for="proto">Protocol:</label> <select id="proto"><option value="tcp">HTTP/2 over TCP and TLS 1.3</option><option value="quic">HTTP/3 over QUIC</option></select></div>
+<div class="steps">
+<div class="stp" id="st-0"><h3>1 DNS</h3><p>The name becomes an address.</p><p class="ms" id="ms-0"></p></div>
+<div class="stp" id="st-1"><h3>2 Connect</h3><p>TCP or QUIC opens a connection.</p><p class="ms" id="ms-1"></p></div>
+<div class="stp" id="st-2"><h3>3 Encrypt</h3><p>TLS agrees keys.</p><p class="ms" id="ms-2"></p></div>
+<div class="stp" data-part="server" id="st-3"><h3>4 Request</h3><p>HTTP asks, the server answers.</p><p class="ms" id="ms-3"></p></div>
+<div class="stp" data-part="html" id="st-4"><h3>5 Render</h3><p>The browser builds the page and fetches its files.</p><p class="ms" id="ms-4"></p></div>
+</div>
+<div class="say" id="say" aria-live="polite"></div>
+<div class="ctl"><button type="button" id="j-start">Start</button><button type="button" id="j-back">Back</button><button type="button" class="primary" id="j-next">Forward</button><button type="button" id="j-end">End</button></div>
+
+<h2 style="margin-top:44px">Five habits for every network <span class="tag" data-part="net">Network</span> <span class="tag" data-part="html">HTML</span></h2>
+<div class="habits">
+<div><h3>Weigh the page</h3><p>Check its total size in the browser's developer tools. Images are usually the heaviest part.</p></div>
+<div><h3>Right-size images</h3><p>Serve small images to small screens, in modern formats.</p></div>
+<div><h3>Load lazily</h3><p>Let images and scripts further down the page wait.</p></div>
+<div><h3>Cache</h3><p>Tell browsers and CDNs how long each file can be kept.</p></div>
+<div><h3>Test slow</h3><p>Throttle the connection in the developer tools and watch the page load.</p></div>
+</div>
+<p class="built"><b>How this part is built:</b> with today's HTML and CSS, light or dark to match your device. The step times are round trips multiplied out; real visits add server time, and often reuse a connection or a remembered DNS answer to skip the first steps.</p>
+</div>
+</section>
+
+<!-- ===================== sources ===================== -->
+<section class="era enow" id="sources" data-era="now" data-who="your connection, today" data-cmd="cat SOURCES">
+<div class="wrap">
+<h2>Sources and further reading</h2>
+<ul class="sources">
+<li>Leonard Kleinrock, <a href="https://www.lk.cs.ucla.edu/internet_first_words.html">The first words on the internet</a>, UCLA</li>
+<li>IETF, <a href="https://www.rfc-editor.org/rfc/rfc1945.html">RFC 1945: HTTP/1.0</a> (1996), <a href="https://www.rfc-editor.org/rfc/rfc9000.html">RFC 9000: QUIC</a> (2021) and <a href="https://www.rfc-editor.org/rfc/rfc9114.html">RFC 9114: HTTP/3</a> (2022)</li>
+<li>TidBITS, <a href="https://tidbits.com/1998/02/16/itu-delivers-56k-modem-accord-2/">ITU delivers 56K modem accord</a> (1998)</li>
+<li>Telecoms.com, <a href="https://www.telecoms.com/wireless-networking/teliasonera-launches-commercial-lte-in-stockholm-and-oslo">TeliaSonera launches commercial LTE in Stockholm and Oslo</a> (2009)</li>
+<li>Let's Encrypt, <a href="https://letsencrypt.org/2015/11/12/public-beta-timing.html">Public beta: December 3, 2015</a></li>
+<li>HTTP Archive, <a href="https://almanac.httparchive.org/en/2024/page-weight">Web Almanac 2024: Page weight</a></li>
+<li>W3Techs, <a href="https://w3techs.com/technologies/history_overview/site_element/all/y">Historical yearly trends in the usage of site elements</a> (HTTP/2, HTTP/3, HTTPS by default)</li>
+<li>ITU, <a href="https://www.itu.int/en/mediacentre/Pages/PR-2024-11-27-facts-and-figures.aspx">Facts and Figures 2024</a>, and World Bank data via <a href="https://fred.stlouisfed.org/series/ITNETUSERP2WLD">FRED: Internet users for the World</a></li>
+<li>Everett M. Rogers, <i>Diffusion of Innovations</i> (1962), summarised in <a href="https://courses.lumenlearning.com/suny-marketing-spring2016/chapter/reading-diffusion-of-innovation/">Principles of Marketing: Diffusion of innovation</a></li>
+</ul>
+<p>This page tells the history from underneath, in the look of each way people got online, with working models of the ideas: packets that route around a broken link, a modem you can wait for, a CDN that shortens the trip, a phone that polls, a page that queues, and the round trips behind every visit.</p>
+</div>
+</section>
+</main>
+
+<p style="max-width:960px;margin:0 auto;padding:18px 16px 40px;font:15px system-ui, sans-serif"><a href="slides.html">The slides that go with this page</a> · <a href="../index.html">All history pages</a> · <a href="../../index.html">From a click to a database row and back</a></p>
+<script>
+(function () {
+  "use strict";
+  var root = document.documentElement;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function calm() { return reduce || root.classList.contains("calm"); }
+  var NS = "http://www.w3.org/2000/svg";
+  function el(name, attrs, text) { var e = document.createElementNS(NS, name); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+
+  /* ---- the link bar follows the era in view ---- */
+  var chrome = document.getElementById("chrome"), who = document.getElementById("who"), cmd = document.getElementById("cmd"), jump = document.getElementById("jump");
+  var eras = Array.prototype.slice.call(document.querySelectorAll("section.era"));
+  function setEra(sec) {
+    chrome.dataset.era = sec.dataset.era; who.textContent = sec.dataset.who; cmd.textContent = sec.dataset.cmd || "";
+    if (jump.querySelector('option[value="' + sec.id + '"]')) jump.value = sec.id;
+  }
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) { entries.forEach(function (e) { if (e.isIntersecting) setEra(e.target); }); }, { rootMargin: "-45% 0px -50% 0px" });
+    eras.forEach(function (s) { io.observe(s); });
+  }
+  jump.addEventListener("change", function () { var t = document.getElementById(jump.value); if (t) t.scrollIntoView({ behavior: calm() ? "auto" : "smooth" }); });
+  var calmBtn = document.getElementById("calm");
+  function setCalm(on) { root.classList.toggle("calm", on); calmBtn.setAttribute("aria-pressed", String(on)); calmBtn.textContent = on ? "Calm mode: on" : "Calm mode"; }
+  calmBtn.addEventListener("click", function () { setCalm(!root.classList.contains("calm")); });
+
+  /* ---- 1969: packets that find their own way ---- */
+  var nodes = { UCLA: [60, 160], UCSB: [200, 60], UTAH: [380, 50], SRI: [580, 110], X: [330, 180] };
+  var links = [["UCLA", "UCSB"], ["UCSB", "UTAH"], ["UTAH", "SRI"], ["UCLA", "X"], ["X", "SRI"], ["UCSB", "X"]];
+  var routes = [["UCLA", "UCSB", "UTAH", "SRI"], ["UCLA", "X", "SRI"], ["UCLA", "UCSB", "X", "SRI"]];
+  var broken = false, pkMap = document.getElementById("pk-map"), pkOut = document.getElementById("pk-out"), pkTimers = [];
+  function drawNet() {
+    pkMap.innerHTML = "";
+    links.forEach(function (l) {
+      var a = nodes[l[0]], b = nodes[l[1]], isBroken = broken && l[0] === "UCSB" && l[1] === "UTAH";
+      pkMap.appendChild(el("line", { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: isBroken ? "#b3261e" : "#333", "stroke-width": 2, "stroke-dasharray": isBroken ? "6 6" : "none" }));
+    });
+    Object.keys(nodes).forEach(function (n) {
+      var p = nodes[n];
+      pkMap.appendChild(el("rect", { x: p[0] - 28, y: p[1] - 14, width: 56, height: 28, fill: "#fffef6", stroke: "#333" }));
+      pkMap.appendChild(el("text", { x: p[0], y: p[1] + 5, "text-anchor": "middle", "font-size": 12, "font-family": "Courier New, monospace" }, n === "X" ? "RAND" : n));
+    });
+  }
+  function send() {
+    pkTimers.forEach(clearTimeout); pkTimers = []; drawNet();
+    var letters = "HELLO".split(""), arrivals = [];
+    var ok = broken ? [routes[1], routes[2]] : routes;
+    letters.forEach(function (ch, i) {
+      var route = ok[i % ok.length], hop = 0;
+      var c = el("circle", { r: 9, fill: "#1f6b66", cx: nodes[route[0]][0], cy: nodes[route[0]][1] });
+      var t = el("text", { "text-anchor": "middle", "font-size": 11, fill: "#fff", "font-weight": 700, x: nodes[route[0]][0], y: nodes[route[0]][1] + 4 }, ch);
+      pkMap.appendChild(c); pkMap.appendChild(t);
+      var delay = i * 250, step = calm() ? 0 : 450 + (route.length === 4 ? 0 : 120);
+      route.forEach(function (n, h) {
+        pkTimers.push(setTimeout(function () {
+          c.setAttribute("cx", nodes[n][0]); c.setAttribute("cy", nodes[n][1]); t.setAttribute("x", nodes[n][0]); t.setAttribute("y", nodes[n][1] + 4);
+          if (h === route.length - 1) {
+            arrivals.push({ i: i, ch: ch, via: route.join(" > ") });
+            pkOut.textContent = arrivals.map(function (a) { return "PACKET " + (a.i + 1) + " '" + a.ch + "' VIA " + a.via; }).join("\n") +
+              (arrivals.length === letters.length ? "\nREASSEMBLED IN ORDER: " + arrivals.slice().sort(function (a, b) { return a.i - b.i; }).map(function (a) { return a.ch; }).join("") : "");
+          }
+        }, delay + h * step));
+      });
+    });
+  }
+  document.getElementById("pk-send").addEventListener("click", function () { broken = false; send(); });
+  document.getElementById("pk-break").addEventListener("click", function () { broken = true; send(); });
+  drawNet();
+
+  /* ---- 1983: a pretend DNS lookup ---- */
+  document.getElementById("dns-go").addEventListener("click", function () {
+    var name = document.getElementById("dns-name").value.trim().toLowerCase().replace(/[^a-z0-9.-]/g, "") || "www.example.ie";
+    var parts = name.split("."), tld = parts[parts.length - 1], domain = parts.slice(-2).join(".");
+    var hash = 0; for (var i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) % 250;
+    var lines = ["ASK ROOT SERVER:      WHO KNOWS ." + tld.toUpperCase() + "?", "  ROOT REPLIES:       ASK THE ." + tld.toUpperCase() + " SERVERS",
+      "ASK ." + tld.toUpperCase() + " SERVER:       WHO KNOWS " + domain.toUpperCase() + "?", "  REPLIES:            ASK " + domain.toUpperCase() + "'S OWN SERVERS",
+      "ASK " + domain.toUpperCase() + ":  WHAT IS " + name.toUpperCase() + "?", "  ANSWER:             192.0.2." + (hash + 1) + "   (REMEMBER FOR 3600 S)"];
+    var out = document.getElementById("dns-out"); out.textContent = "";
+    if (calm()) { out.textContent = lines.join("\n"); return; }
+    lines.forEach(function (l, k) { setTimeout(function () { out.textContent += (k ? "\n" : "") + l; }, k * 300); });
+  });
+
+  /* ---- 1996: waiting for a modem ---- */
+  var dialTimer;
+  document.getElementById("dial").addEventListener("click", function () {
+    clearInterval(dialTimer);
+    var kbps = +document.getElementById("modem").value, secs = 100 * 8 / kbps, shown = calm() ? 0 : secs * 100;
+    var bar = document.getElementById("dial-bar"), cover = document.getElementById("dial-cover"), img = document.getElementById("dial-img"), note = document.getElementById("dial-note"), alt = document.getElementById("dial-alt");
+    img.classList.add("coarse"); alt.hidden = false; var start = Date.now();
+    note.textContent = "Connected at " + (kbps >= 1000 ? kbps / 1000 + " Mbit/s" : kbps + " kbit/s") + ". Downloading 100 KB…";
+    function tick() {
+      var f = shown ? Math.min(1, (Date.now() - start) / shown) : 1;
+      bar.style.width = (f * 100) + "%"; cover.style.top = (f * 100) + "%";
+      if (f > .5) { img.classList.remove("coarse"); alt.hidden = true; }
+      if (f >= 1) { clearInterval(dialTimer); note.textContent = "Done. At " + (kbps >= 1000 ? kbps / 1000 + " Mbit/s" : kbps + " kbit/s") + " the real wait was about " + (secs < 1 ? secs.toFixed(1) : Math.round(secs)) + " seconds."; }
+    }
+    dialTimer = setInterval(tick, 50); tick();
+  });
+
+  /* ---- 2004: distance and a content delivery network ---- */
+  var cities = { dublin: { n: "Dublin", p: [300, 85], km: 8200 }, ny: { n: "New York", p: [190, 110], km: 4100 }, sydney: { n: "Sydney", p: [560, 210], km: 12000 } };
+  var origin = [95, 115], city = "dublin", useCdn = false, cdnMap = document.getElementById("cdn-map");
+  function drawCdn() {
+    cdnMap.innerHTML = "";
+    cdnMap.appendChild(el("rect", { x: 0, y: 0, width: 640, height: 260, rx: 12, fill: "#dfeaf5" }));
+    [[40, 60, 180, 110], [270, 40, 120, 90], [300, 140, 90, 90], [420, 50, 170, 110], [510, 180, 90, 50]].forEach(function (r) {
+      cdnMap.appendChild(el("rect", { x: r[0], y: r[1], width: r[2], height: r[3], rx: 40, fill: "#b9d3a8" }));
+    });
+    var c = cities[city], target = useCdn ? [c.p[0] + 18, c.p[1] - 14] : origin;
+    cdnMap.appendChild(el("line", { x1: c.p[0], y1: c.p[1], x2: target[0], y2: target[1], stroke: "#1a5a96", "stroke-width": 3, "stroke-dasharray": "7 5" }));
+    cdnMap.appendChild(el("circle", { cx: origin[0], cy: origin[1], r: 8, fill: "#2e6b4a" }));
+    cdnMap.appendChild(el("text", { x: origin[0], y: origin[1] + 24, "text-anchor": "middle", "font-size": 12, fill: "#223" }, "Main server, California"));
+    if (useCdn) { cdnMap.appendChild(el("rect", { x: target[0] - 6, y: target[1] - 6, width: 12, height: 12, fill: "#e8955c" })); cdnMap.appendChild(el("text", { x: target[0] + 10, y: target[1] - 8, "font-size": 12, fill: "#223" }, "CDN copy")); }
+    cdnMap.appendChild(el("circle", { cx: c.p[0], cy: c.p[1], r: 7, fill: "#1a5a96" }));
+    cdnMap.appendChild(el("text", { x: c.p[0], y: c.p[1] + 22, "text-anchor": "middle", "font-size": 12, "font-weight": 700, fill: "#223" }, "Reader, " + c.n));
+    var rtt = useCdn ? 4 : Math.round(c.km * 2 / 200);
+    document.getElementById("cdn-out").textContent = "Each round trip takes at least " + rtt + " ms. A page with 40 files over 6 connections needs about 7 rounds of requests, so at least " + (rtt * 7) + " ms of travel before counting any download." + (useCdn ? " The copy is in the reader's own city." : "");
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("[data-city]"), function (b) {
+    b.addEventListener("click", function () { city = b.dataset.city; Array.prototype.forEach.call(document.querySelectorAll("[data-city]"), function (x) { x.setAttribute("aria-pressed", String(x === b)); }); drawCdn(); });
+  });
+  document.getElementById("cdn-toggle").addEventListener("click", function () { useCdn = !useCdn; this.setAttribute("aria-pressed", String(useCdn)); this.textContent = useCdn ? "CDN on" : "Use a CDN"; drawCdn(); });
+  drawCdn();
+
+  /* ---- 2010: polling against a WebSocket ---- */
+  var mode = "poll", reqs = 0, news = 0, minute = 0, feed = document.getElementById("feed"), goals = { 12: "GOAL! Dublin 1–0", 31: "Yellow card, Kerry", 54: "GOAL! Kerry 1–1", 77: "GOAL! Dublin 2–1", 90: "Full time: Dublin 2–1 Kerry" };
+  function matchTick() {
+    minute = (minute + 1) % 95;
+    document.getElementById("clock").textContent = String(minute).padStart(2, "0") + "'";
+    var happened = goals[minute];
+    if (mode === "poll" && minute % 2 === 0) { reqs++; if (feedHasNew) { news++; feedHasNew = false; } }
+    if (happened) {
+      if (mode === "socket") { reqs = Math.max(reqs, 1); news++; } else feedHasNew = true;
+      var p = document.createElement("p"); p.textContent = minute + "'  " + happened; feed.insertBefore(p, feed.firstChild);
+      while (feed.children.length > 5) feed.removeChild(feed.lastChild);
+    }
+    if (minute === 0) { feed.innerHTML = "<p>Kick-off. Waiting for news…</p>"; reqs = mode === "socket" ? 1 : 0; news = 0; }
+    document.getElementById("req-count").textContent = reqs; document.getElementById("news-count").textContent = news;
+  }
+  var feedHasNew = false, matchTimer = null;
+  Array.prototype.forEach.call(document.querySelectorAll("[data-mode]"), function (b) {
+    b.addEventListener("click", function () {
+      mode = b.dataset.mode; minute = 94; reqs = 0; news = 0;
+      Array.prototype.forEach.call(document.querySelectorAll("[data-mode]"), function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      matchTick();
+    });
+  });
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting && !matchTimer) matchTimer = setInterval(matchTick, calm() ? 400 : 220);
+        if (!e.isIntersecting && matchTimer) { clearInterval(matchTimer); matchTimer = null; }
+      });
+    }).observe(document.getElementById("y2010"));
+  }
+
+  /* ---- 2016: queues on HTTP/1.1 against one shared connection on HTTP/2 ---- */
+  function lanes(id, rows) {
+    var box = document.getElementById(id); box.innerHTML = "";
+    rows.forEach(function (r, i) {
+      var lane = document.createElement("div"); lane.className = "lane";
+      lane.innerHTML = '<span>file ' + (i + 1) + '</span><div class="track"></div>'; var tr = lane.lastChild;
+      if (r.wait) { var w = document.createElement("i"); w.className = "seg wait"; w.style.left = "0%"; w.style.width = r.wait + "%"; tr.appendChild(w); }
+      var s = document.createElement("i"); s.className = "seg"; s.style.left = r.start + "%"; s.style.width = r.len + "%"; tr.appendChild(s);
+      box.appendChild(lane);
+    });
+  }
+  document.getElementById("h-run").addEventListener("click", function () {
+    var total1 = 2 * 100 + 50, h1 = [], h2 = [];
+    for (var i = 0; i < 12; i++) {
+      var round = Math.floor(i / 6), start = 50 + round * 100;
+      h1.push({ wait: start / total1 * 100, start: start / total1 * 100, len: 100 / total1 * 100 });
+      h2.push({ wait: 0, start: 50 / total1 * 100, len: (100 + i * 4) / total1 * 100 });
+    }
+    lanes("h1-lanes", h1); lanes("h2-lanes", h2);
+    document.getElementById("h1-time").textContent = "about 250 ms, in two rounds";
+    document.getElementById("h2-time").textContent = "about 200 ms, all at once on one connection";
+  });
+
+  /* ---- 2023: the weight of a page on different networks ---- */
+  function weigh() {
+    var kbps = +document.getElementById("net-pick").value, lat = { 56: 150, 384: 400, 2000: 300, 20000: 60, 100000: 10 }[kbps];
+    var secs = 2311 * 8 / kbps + lat * 4 / 1000;
+    document.getElementById("net-time").textContent = secs >= 60 ? "about " + (secs / 60).toFixed(1) + " minutes" : "about " + (secs < 10 ? secs.toFixed(1) : Math.round(secs)) + " seconds";
+    document.getElementById("net-cost").textContent = "That is " + (2311 * 8 / kbps).toFixed(1) + " s of downloading plus about " + (lat * 4) + " ms of round trips. On a plan priced per gigabyte, the page uses about 2.3 MB of it, every visit that is not cached.";
+  }
+  document.getElementById("net-pick").addEventListener("change", weigh); weigh();
+  var ppl = document.getElementById("people");
+  for (var k = 0; k < 100; k++) { var d = document.createElement("i"); if (k >= 68) d.className = "off"; ppl.appendChild(d); }
+
+  /* ---- now: the round trips behind one visit ---- */
+  var j = -1;
+  var texts = [
+    "<b>DNS.</b> The browser asks a resolver for the address, which costs one round trip unless the answer is remembered.",
+    "<b>Connect.</b> TCP needs one round trip to open a connection. QUIC folds this into the next step.",
+    "<b>Encrypt.</b> TLS 1.3 needs one round trip to agree keys. With QUIC, connecting and encrypting share a single round trip.",
+    "<b>Request.</b> The browser sends GET and waits for the first bytes of the answer: one more round trip, plus the server's own time.",
+    "<b>Render.</b> The HTML names images, styles and scripts. Fetching them takes at least another round trip, and often several."
+  ];
+  function costs() {
+    var r = +document.getElementById("rtt").value, q = document.getElementById("proto").value === "quic";
+    return [r, q ? 0 : r, r, r, r * 2];
+  }
+  function showJ(n) {
+    j = Math.max(-1, Math.min(4, n));
+    var c = costs(), sum = 0;
+    for (var i = 0; i < 5; i++) {
+      document.getElementById("st-" + i).classList.toggle("on", i === j);
+      document.getElementById("ms-" + i).textContent = i <= j ? (c[i] ? c[i] + " ms" : "shared with step 3") : "";
+      if (i <= j) sum += c[i];
+    }
+    document.getElementById("say").innerHTML = j < 0 ? "<b>Ready.</b> Press Forward to follow one visit, step by step." : texts[j] + "<br><span class='muted'>Total so far: " + sum + " ms of waiting on the network.</span>";
+  }
+  ["rtt", "proto"].forEach(function (id) { document.getElementById(id).addEventListener("change", function () { showJ(j); }); });
+  document.getElementById("j-start").addEventListener("click", function () { showJ(-1); });
+  document.getElementById("j-back").addEventListener("click", function () { showJ(j - 1); });
+  document.getElementById("j-next").addEventListener("click", function () { showJ(j + 1); });
+  document.getElementById("j-end").addEventListener("click", function () { showJ(4); });
+  showJ(-1);
+
+  if (reduce) setCalm(true);
+})();
+</script>
+
+</body>
+</html>

@@ -25,6 +25,8 @@ PIECES = [
      "The front end's story: HTML, CSS and scripts, from the first page in 1991 to AI."),
     ("server", "The Server Remembers", "Behind the Page",
      "The back end's story: servers and databases, from punched cards to vector search."),
+    ("network", "The Wire Gets Wider", "Down the Wire",
+     "The story underneath: networks and protocols, from a two-letter message in 1969 to 5G."),
 ]
 
 # Simple line icons for the <x-icon> tags that the Slides artifact draws for itself.
@@ -187,7 +189,7 @@ def build_site(name, site_title, out):
 
 NOTES_CSS = """
 :root { --bg: #fbfaf7; --fg: #1b2a4a; --muted: #4a5568; --line: #ddd6c8; --card: #fff; --code: #f1eee6;
-  --html: #E8955C; --css: #8DB4E2; --scripts: #E9C46A; --server: #8CC9A6; --db: #B9A6E0; --plugin: #C9D2E3; }
+  --html: #E8955C; --css: #8DB4E2; --scripts: #E9C46A; --server: #8CC9A6; --db: #B9A6E0; --plugin: #C9D2E3; --net: #7CC6C1; }
 @media (prefers-color-scheme: dark) { :root { --bg: #131b2e; --fg: #eef0f5; --muted: #c4cbda; --line: #33456b; --card: #1b2a4a; --code: #0f1729; } }
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.65 "Public Sans", system-ui, sans-serif; }
@@ -206,12 +208,13 @@ th, td { text-align: left; vertical-align: top; padding: 7px 10px; border-bottom
 th { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
 .t { display: inline-block; font: 700 12px "Public Sans", sans-serif; color: #1b2a4a; padding: 2px 10px; border-radius: 999px; vertical-align: middle; white-space: nowrap; }
 [data-part="html"].t { background: var(--html); } [data-part="css"].t { background: var(--css); } [data-part="scripts"].t { background: var(--scripts); }
-[data-part="server"].t { background: var(--server); } [data-part="db"].t { background: var(--db); } [data-part="plugin"].t { background: var(--plugin); }
+[data-part="server"].t { background: var(--server); } [data-part="db"].t { background: var(--db); } [data-part="net"].t { background: var(--net); } [data-part="plugin"].t { background: var(--plugin); }
 .parts { display: grid; gap: 10px; margin: 12px 0; }
 .parts > div, .node { background: var(--card); border: 1px solid var(--line); border-left: 8px solid var(--line); border-radius: 8px; padding: 10px 14px; }
 [data-part="html"].node, .parts [data-part="html"] { border-left-color: var(--html); } [data-part="css"].node, .parts [data-part="css"] { border-left-color: var(--css); }
 [data-part="scripts"].node, .parts [data-part="scripts"] { border-left-color: var(--scripts); } [data-part="server"].node, .parts [data-part="server"] { border-left-color: var(--server); }
 [data-part="db"].node, .parts [data-part="db"] { border-left-color: var(--db); }
+[data-part="net"].node, .parts [data-part="net"] { border-left-color: var(--net); }
 figure { margin: 14px 0 16px; }
 .flow { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
 .flow.three { grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; }
@@ -293,7 +296,7 @@ HUB = """<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Two histories of the web</title>
+<title>Three histories of the web</title>
 <style>
 :root { --bg: #f7f5f0; --fg: #1b2a4a; --muted: #5a6478; --card: #fffdf9; --line: #d9d3c7; }
 @media (prefers-color-scheme: dark) { :root { --bg: #131b2e; --fg: #f4f1ea; --muted: #c9d2e3; --card: #1b2a4a; --line: #33456b; } }
@@ -312,9 +315,9 @@ a { color: inherit; text-underline-offset: 3px; }
 </head>
 <body>
 <main>
-<h1>Two histories of the web</h1>
-<p class="lede">The same thirty-odd years, told twice. The first history watches from the browser: HTML, CSS and scripts. The second watches from behind the page: the servers that answer and the databases that remember. Both use the same colours for the four parts of a website.</p>
-<ul class="key"><li style="background:#E8955C">HTML</li><li style="background:#8DB4E2">CSS</li><li style="background:#E9C46A">Scripts</li><li style="background:#8CC9A6">Server</li></ul>
+<h1>Three histories of the web</h1>
+<p class="lede">The same story told three ways. The first history watches from the browser: HTML, CSS and scripts. The second watches from behind the page: the servers that answer and the databases that remember. The third watches from underneath: the networks and protocols that carry everything. All three use the same colours for the parts of a website.</p>
+<ul class="key"><li style="background:#E8955C">HTML</li><li style="background:#8DB4E2">CSS</li><li style="background:#E9C46A">Scripts</li><li style="background:#8CC9A6">Server</li><li style="background:#B9A6E0">Database</li><li style="background:#7CC6C1">Network</li></ul>
 <div class="cards">
 CARDS
 </div>
