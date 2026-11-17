@@ -253,6 +253,9 @@ figure { margin: 14px 0 16px; }
 .map span.q { color: var(--fg); font-weight: 700; } .map span.q::before { content: ""; }
 figure.chart { color: var(--fg); margin: 16px 0; }
 figure.chart svg { display: block; width: 100%; height: auto; }
+.curve-key { border-collapse: collapse; width: 100%; font-size: 14px; margin: 8px 0; }
+.curve-key th, .curve-key td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.curve-key .sw { display: inline-block; width: 18px; height: 6px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
 details { margin: 8px 0 14px; } summary { cursor: pointer; font-weight: 700; }
 .toc { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 18px; margin: 18px 0; }
 .toc ol { margin: 6px 0 0; padding-left: 1.3em; }
