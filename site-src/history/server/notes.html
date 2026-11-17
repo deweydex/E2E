@@ -102,14 +102,14 @@
 <p>A web server begins as a simple program: it waits for a request, finds a file and sends it back. The browser asks for a page, and a program on another computer answers.</p>
 
 <h3>A server is a program that listens <span class="t" data-part="server">Server</span></h3>
-<p>Tim Berners-Lee wrote the first web server at CERN in 1990. It listened on a network port, read each request, found the matching file on its disk and sent it back. If the file was missing, it answered with a status code instead. 404 still means "Not Found".</p>
+<p>Tim Berners-Lee wrote the first web server at CERN in 1990. It listened on a network port, read each request, found the matching file on its disk and sent it back. If the file was missing, it sent back a short HTML page saying so. Status codes such as 404, "Not Found", came later, with HTTP/1.0 in 1996. Here is a request and its answer in that 1996 version:</p>
 <pre>GET /hypertext/WWW/TheProject.html HTTP/1.0
 
 HTTP/1.0 200 OK
 Content-Type: text/html
 
 &lt;h1&gt;World Wide Web&lt;/h1&gt;…</pre>
-<p>Every request since works this way: a method and a path go in, and a status and a body come back. The first server was called CERN httpd; the d stands for daemon, a program that runs in the background. Your browser's developer tools show these messages for any site: open the Network tab and reload the page.</p>
+<p>Every request since 1996 works this way: a method and a path go in, and a status and a body come back. The first server was called CERN httpd; the d stands for daemon, a program that runs in the background. Your browser's developer tools show these messages for any site: open the Network tab and reload the page.</p>
 
 <h3>CGI: the server runs a program <span class="t" data-part="server">Server</span> <span class="t" data-part="html">HTML</span></h3>
 <p>The Common Gateway Interface, from NCSA in 1993, let a server run a program and send back whatever that program printed, instead of a stored file. A form could now send data to a script on the server, often written in Perl. The script could search, count or save, then print a fresh HTML page.</p>

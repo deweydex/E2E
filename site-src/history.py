@@ -23,7 +23,7 @@ sys.path.insert(0, str(SRC))
 DIST = W / "docs" / "history"
 
 PIECES = [
-    ("web", "The Web Rebuilds Itself", "How the Web Learned to Respond",
+    ("web", "The Web Rebuilds Itself", "From the Browser",
      "The front end's story: HTML, CSS and scripts, from the first page in 1991 to AI."),
     ("server", "The Server Remembers", "Behind the Page",
      "The back end's story: servers and databases, from punched cards to vector search."),
@@ -105,6 +105,9 @@ VIEWER_JS = """
     var best = 0;
     Array.prototype.forEach.call(jump.options, function (o, k) { if (+o.value <= i) best = k; });
     jump.selectedIndex = best;
+    var ch = jump.options[best] ? jump.options[best].getAttribute('data-ch') : '';
+    if (ch) { document.getElementById('to-notes').href = 'notes.html#ch' + ch; document.getElementById('to-page').href = 'index.html#' + jump.options[best].getAttribute('data-band'); }
+    else { document.getElementById('to-notes').href = 'notes.html'; document.getElementById('to-page').href = 'index.html'; }
     if (location.hash !== '#' + (i + 1)) history.replaceState(null, '', '#' + (i + 1));
   }
   document.getElementById('prev').onclick = function () { show(i - 1); };
@@ -140,7 +143,9 @@ def build_deck(name, deck_title, out):
     options = []
     for key in sorted(deck.get("sections", {})):
         chapter = deck["sections"][key]
-        options.append(f'<option value="{order.index(chapter["start"])}">{html.escape(chapter["description"])}</option>')
+        m = re.fullmatch(r"ch(\d)", chapter["start"])
+        extra = f' data-ch="{m.group(1)}" data-band="{chapter_band(name, int(m.group(1)))}"' if m else ""
+        options.append(f'<option value="{order.index(chapter["start"])}"{extra}>{html.escape(chapter["description"])}</option>')
     page = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -153,10 +158,11 @@ def build_deck(name, deck_title, out):
 <body>
 <div class="bar">
 <span class="title">{html.escape(deck_title)}</span>
-<a href="index.html">The era-by-era page</a>
-<a href="notes.html">Notes</a>
-<a href="../index.html">All history pages</a>
-PPTX_LINK<label for="jump" class="count">Chapter</label> <select id="jump">{''.join(options)}</select>
+<a href="index.html" id="to-page">Era page</a>
+<a href="notes.html" id="to-notes">Notes</a>
+PPTX_LINK<a href="../timeline.html">Timeline</a>
+<a href="../index.html">All three views</a>
+<label for="jump" class="count">Chapter</label> <select id="jump">{''.join(options)}</select>
 <button type="button" id="prev" aria-label="Previous slide">←</button>
 <span class="count" id="count" aria-live="polite"></span>
 <button type="button" id="next" aria-label="Next slide">→</button>
@@ -175,14 +181,60 @@ PPTX_LINK<label for="jump" class="count">Chapter</label> <select id="jump">{''.j
     (out / "slides.html").write_text(page.replace("PPTX_LINK", link))
 
 
+BAND_CHAPTER = {
+    "web": {"y1991": 1, "y1994": 1, "y1996": 2, "y2001": 2, "y2003": 2, "y2006": 3, "y2013": 3, "y2016": 4, "y2019": 5, "y2023": 6, "now": 7},
+    "server": {"y1970": 1, "y1993": 2, "y1999": 3, "y2005": 4, "y2014": 5, "y2023": 6, "now": 7},
+    "network": {"y1969": 1, "y1996": 2, "y2004": 3, "y2010": 4, "y2016": 5, "y2023": 6, "now": 7},
+}
+FORMATS = [("index.html", "Era page"), ("slides.html", "Slides"), ("notes.html", "Notes")]
+
+
+def view_title(name):
+    return next(p[2] for p in PIECES if p[0] == name)
+
+
+def chapter_slide(name, n):
+    order = json.loads((SRC / name / "deck" / "deck.json").read_text())["order"]
+    return order.index(f"ch{n}") + 1
+
+
+def chapter_band(name, n):
+    return next(b for b, c in BAND_CHAPTER[name].items() if c == n)
+
+
+def format_bar(name, current, cls="fmt"):
+    """One bar, the same in every format: the view's name, then each format, the PowerPoint and the timeline."""
+    items = [f'<b>{html.escape(view_title(name))}</b>']
+    for href, label in FORMATS:
+        if href == current:
+            items.append(f'<a href="{href}" aria-current="page">{label}</a>')
+        else:
+            items.append(f'<a href="{href}" data-fmt="{href}">{label}</a>')
+    items += [f'<a href="{f.name}" download>PowerPoint</a>' for f in sorted((SRC / name).glob("*.pptx"))]
+    items += ['<a href="../timeline.html">Timeline</a>', '<a href="../index.html">All three views</a>']
+    return f'<nav class="{cls}" aria-label="Formats of this history">' + " ".join(items) + "</nav>"
+
+
+FMT_CSS = (".fmt { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; font: 15px/1.5 system-ui, sans-serif; padding: 8px 16px; "
+           "background: #1b2a4a; color: #f4f1ea; text-shadow: none; text-transform: none; letter-spacing: normal; position: relative; z-index: 50; } "
+           ".fmt a { color: #c9d2e3; text-underline-offset: 3px; } .fmt a[aria-current] { color: #f4f1ea; font-weight: 700; text-decoration: none; } "
+           ".fmt b { margin-right: 6px; } "
+           ".xlinks { max-width: 960px; margin: 14px auto 0; padding: 8px 16px; font: 14px/1.5 system-ui, sans-serif; text-shadow: none; text-transform: none; letter-spacing: normal; } "
+           ".xlinks a { color: inherit; text-underline-offset: 3px; }")
+
+
 def build_site(name, site_title, out):
     text = (SRC / name / "site.html").read_text()
     head_end = text.index("</style>") + len("</style>")
     head, body = text[:head_end], text[head_end:]
-    footer = ('<p style="max-width:960px;margin:0 auto;padding:18px 16px 40px;font:15px system-ui, sans-serif">'
-              '<a href="slides.html">The slides that go with this page</a> · <a href="../index.html">All history pages</a> · '
-              '<a href="../../index.html">From a click to a database row and back</a></p>')
-    body = body.replace("<script", footer + "\n<script", 1)
+    head = head.replace("</style>", FMT_CSS + "\n</style>", 1)
+    for band, n in BAND_CHAPTER[name].items():
+        start = body.index(f'id="{band}"')
+        end = body.index("</section>", start)
+        links = (f'<p class="xlinks">This era in the other formats: <a href="notes.html#ch{n}">the notes for chapter {n}</a> · '
+                 f'<a href="slides.html#{chapter_slide(name, n)}">the slides for chapter {n}</a></p>\n')
+        body = body[:end] + links + body[end:]
+    body = format_bar(name, "index.html") + "\n" + body.replace("<script", format_bar(name, "index.html") + "\n<script", 1)
     page = ('<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
             '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
             + head + "\n</head>\n<body>\n" + body + "\n</body>\n</html>\n")
@@ -261,6 +313,8 @@ details { margin: 8px 0 14px; } summary { cursor: pointer; font-weight: 700; }
 .toc ol { margin: 6px 0 0; padding-left: 1.3em; }
 .top { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--muted); }
 .sources li { margin: 6px 0; }
+.fmtn a[aria-current] { font-weight: 700; text-decoration: none; color: var(--fg); } .fmtn b { color: var(--fg); }
+.xl { font-size: 14px; color: var(--muted); margin: 0 0 8px; }
 @media print { .top, .toc { display: none; } h2 { break-before: page; border: 0; } pre, figure, table { break-inside: avoid; } body { background: #fff; color: #000; } }
 """
 
@@ -269,10 +323,9 @@ def build_notes(name, deck_title, out, pptx):
     body = (SRC / name / "notes.html").read_text()
     heads = re.findall(r'<h2 id="([^"]+)">(.*?)</h2>', body)
     toc = "".join(f'<li><a href="#{i}">{t}</a></li>' for i, t in heads)
-    links = ['<a href="slides.html">The slides</a>', '<a href="index.html">The era-by-era page</a>']
-    links += [f'<a href="{f.name}" download>The slides as PowerPoint</a>' for f in pptx]
-    links.append('<a href="../index.html">All history pages</a>')
-    top = '<p class="top">' + " · ".join(links) + "</p>"
+    top = format_bar(name, "notes.html", "top fmtn")
+    for n in range(1, 8):
+        body = re.sub(rf'(<h2 id="ch{n}">.*?</h2>)', lambda m: m.group(1) + f'\n<p class="xl">This chapter in the other formats: <a href="slides.html#{chapter_slide(name, n)}">the slides</a> · <a href="index.html#{chapter_band(name, n)}">the era page</a></p>', body, count=1)
     first_h2 = body.index("<h2")
     body = body[:first_h2] + f'<nav class="toc" aria-label="Contents"><b>Contents</b><ol>{toc}</ol></nav>\n' + body[first_h2:]
     page = f"""<!DOCTYPE html>
@@ -301,7 +354,7 @@ HUB = """<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Three histories of the web</title>
+<title>Pages Through the Ages</title>
 <style>
 :root { --bg: #f7f5f0; --fg: #1b2a4a; --muted: #5a6478; --card: #fffdf9; --line: #d9d3c7; }
 @media (prefers-color-scheme: dark) { :root { --bg: #131b2e; --fg: #f4f1ea; --muted: #c9d2e3; --card: #1b2a4a; --line: #33456b; } }
@@ -309,6 +362,8 @@ body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.6 system
 main { max-width: 860px; margin: 0 auto; padding: 48px 16px 80px; }
 h1 { font: 700 clamp(30px, 6vw, 44px)/1.1 Georgia, serif; margin: 0 0 12px; }
 .lede { color: var(--muted); max-width: 62ch; }
+.kicker { text-transform: uppercase; letter-spacing: .12em; font-size: 13px; font-weight: 700; color: var(--muted); margin: 0 0 6px; }
+.card .sub { font-style: italic; margin: -2px 0 8px; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 28px; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
 .card h2 { margin: 0 0 6px; font-size: 1.3rem; }
@@ -320,8 +375,9 @@ a { color: inherit; text-underline-offset: 3px; }
 </head>
 <body>
 <main>
-<h1>Three histories of the web</h1>
-<p class="lede">The same story told three ways. The first history watches from the browser: HTML, CSS and scripts. The second watches from behind the page: the servers that answer and the databases that remember. The third watches from underneath: the networks and protocols that carry everything. All three use the same colours for the parts of a website.</p>
+<p class="kicker">A history of the web in three views</p>
+<h1>Pages Through the Ages</h1>
+<p class="lede">The same story told three ways. <b>From the Browser</b> watches HTML, CSS and scripts. <b>Behind the Page</b> watches the servers that answer and the databases that remember. <b>Down the Wire</b> watches the networks and protocols that carry everything. Each view comes as an era-by-era page that changes its look with the decade, a slide deck, notes that read on their own, and a PowerPoint file. All three use the same colours for the parts of a website.</p>
 <ul class="key"><li style="background:#E8955C">HTML</li><li style="background:#8DB4E2">CSS</li><li style="background:#E9C46A">Scripts</li><li style="background:#8CC9A6">Server</li><li style="background:#B9A6E0">Database</li><li style="background:#7CC6C1">Network</li></ul>
 <div class="cards">
 CARDS
@@ -350,12 +406,12 @@ def build():
             shutil.copy(f, out / f.name)
         if (SRC / name / "notes.html").exists():
             build_notes(name, deck_title, out, pptx)
-        cards.append(f'<div class="card"><h2>{html.escape(site_title)}</h2><p>{html.escape(blurb)}</p>'
+        cards.append(f'<div class="card"><h2>{html.escape(deck_title)}</h2><p class="sub">The era page: {html.escape(site_title)}</p><p>{html.escape(blurb)}</p>'
                      f'<p><a href="{name}/index.html">The era-by-era page</a><br><a href="{name}/slides.html">The slides</a><br><a href="{name}/notes.html">The notes, to read on their own</a>'
                      + "".join(f'<br><a href="{name}/{f.name}" download>The slides as PowerPoint</a>' for f in pptx) + '</p></div>')
     import timeline
     (DIST / "timeline.html").write_text(timeline.combined_page())
-    cards.append('<div class="card"><h2>Every date in three histories</h2><p>All the dates from the three histories on one line of time, which you can filter by history and by part.</p><p><a href="timeline.html">The combined timeline</a></p></div>')
+    cards.append('<div class="card"><h2>Every date on one line</h2><p>All the dates from the three views on one line of time, which you can filter by history and by part.</p><p><a href="timeline.html">The combined timeline</a></p></div>')
     (DIST / "index.html").write_text(HUB.replace("CARDS", "\n".join(cards)))
 
 

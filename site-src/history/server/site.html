@@ -223,15 +223,17 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 .adopt-fig { margin: 18px 0; color: var(--fg); }
 .adopt-fig svg { display: block; width: 100%; height: auto; }
 
+/* curve-css */
 .curve-card { background: #fffdf9; color: #1b2a4a; border: 2px solid #1b2a4a; border-radius: 14px; padding: 16px 20px; margin: 28px auto 0; max-width: 960px; font: 16px/1.55 "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif; text-shadow: none; text-transform: none; letter-spacing: normal; }
 .curve-card h3 { font: 700 20px/1.25 "Atkinson Hyperlegible Next", system-ui, sans-serif; margin: 0 0 6px; color: #1b2a4a; }
 .curve-card .from { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #5a6478; margin: 0 0 4px; }
 .curve-card figure { margin: 10px 0; color: #1b2a4a; }
 .curve-card svg { display: block; width: 100%; height: auto; }
-.curve-card table { border-collapse: collapse; width: 100%; font-size: 14px; background: none; }
+aside.curve-card table.curve-key { border-collapse: collapse; width: 100%; font-size: 14px; background: none; min-width: 0 !important; table-layout: fixed; overflow-wrap: anywhere; }
 .curve-card th, .curve-card td { text-align: left; padding: 5px 8px; border: 0; border-bottom: 1px solid #d9d3c7; color: #1b2a4a; background: none; }
 .curve-card .sw, .curve-key .sw { display: inline-block; width: 18px; height: 6px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
 .curve-card .cap { font-size: 13px; color: #5a6478; }
+/* end curve-css */
 </style>
 
 <header class="chrome" id="chrome" data-era="1970" aria-label="The machine and command for the era on screen">
@@ -337,7 +339,7 @@ ID  NAME    PRICE  ORDER_ID
 <section class="era e1993" id="y1993" data-era="1993" data-who="info.cern.ch" data-cmd="httpd -port 80">
 <div class="wrap">
 <h2>1990: a server is a program that listens <span class="tag" data-part="server">Server</span> <span class="tag" data-part="html">HTML</span></h2>
-<p>Tim Berners-Lee wrote the first web server at CERN in 1990. It waited on a network port for a request, found the matching file on its disk and sent it back. When the file was missing, it answered with a status code instead. 404 still means "Not Found".</p>
+<p>Tim Berners-Lee wrote the first web server at CERN in 1990. It waited on a network port for a request, found the matching file on its disk and sent it back. When the file was missing, it sent back a short HTML page saying so. Status codes such as 404, "Not Found", came with HTTP/1.0 in 1996, and this pretend server speaks that version.</p>
 <p>Type a path and send a request to this pretend server. It holds two files: <code>/index.html</code> and <code>/about.html</code>.</p>
 <p><label for="path">Path:</label> <input type="text" id="path" value="/index.html"> <button type="button" id="send">Send request</button></p>
 <pre class="term" id="http-out" aria-live="polite"></pre>

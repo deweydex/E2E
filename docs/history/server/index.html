@@ -228,18 +228,22 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 .adopt-fig { margin: 18px 0; color: var(--fg); }
 .adopt-fig svg { display: block; width: 100%; height: auto; }
 
+/* curve-css */
 .curve-card { background: #fffdf9; color: #1b2a4a; border: 2px solid #1b2a4a; border-radius: 14px; padding: 16px 20px; margin: 28px auto 0; max-width: 960px; font: 16px/1.55 "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif; text-shadow: none; text-transform: none; letter-spacing: normal; }
 .curve-card h3 { font: 700 20px/1.25 "Atkinson Hyperlegible Next", system-ui, sans-serif; margin: 0 0 6px; color: #1b2a4a; }
 .curve-card .from { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #5a6478; margin: 0 0 4px; }
 .curve-card figure { margin: 10px 0; color: #1b2a4a; }
 .curve-card svg { display: block; width: 100%; height: auto; }
-.curve-card table { border-collapse: collapse; width: 100%; font-size: 14px; background: none; }
+aside.curve-card table.curve-key { border-collapse: collapse; width: 100%; font-size: 14px; background: none; min-width: 0 !important; table-layout: fixed; overflow-wrap: anywhere; }
 .curve-card th, .curve-card td { text-align: left; padding: 5px 8px; border: 0; border-bottom: 1px solid #d9d3c7; color: #1b2a4a; background: none; }
 .curve-card .sw, .curve-key .sw { display: inline-block; width: 18px; height: 6px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
 .curve-card .cap { font-size: 13px; color: #5a6478; }
+/* end curve-css */
+.fmt { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; font: 15px/1.5 system-ui, sans-serif; padding: 8px 16px; background: #1b2a4a; color: #f4f1ea; text-shadow: none; text-transform: none; letter-spacing: normal; position: relative; z-index: 50; } .fmt a { color: #c9d2e3; text-underline-offset: 3px; } .fmt a[aria-current] { color: #f4f1ea; font-weight: 700; text-decoration: none; } .fmt b { margin-right: 6px; } .xlinks { max-width: 960px; margin: 14px auto 0; padding: 8px 16px; font: 14px/1.5 system-ui, sans-serif; text-shadow: none; text-transform: none; letter-spacing: normal; } .xlinks a { color: inherit; text-underline-offset: 3px; }
 </style>
 </head>
 <body>
+<nav class="fmt" aria-label="Formats of this history"><b>Behind the Page</b> <a href="index.html" aria-current="page">Era page</a> <a href="slides.html" data-fmt="slides.html">Slides</a> <a href="notes.html" data-fmt="notes.html">Notes</a> <a href="behind-the-page.pptx" download>PowerPoint</a> <a href="../timeline.html">Timeline</a> <a href="../index.html">All three views</a></nav>
 
 
 <header class="chrome" id="chrome" data-era="1970" aria-label="The machine and command for the era on screen">
@@ -339,13 +343,14 @@ ID  NAME    PRICE  ORDER_ID
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch1">the notes for chapter 1</a> · <a href="slides.html#7">the slides for chapter 1</a></p>
 </section>
 
 <!-- ===================== 1990 to 1995 ===================== -->
 <section class="era e1993" id="y1993" data-era="1993" data-who="info.cern.ch" data-cmd="httpd -port 80">
 <div class="wrap">
 <h2>1990: a server is a program that listens <span class="tag" data-part="server">Server</span> <span class="tag" data-part="html">HTML</span></h2>
-<p>Tim Berners-Lee wrote the first web server at CERN in 1990. It waited on a network port for a request, found the matching file on its disk and sent it back. When the file was missing, it answered with a status code instead. 404 still means "Not Found".</p>
+<p>Tim Berners-Lee wrote the first web server at CERN in 1990. It waited on a network port for a request, found the matching file on its disk and sent it back. When the file was missing, it sent back a short HTML page saying so. Status codes such as 404, "Not Found", came with HTTP/1.0 in 1996, and this pretend server speaks that version.</p>
 <p>Type a path and send a request to this pretend server. It holds two files: <code>/index.html</code> and <code>/about.html</code>.</p>
 <p><label for="path">Path:</label> <input type="text" id="path" value="/index.html"> <button type="button" id="send">Send request</button></p>
 <pre class="term" id="http-out" aria-live="polite"></pre>
@@ -373,6 +378,7 @@ print "&lt;h1&gt;Hello, $name&lt;/h1&gt;";</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch2">the notes for chapter 2</a> · <a href="slides.html#12">the slides for chapter 2</a></p>
 </section>
 
 <!-- ===================== 1995 to 2004 ===================== -->
@@ -432,6 +438,7 @@ sessions:  8f3a91c2 → user 2 (brian), basket [3, 7]</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch3">the notes for chapter 3</a> · <a href="slides.html#17">the slides for chapter 3</a></p>
 </section>
 
 <!-- ===================== 2003 to 2010 ===================== -->
@@ -489,6 +496,7 @@ order_id  item    price
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch4">the notes for chapter 4</a> · <a href="slides.html#23">the slides for chapter 4</a></p>
 </section>
 
 <!-- ===================== 2006 to 2019 ===================== -->
@@ -529,6 +537,7 @@ CMD ["python", "/app/server.py"]</pre>
 <p class="cap">Values are per cent, except subscriptions, which are per 100 people and can pass 100. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch5">the notes for chapter 5</a> · <a href="slides.html#29">the slides for chapter 5</a></p>
 </section>
 
 <!-- ===================== 2020 to now ===================== -->
@@ -574,6 +583,7 @@ LIMIT 3;</pre></div>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch6">the notes for chapter 6</a> · <a href="slides.html#35">the slides for chapter 6</a></p>
 </section>
 
 <!-- ===================== now ===================== -->
@@ -618,6 +628,7 @@ LIMIT 3;</pre></div>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch7">the notes for chapter 7</a> · <a href="slides.html#41">the slides for chapter 7</a></p>
 </section>
 
 <!-- ===================== sources ===================== -->
@@ -651,7 +662,7 @@ LIMIT 3;</pre></div>
 </section>
 </main>
 
-<p style="max-width:960px;margin:0 auto;padding:18px 16px 40px;font:15px system-ui, sans-serif"><a href="slides.html">The slides that go with this page</a> · <a href="../index.html">All history pages</a> · <a href="../../index.html">From a click to a database row and back</a></p>
+<nav class="fmt" aria-label="Formats of this history"><b>Behind the Page</b> <a href="index.html" aria-current="page">Era page</a> <a href="slides.html" data-fmt="slides.html">Slides</a> <a href="notes.html" data-fmt="notes.html">Notes</a> <a href="behind-the-page.pptx" download>PowerPoint</a> <a href="../timeline.html">Timeline</a> <a href="../index.html">All three views</a></nav>
 <script>
 (function () {
   "use strict";

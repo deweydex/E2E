@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>How the Web Learned to Respond · notes</title>
+<title>From the Browser · notes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Public+Sans:wght@400;700&family=JetBrains+Mono:wght@400&display=swap">
 <style>
@@ -78,19 +78,21 @@ details { margin: 8px 0 14px; } summary { cursor: pointer; font-weight: 700; }
 .toc ol { margin: 6px 0 0; padding-left: 1.3em; }
 .top { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--muted); }
 .sources li { margin: 6px 0; }
+.fmtn a[aria-current] { font-weight: 700; text-decoration: none; color: var(--fg); } .fmtn b { color: var(--fg); }
+.xl { font-size: 14px; color: var(--muted); margin: 0 0 8px; }
 @media print { .top, .toc { display: none; } h2 { break-before: page; border: 0; } pre, figure, table { break-inside: avoid; } body { background: #fff; color: #000; } }
 </style>
 </head>
 <body>
 <main>
-<p class="top"><a href="slides.html">The slides</a> · <a href="index.html">The era-by-era page</a> · <a href="how-the-web-learned-to-respond.pptx" download>The slides as PowerPoint</a> · <a href="../index.html">All history pages</a></p>
-<h1>How the Web Learned to Respond</h1>
+<nav class="top fmtn" aria-label="Formats of this history"><b>From the Browser</b> <a href="index.html" data-fmt="index.html">Era page</a> <a href="slides.html" data-fmt="slides.html">Slides</a> <a href="notes.html" aria-current="page">Notes</a> <a href="how-the-web-learned-to-respond.pptx" download>PowerPoint</a> <a href="../timeline.html">Timeline</a> <a href="../index.html">All three views</a></nav>
+<h1>From the Browser</h1>
 <p class="lede">Notes on a history of the web from 1991 to now, told through four parts: HTML, CSS, scripts and the server. The headings follow the slides in order, and each section reads on its own.</p>
 
 <nav class="toc" aria-label="Contents"><b>Contents</b><ol><li><a href="#intro">Introduction</a></li><li><a href="#before">Before we start: history is messy</a></li><li><a href="#ch1">Chapter 1 · 1991 to 1995: Documents and forms</a></li><li><a href="#ch2">Chapter 2 · 1995 to 2004: Scripts, styles and server languages</a></li><li><a href="#ch3">Chapter 3 · 2005 to 2014: Web 2.0, HTML5 and every screen</a></li><li><a href="#ch4">Chapter 4 · 2009 to now: Scripts grow up</a></li><li><a href="#ch5">Chapter 5 · 2016 to 2022: The platform catches up</a></li><li><a href="#ch6">Chapter 6 · 2023 to now: AI and the web</a></li><li><a href="#ch7">Chapter 7 · Today: Putting it together</a></li><li><a href="#timeline">Every date in this story</a></li><li><a href="#sources">Sources</a></li></ol></nav>
 <h2 id="intro">Introduction</h2>
 
-<h3>How the web learned to respond</h3>
+<h3>From the Browser: how the web learned to respond</h3>
 <p>This history follows the web from its first page in 1991 to the browser you are using today. It looks at four parts that every website is made of, asks what each part does and when it arrived, and follows how its jobs changed over thirty years.</p>
 
 <h3>Four parts, four jobs, four colours</h3>
@@ -147,6 +149,7 @@ details { margin: 8px 0 14px; } summary { cursor: pointer; font-weight: 700; }
 <p class="cap muted">Sources: Pew Research Center, Mobile fact sheet; HTTP Archive, Web Almanac CSS chapter 2022; W3Techs historical trends; Stack Overflow Developer Surveys 2019, 2021, 2022 and 2024; World Bank and ITU. Each line measures a different group.</p>
 <!-- adoption:end -->
 <h2 id="ch1">Chapter 1 · 1991 to 1995: Documents and forms</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#7">the slides</a> · <a href="index.html#y1991">the era page</a></p>
 <p>The web begins as pages of text and links, and forms let readers write back.</p>
 
 <h3>The first page was text and links <span class="t" data-part="html">HTML</span> <span class="t" data-part="server">Server</span></h3>
@@ -171,6 +174,7 @@ details { margin: 8px 0 14px; } summary { cursor: pointer; font-weight: 700; }
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch2">Chapter 2 · 1995 to 2004: Scripts, styles and server languages</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#11">the slides</a> · <a href="index.html#y1996">the era page</a></p>
 <p>Browsers and servers both learn to run programs, and plugins fill the gaps.</p>
 
 <h3>Scripts and CSS arrive within a year <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="css">CSS</span></h3>
@@ -216,6 +220,7 @@ details { margin: 8px 0 14px; } summary { cursor: pointer; font-weight: 700; }
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch3">Chapter 3 · 2005 to 2014: Web 2.0, HTML5 and every screen</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#17">the slides</a> · <a href="index.html#y2006">the era page</a></p>
 <p>Pages update without reloading, visitors write into the web, and HTML and CSS take on new jobs.</p>
 
 <h3>Ajax: update one part, not the whole page <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="server">Server</span></h3>
@@ -231,7 +236,7 @@ fetch("/news");</pre></div></div>
 <p>Browsers now agree with each other, and they copied the best of jQuery's ideas. New sites rarely need it, but many older sites still use it.</p>
 
 <h3>Visitors start writing into the web <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="server">Server</span></h3>
-<p>From about 2004, the web changed in who made it. Tim O'Reilly's 2005 essay gave this change its name, <b>Web 2.0</b>. Four ideas mark it out.</p>
+<p>From about 2004, the web changed in who made it. Tim O'Reilly's 2005 essay made a name for this change popular: <b>Web 2.0</b>. Four ideas mark it out.</p>
 <table>
 <tr><th>Idea</th><th>What it means</th><th>Leans on</th></tr>
 <tr><td>Comments and reviews</td><td>Anyone can add to a page, and the server stores it.</td><td><span class="t" data-part="server">Server</span></td></tr>
@@ -286,6 +291,7 @@ fetch("/news");</pre></div></div>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch4">Chapter 4 · 2009 to now: Scripts grow up</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#25">the slides</a> · <a href="index.html#y2016">the era page</a></p>
 <p>JavaScript moves onto the server, frameworks build whole pages, and TypeScript adds types.</p>
 
 <h3>JavaScript moves onto the server <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="server">Server</span></h3>
@@ -320,6 +326,7 @@ priceWithVat("ten");   // stopped here: "ten" is text, not a number</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch5">Chapter 5 · 2016 to 2022: The platform catches up</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#30">the slides</a> · <a href="index.html#y2019">the era page</a></p>
 <p>CSS gets real layout, every site gets a padlock, web apps work offline, and the browsers finally agree. Few of these changes made headlines, but together they are why building a site today is so different from 2014.</p>
 
 <h3>The server sends HTML first again <span class="t" data-part="server">Server</span> <span class="t" data-part="scripts">Scripts</span></h3>
@@ -373,7 +380,7 @@ priceWithVat("ten");   // stopped here: "ten" is text, not a number</pre>
 
 <h3>The browsers finally agree <span class="t" data-part="html">HTML</span> <span class="t" data-part="css">CSS</span> <span class="t" data-part="scripts">Scripts</span></h3>
 <p><b>Internet Explorer retires.</b> Microsoft retired Internet Explorer on 15 June 2022. For years, sites had carried extra code just to work in it.</p>
-<p><b>Interop.</b> Also in 2022, Apple, Google, Microsoft and Mozilla began Interop, a yearly project to make the same features work the same way in every browser. Its public dashboard at <a href="https://wpt.fyi/interop">wpt.fyi</a> shows how well each browser scores.</p>
+<p><b>Interop.</b> Also in 2022, Apple, Google, Microsoft and Mozilla, with Bocoup and Igalia, launched Interop 2022, a yearly project to make the same features work the same way in every browser. Its public dashboard at <a href="https://wpt.fyi/interop">wpt.fyi</a> shows how well each browser scores.</p>
 <p>The browser wars of chapter 2 made jQuery necessary. Interop is why the new HTML features in chapter 7 now arrive in every browser at about the same time.</p>
 
 <!-- curve:start ch5 -->
@@ -384,6 +391,7 @@ priceWithVat("ten");   // stopped here: "ten" is text, not a number</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch6">Chapter 6 · 2023 to now: AI and the web</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#39">the slides</a> · <a href="index.html#y2023">the era page</a></p>
 <p>Machines start to write web pages, read them, summarise them and use them. This chapter differs from the others, because nobody knows yet how it ends, so it closes with questions instead of a verdict.</p>
 
 <h3>AI starts writing the code <span class="t" data-part="html">HTML</span> <span class="t" data-part="scripts">Scripts</span></h3>
@@ -434,6 +442,7 @@ Disallow: /</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch7">Chapter 7 · Today: Putting it together</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#45">the slides</a> · <a href="index.html#now">the era page</a></p>
 <p>Which jobs moved from scripts to HTML and CSS, how the four parts fit, and how to keep a site safe. Everything in this chapter applies to any site you build.</p>
 
 <h3>A rollover, then and now <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="css">CSS</span></h3>
@@ -456,7 +465,7 @@ Disallow: /</pre>
 <tr><td>Open and close a panel</td><td>a click handler</td><td><code>&lt;details&gt;</code></td><td>2020</td></tr>
 <tr><td>A box over the page</td><td>a pop-up script</td><td><code>&lt;dialog&gt;</code>, <code>popover</code></td><td>2022, 2024</td></tr>
 <tr><td>Open a dialog from a button</td><td><code>showModal()</code></td><td><code>commandfor</code></td><td>2025</td></tr>
-<tr><td>Check a form</td><td>a submit handler</td><td><code>required</code>, <code>pattern</code></td><td>about 2012</td></tr>
+<tr><td>Check a form</td><td>a submit handler</td><td><code>required</code>, <code>pattern</code></td><td>2017</td></tr>
 <tr><td>Style from the page's state</td><td>adding classes</td><td><code>:has()</code></td><td>2023</td></tr>
 <tr><td>Play a video</td><td>Flash</td><td><code>&lt;video&gt;</code></td><td>about 2012</td></tr>
 </table>
@@ -513,7 +522,7 @@ SELECT * FROM users WHERE name = ?</pre>
 <p>All the dates in these notes, in order. Remember the opening section: each date marks when something appeared or became a standard, not when everyone used it.</p>
 <table>
 <tr><th>Year</th><th>What happened</th><th>Part</th></tr>
-<tr><td>1991</td><td>The first web page goes online at CERN</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>1995</td><td>Forms become part of HTML 2.0</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>1995</td><td>JavaScript arrives in the Netscape browser</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>1995</td><td>PHP is first released</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>1996</td><td>CSS level 1 becomes a standard</td><td><span class="t" data-part="css" style="background:#8DB4E2">CSS</span></td></tr><tr><td>1996</td><td>Flash appears as a browser plugin</td><td><span class="t" data-part="plugin" style="background:#C9D2E3">Plugins</span></td></tr><tr><td>1996</td><td>Microsoft releases ASP</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>1998</td><td>CSS level 2 adds positioning and :hover</td><td><span class="t" data-part="css" style="background:#8DB4E2">CSS</span></td></tr><tr><td>2003</td><td>WordPress is released</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2004</td><td>Gmail updates its inbox without reloading</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2005</td><td>Ajax is named, and Google Maps launches</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2005</td><td>Tim O'Reilly's essay names Web 2.0</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2006</td><td>jQuery is released</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2007</td><td>The first iPhone arrives without Flash</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>2009</td><td>Node.js runs JavaScript on the server</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2010</td><td>Responsive web design is named</td><td><span class="t" data-part="css" style="background:#8DB4E2">CSS</span></td></tr><tr><td>2010</td><td>AngularJS is released</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2012</td><td>TypeScript is released</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2013</td><td>React is released</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2014</td><td>HTML5 becomes a finished standard</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>2014</td><td>Vue is released</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2015</td><td>Let's Encrypt gives away free certificates</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2016</td><td>Next.js renders React pages on the server</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2017</td><td>CSS Grid ships in every major browser</td><td><span class="t" data-part="css" style="background:#8DB4E2">CSS</span></td></tr><tr><td>2017</td><td>WebAssembly runs in every major browser</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2018</td><td>The GDPR begins to apply</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2018</td><td>Chrome marks plain HTTP pages “Not secure”</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2019</td><td>HTML becomes one living standard</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>2019</td><td>CSS can follow the device's dark mode</td><td><span class="t" data-part="css" style="background:#8DB4E2">CSS</span></td></tr><tr><td>2020</td><td>Flash reaches its official end</td><td><span class="t" data-part="plugin" style="background:#C9D2E3">Plugins</span></td></tr><tr><td>2022</td><td>Internet Explorer is retired</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>2022</td><td>Browser makers begin Interop</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>2022</td><td>ChatGPT launches</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2023</td><td>:has() and container queries work everywhere</td><td><span class="t" data-part="css" style="background:#8DB4E2">CSS</span></td></tr><tr><td>2023</td><td>OpenAI names its crawler, GPTBot</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2024</td><td>Google shows AI Overviews above search results</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2024</td><td>llms.txt is proposed</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2025</td><td>Cloudflare blocks AI crawlers by default</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2025</td><td>Buttons can open dialogs with commandfor</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr>
+<tr><td>1991</td><td>The first web page goes online at CERN</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>1995</td><td>Forms become part of HTML 2.0</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>1995</td><td>JavaScript arrives in the Netscape browser</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>1995</td><td>PHP is first released</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>1996</td><td>CSS level 1 becomes a standard</td><td><span class="t" data-part="css" style="background:#8DB4E2">CSS</span></td></tr><tr><td>1996</td><td>Flash appears as a browser plugin</td><td><span class="t" data-part="plugin" style="background:#C9D2E3">Plugins</span></td></tr><tr><td>1996</td><td>Microsoft releases ASP</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>1998</td><td>CSS level 2 adds positioning and :hover</td><td><span class="t" data-part="css" style="background:#8DB4E2">CSS</span></td></tr><tr><td>2003</td><td>WordPress is released</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2004</td><td>Gmail updates its inbox without reloading</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2005</td><td>Ajax is named, and Google Maps launches</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2005</td><td>Tim O'Reilly's essay defines Web 2.0</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2006</td><td>jQuery is released</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2007</td><td>The first iPhone arrives without Flash</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>2009</td><td>Node.js runs JavaScript on the server</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2010</td><td>Responsive web design is named</td><td><span class="t" data-part="css" style="background:#8DB4E2">CSS</span></td></tr><tr><td>2010</td><td>AngularJS is released</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2012</td><td>TypeScript is released</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2013</td><td>React is released</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2014</td><td>HTML5 becomes a finished standard</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>2014</td><td>Vue is released</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2015</td><td>Let's Encrypt gives away free certificates</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2016</td><td>Next.js renders React pages on the server</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2017</td><td>CSS Grid ships in every major browser</td><td><span class="t" data-part="css" style="background:#8DB4E2">CSS</span></td></tr><tr><td>2017</td><td>WebAssembly runs in every major browser</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2018</td><td>The GDPR begins to apply</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2018</td><td>Chrome marks plain HTTP pages “Not secure”</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2019</td><td>HTML becomes one living standard</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>2019</td><td>CSS can follow the device's dark mode</td><td><span class="t" data-part="css" style="background:#8DB4E2">CSS</span></td></tr><tr><td>2020</td><td>Flash reaches its official end</td><td><span class="t" data-part="plugin" style="background:#C9D2E3">Plugins</span></td></tr><tr><td>2022</td><td>Internet Explorer is retired</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>2022</td><td>Browser makers begin Interop</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>2022</td><td>ChatGPT launches</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2023</td><td>:has() and container queries work everywhere</td><td><span class="t" data-part="css" style="background:#8DB4E2">CSS</span></td></tr><tr><td>2023</td><td>OpenAI names its crawler, GPTBot</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2024</td><td>Google shows AI Overviews above search results</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2024</td><td>llms.txt is proposed</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2025</td><td>Cloudflare blocks AI crawlers by default</td><td><span class="t" data-part="server" style="background:#8CC9A6">Server</span></td></tr><tr><td>2025</td><td>Buttons can open dialogs with commandfor</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr>
 </table>
 <!-- timeline:end -->
 <h2 id="sources">Sources</h2>

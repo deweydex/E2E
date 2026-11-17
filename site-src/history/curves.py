@@ -229,7 +229,7 @@ PAGE_CSS = """
 .curve-card .from { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #5a6478; margin: 0 0 4px; }
 .curve-card figure { margin: 10px 0; color: #1b2a4a; }
 .curve-card svg { display: block; width: 100%; height: auto; }
-.curve-card table { border-collapse: collapse; width: 100%; font-size: 14px; background: none; }
+aside.curve-card table.curve-key { border-collapse: collapse; width: 100%; font-size: 14px; background: none; min-width: 0 !important; table-layout: fixed; overflow-wrap: anywhere; }
 .curve-card th, .curve-card td { text-align: left; padding: 5px 8px; border: 0; border-bottom: 1px solid #d9d3c7; color: #1b2a4a; background: none; }
 .curve-card .sw, .curve-key .sw { display: inline-block; width: 18px; height: 6px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
 .curve-card .cap { font-size: 13px; color: #5a6478; }
@@ -239,8 +239,12 @@ PAGE_CSS = """
 def update_page(story):
     path = HERE / story / "site.html"
     text = re.sub(r"<!-- curve:start ch\d -->.*?<!-- curve:end -->\n?", "", path.read_text(), flags=re.S)
-    if ".curve-card {" not in text:
-        text = text.replace("</style>", PAGE_CSS + "</style>", 1)
+    text = re.sub(r"/\* curve-css \*/.*?/\* end curve-css \*/\n?", "", text, flags=re.S)
+    i = text.find(".curve-card {")
+    if i >= 0:
+        j = text.index("</style>", i)
+        text = text[:i] + text[j:]
+    text = text.replace("</style>", "/* curve-css */" + PAGE_CSS + "/* end curve-css */\n</style>", 1)
     for n, band in PAGE_BANDS[story].items():
         start = text.index(f'id="{band}"')
         end = text.index("</section>", start)

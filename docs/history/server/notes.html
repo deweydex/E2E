@@ -78,12 +78,14 @@ details { margin: 8px 0 14px; } summary { cursor: pointer; font-weight: 700; }
 .toc ol { margin: 6px 0 0; padding-left: 1.3em; }
 .top { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--muted); }
 .sources li { margin: 6px 0; }
+.fmtn a[aria-current] { font-weight: 700; text-decoration: none; color: var(--fg); } .fmtn b { color: var(--fg); }
+.xl { font-size: 14px; color: var(--muted); margin: 0 0 8px; }
 @media print { .top, .toc { display: none; } h2 { break-before: page; border: 0; } pre, figure, table { break-inside: avoid; } body { background: #fff; color: #000; } }
 </style>
 </head>
 <body>
 <main>
-<p class="top"><a href="slides.html">The slides</a> · <a href="index.html">The era-by-era page</a> · <a href="behind-the-page.pptx" download>The slides as PowerPoint</a> · <a href="../index.html">All history pages</a></p>
+<nav class="top fmtn" aria-label="Formats of this history"><b>Behind the Page</b> <a href="index.html" data-fmt="index.html">Era page</a> <a href="slides.html" data-fmt="slides.html">Slides</a> <a href="notes.html" aria-current="page">Notes</a> <a href="behind-the-page.pptx" download>PowerPoint</a> <a href="../timeline.html">Timeline</a> <a href="../index.html">All three views</a></nav>
 <h1>Behind the Page</h1>
 <p class="lede">Notes on a history of the web told from behind the page: how servers learned to answer and databases learned to remember, from punched cards to vector search. The headings follow the slides in order, and each section reads on its own.</p>
 
@@ -148,6 +150,7 @@ details { margin: 8px 0 14px; } summary { cursor: pointer; font-weight: 700; }
 <p class="cap muted">Sources: Pew Research Center, Mobile fact sheet; HTTP Archive, Web Almanac CSS chapter 2022; W3Techs historical trends; Stack Overflow Developer Surveys 2019, 2021, 2022 and 2024; World Bank and ITU. Each line measures a different group.</p>
 <!-- adoption:end -->
 <h2 id="ch1">Chapter 1 · 1966 to 1986: Data learns to sit in tables</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#7">the slides</a> · <a href="index.html#y1970">the era page</a></p>
 <p>Before the web, banks and airlines already needed computers that remembered things. The answer they settled on was the table, and almost every web database still uses the ideas in this chapter: tables, rows, keys and SQL.</p>
 
 <h3>First, data lived in trees <span class="t" data-part="db">Database</span></h3>
@@ -186,17 +189,18 @@ details { margin: 8px 0 14px; } summary { cursor: pointer; font-weight: 700; }
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch2">Chapter 2 · 1990 to 1995: The first servers hand out files</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#12">the slides</a> · <a href="index.html#y1993">the era page</a></p>
 <p>A web server begins as a simple program: it waits for a request, finds a file and sends it back. The browser asks for a page, and a program on another computer answers.</p>
 
 <h3>A server is a program that listens <span class="t" data-part="server">Server</span></h3>
-<p>Tim Berners-Lee wrote the first web server at CERN in 1990. It listened on a network port, read each request, found the matching file on its disk and sent it back. If the file was missing, it answered with a status code instead. 404 still means "Not Found".</p>
+<p>Tim Berners-Lee wrote the first web server at CERN in 1990. It listened on a network port, read each request, found the matching file on its disk and sent it back. If the file was missing, it sent back a short HTML page saying so. Status codes such as 404, "Not Found", came later, with HTTP/1.0 in 1996. Here is a request and its answer in that 1996 version:</p>
 <pre>GET /hypertext/WWW/TheProject.html HTTP/1.0
 
 HTTP/1.0 200 OK
 Content-Type: text/html
 
 &lt;h1&gt;World Wide Web&lt;/h1&gt;…</pre>
-<p>Every request since works this way: a method and a path go in, and a status and a body come back. The first server was called CERN httpd; the d stands for daemon, a program that runs in the background. Your browser's developer tools show these messages for any site: open the Network tab and reload the page.</p>
+<p>Every request since 1996 works this way: a method and a path go in, and a status and a body come back. The first server was called CERN httpd; the d stands for daemon, a program that runs in the background. Your browser's developer tools show these messages for any site: open the Network tab and reload the page.</p>
 
 <h3>CGI: the server runs a program <span class="t" data-part="server">Server</span> <span class="t" data-part="html">HTML</span></h3>
 <p>The Common Gateway Interface, from NCSA in 1993, let a server run a program and send back whatever that program printed, instead of a stored file. A form could now send data to a script on the server, often written in Perl. The script could search, count or save, then print a fresh HTML page.</p>
@@ -218,6 +222,7 @@ print "&lt;h1&gt;Hello, $name&lt;/h1&gt;";</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch3">Chapter 3 · 1995 to 2004: Pages built from a database</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#17">the slides</a> · <a href="index.html#y1999">the era page</a></p>
 <p>Cheap hosting and free software put a database behind ordinary websites, and the server now remembers. Many sites still follow this pattern: a server language, a SQL database and HTML built on each request.</p>
 
 <h3>LAMP: a free stack for everyone <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></h3>
@@ -272,6 +277,7 @@ SELECT * FROM users WHERE name = '' OR '1'='1'</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch4">Chapter 4 · 2003 to 2010: Frameworks, caches and NoSQL</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#23">the slides</a> · <a href="index.html#y2005">the era page</a></p>
 <p>Sites with millions of users push servers and databases to their limits, and new tools appear to cope. Three ideas mark this chapter: frameworks that write the repetitive code, caches that remember answers, and databases that give up some of SQL's rules to grow bigger.</p>
 
 <h3>Frameworks and the ORM <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></h3>
@@ -320,6 +326,7 @@ order_id  item    price
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch5">Chapter 5 · 2006 to 2019: Someone else’s computer</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#29">the slides</a> · <a href="index.html#y2014">the era page</a></p>
 <p>Servers move out of the back room and into rented data centres, and you pay for what you use. The phrase "the cloud is just someone else's computer" is a joke, and it is also accurate.</p>
 
 <h3>Renting servers by the hour <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></h3>
@@ -365,6 +372,7 @@ CMD python /app/server.py</pre>
 <p class="cap">Values are per cent, except subscriptions, which are per 100 people and can pass 100. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch6">Chapter 6 · 2020 to now: Data for AI</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#35">the slides</a> · <a href="index.html#y2023">the era page</a></p>
 <p>AI systems need data to learn from and data to look things up in, and databases learn to search by meaning. This chapter has no settled ending, so it closes with questions.</p>
 
 <h3>Meaning as a list of numbers <span class="t" data-part="db">Database</span></h3>
@@ -413,6 +421,7 @@ LIMIT 3;</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch7">Chapter 7 · Today: Putting it together</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#41">the slides</a> · <a href="index.html#now">the era page</a></p>
 <p>One click, followed all the way to a database row and back, and the habits that keep it safe.</p>
 
 <h3>The journey of one click <span class="t" data-part="scripts">Scripts</span> <span class="t" data-part="server">Server</span> <span class="t" data-part="db">Database</span></h3>

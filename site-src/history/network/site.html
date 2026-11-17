@@ -192,15 +192,17 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 .adopt-fig { margin: 18px 0; color: var(--fg); }
 .adopt-fig svg { display: block; width: 100%; height: auto; }
 
+/* curve-css */
 .curve-card { background: #fffdf9; color: #1b2a4a; border: 2px solid #1b2a4a; border-radius: 14px; padding: 16px 20px; margin: 28px auto 0; max-width: 960px; font: 16px/1.55 "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif; text-shadow: none; text-transform: none; letter-spacing: normal; }
 .curve-card h3 { font: 700 20px/1.25 "Atkinson Hyperlegible Next", system-ui, sans-serif; margin: 0 0 6px; color: #1b2a4a; }
 .curve-card .from { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #5a6478; margin: 0 0 4px; }
 .curve-card figure { margin: 10px 0; color: #1b2a4a; }
 .curve-card svg { display: block; width: 100%; height: auto; }
-.curve-card table { border-collapse: collapse; width: 100%; font-size: 14px; background: none; }
+aside.curve-card table.curve-key { border-collapse: collapse; width: 100%; font-size: 14px; background: none; min-width: 0 !important; table-layout: fixed; overflow-wrap: anywhere; }
 .curve-card th, .curve-card td { text-align: left; padding: 5px 8px; border: 0; border-bottom: 1px solid #d9d3c7; color: #1b2a4a; background: none; }
 .curve-card .sw, .curve-key .sw { display: inline-block; width: 18px; height: 6px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
 .curve-card .cap { font-size: 13px; color: #5a6478; }
+/* end curve-css */
 </style>
 
 <header class="chrome" id="chrome" data-era="1969" aria-label="The connection for the era on screen">
@@ -306,7 +308,7 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 
 <div class="win"><div class="bar"><span>Security Information</span><span>_ □ ×</span></div><div class="body">
 <h2>1995 to 1999: a lock for the connection <span class="tag" data-part="net">Network</span></h2>
-<p>Netscape added SSL to its browser in 1995 so that a connection could be encrypted, and a card number could cross the internet without anyone on the way reading it. In 1999 the standards body took it over and renamed it TLS. Encryption was slow on the computers of the time, so for years only payment pages used it.</p>
+<p>Netscape added SSL to its browser in 1994 so that a connection could be encrypted, and a card number could cross the internet without anyone on the way reading it. In 1999 the standards body took it over and renamed it TLS. Encryption was slow on the computers of the time, so for years only payment pages used it.</p>
 </div></div>
 <p class="built" style="color:#fff"><b>How this part is built:</b> windows made of grey boxes with raised and sunken borders (<code>outset</code> and <code>inset</code>), a blue gradient title bar, and a teal desktop. The picture is two CSS gradients, blurred while it "loads" and uncovered from the top down.</p>
 </div>

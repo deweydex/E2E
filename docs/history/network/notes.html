@@ -78,12 +78,14 @@ details { margin: 8px 0 14px; } summary { cursor: pointer; font-weight: 700; }
 .toc ol { margin: 6px 0 0; padding-left: 1.3em; }
 .top { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--muted); }
 .sources li { margin: 6px 0; }
+.fmtn a[aria-current] { font-weight: 700; text-decoration: none; color: var(--fg); } .fmtn b { color: var(--fg); }
+.xl { font-size: 14px; color: var(--muted); margin: 0 0 8px; }
 @media print { .top, .toc { display: none; } h2 { break-before: page; border: 0; } pre, figure, table { break-inside: avoid; } body { background: #fff; color: #000; } }
 </style>
 </head>
 <body>
 <main>
-<p class="top"><a href="slides.html">The slides</a> · <a href="index.html">The era-by-era page</a> · <a href="down-the-wire.pptx" download>The slides as PowerPoint</a> · <a href="../index.html">All history pages</a></p>
+<nav class="top fmtn" aria-label="Formats of this history"><b>Down the Wire</b> <a href="index.html" data-fmt="index.html">Era page</a> <a href="slides.html" data-fmt="slides.html">Slides</a> <a href="notes.html" aria-current="page">Notes</a> <a href="down-the-wire.pptx" download>PowerPoint</a> <a href="../timeline.html">Timeline</a> <a href="../index.html">All three views</a></nav>
 <h1>Down the Wire</h1>
 <p class="lede">Notes on a history of the networks and protocols under the web, and of how each faster, wider pipe changed what a website could be. The headings follow the slides in order, and each section reads on its own.</p>
 
@@ -148,12 +150,13 @@ details { margin: 8px 0 14px; } summary { cursor: pointer; font-weight: 700; }
 <p class="cap muted">Sources: Pew Research Center, Mobile fact sheet; HTTP Archive, Web Almanac CSS chapter 2022; W3Techs historical trends; Stack Overflow Developer Surveys 2019, 2021, 2022 and 2024; World Bank and ITU. Each line measures a different group.</p>
 <!-- adoption:end -->
 <h2 id="ch1">Chapter 1 · 1969 to 1990: Packets find their way</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#7">the slides</a> · <a href="index.html#y1969">the era page</a></p>
 <p>Before the web, researchers built a network that could carry any message, by any route, between any computers. Packets, addresses and names, the ideas in this chapter, were not built for the web, which arrived twenty years later.</p>
 
 <h3>The first message, and the idea of a packet <span class="t" data-part="net">Network</span></h3>
 <p>A telephone call holds one line open for the whole conversation. <b>Packet switching</b> works differently: a message is cut into small packets, each packet carries the address it is going to, and each can take any free route there. The receiver puts them back in order.</p>
 <pre>HELLO  →  [H] [E] [L] [L] [O]  →  each by its own route  →  HELLO</pre>
-<p>On 29 October 1969 a student in Leonard Kleinrock's lab at UCLA tried to log in to a computer at Stanford Research Institute over ARPANET, a network funded by the US Department of Defense. The system crashed after two letters, so the first message was "LO". By the end of 1969 the network linked four universities. Because packets share the lines, a broken link only means a different route, which is why the internet keeps working around faults.</p>
+<p>On 29 October 1969 a student in Leonard Kleinrock's lab at UCLA tried to log in to a computer at Stanford Research Institute over ARPANET, a network funded by the US Department of Defense. The system crashed after two letters, so the first message was "LO". By the end of 1969 the network linked four sites: three universities and SRI. Because packets share the lines, a broken link only means a different route, which is why the internet keeps working around faults.</p>
 
 <h3>TCP/IP: one language for every network <span class="t" data-part="net">Network</span></h3>
 <p>By the 1970s there were many separate networks. Vint Cerf and Bob Kahn designed a way to join them.</p>
@@ -186,6 +189,7 @@ then the browser connects to 192.0.2.17</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch2">Chapter 2 · 1991 to 1999: The web over a phone line</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#12">the slides</a> · <a href="index.html#y1996">the era page</a></p>
 <p>Most people reached the web through a modem that turned data into sound on a telephone line, and every byte counted. In this chapter the network shapes the page, and the protocol grows up to make each connection go further.</p>
 
 <h3>HTTP: the web’s own protocol <span class="t" data-part="net">Network</span> <span class="t" data-part="server">Server</span></h3>
@@ -212,7 +216,7 @@ Host: www.example.ie</pre>
 <p>Pages were built for that wait: small GIF images, few colours, text that appeared first, and images that loaded in coarse stripes, then sharpened. The <code>alt</code> text on an image was often what a visitor read while the picture arrived, or instead of it.</p>
 
 <h3>A lock for the connection <span class="t" data-part="net">Network</span> <span class="t" data-part="server">Server</span></h3>
-<p><b>SSL, 1995.</b> Netscape added SSL to its browser so that a connection could be encrypted, and a card number could cross the internet without anyone on the way reading it. The address began with <code>https://</code> and the browser showed a padlock.</p>
+<p><b>SSL, 1994.</b> Netscape added SSL to its browser so that a connection could be encrypted, and a card number could cross the internet without anyone on the way reading it. The address began with <code>https://</code> and the browser showed a padlock.</p>
 <p><b>TLS, 1999.</b> The standards body took SSL over and renamed it TLS. Every padlock in a browser today is TLS.</p>
 <p>Encryption made online shopping possible. It costs a little time at the start of each connection, for the two computers to agree on keys, and on 1990s hardware that cost was large. For years only payment pages used it.</p>
 
@@ -224,6 +228,7 @@ Host: www.example.ie</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch3">Chapter 3 · 1998 to 2007: Always on</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#17">the slides</a> · <a href="index.html#y2004">the era page</a></p>
 <p>Broadband and Wi-Fi left the connection open all day, so sites could send more, more often, to more places. The shift from dialling in to always on changed habits as much as speed.</p>
 
 <h3>Broadband changes what a page can do <span class="t" data-part="net">Network</span> <span class="t" data-part="scripts">Scripts</span></h3>
@@ -238,7 +243,7 @@ Host: www.example.ie</pre>
 <p>Wi-Fi carries network packets over radio. The standard is called 802.11, and the name Wi-Fi came from the industry group that tests devices against it. A laptop could now be online anywhere in a building, and soon in cafés, stations and airports.</p>
 <ul class="dates">
 <li><b>1997.</b> The first 802.11 standard, at 2 Mbit/s.</li>
-<li><b>1999.</b> 802.11b reaches 11 Mbit/s, and the Wi-Fi Alliance forms to certify devices.</li>
+<li><b>1999.</b> 802.11b reaches 11 Mbit/s, and the group now called the Wi-Fi Alliance forms to certify devices.</li>
 <li><b>2003.</b> Laptops start to include Wi-Fi as standard.</li>
 </ul>
 <p>Radio is shared and noisy, so Wi-Fi spends much of its time taking turns and resending lost packets. That is why it feels slower than its headline speed, and why a busy café network crawls.</p>
@@ -257,6 +262,7 @@ Host: www.example.ie</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch4">Chapter 4 · 2007 to 2014: The web in your pocket</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#22">the slides</a> · <a href="index.html#y2010">the era page</a></p>
 <p>Phones put the web on slow, patchy radio links, and the same pages had to work on all of them. Mobile networks brought the web to billions of people, often as their only connection.</p>
 
 <h3>Mobile data grows up <span class="t" data-part="net">Network</span> <span class="t" data-part="css">CSS</span></h3>
@@ -293,6 +299,7 @@ socket.onmessage = (event) =&gt; {
 <p class="cap">Values are per cent, except subscriptions, which are per 100 people and can pass 100. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch5">Chapter 5 · 2015 to 2022: Faster, and encrypted by default</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#27">the slides</a> · <a href="index.html#y2016">the era page</a></p>
 <p>For twenty years HTTP barely changed. Between 2015 and 2022 it changed twice, and encryption went from optional to normal.</p>
 
 <h3>HTTP/2: many requests on one connection <span class="t" data-part="net">Network</span> <span class="t" data-part="html">HTML</span></h3>
@@ -332,6 +339,7 @@ HTTP/2     one connection: [1][2][3][4][5][6][7][8]… interleaved</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch6">Chapter 6 · 2014 to now: Heavier pages, uneven networks</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#33">the slides</a> · <a href="index.html#y2023">the era page</a></p>
 <p>Pages grew as fast as connections did, and a third of the world is still not online. Faster networks did not make the web fast for everyone.</p>
 
 <h3>Pages grew to fill the pipe <span class="t" data-part="html">HTML</span> <span class="t" data-part="net">Network</span></h3>
@@ -367,6 +375,7 @@ HTTP/2     one connection: [1][2][3][4][5][6][7][8]… interleaved</pre>
 <p class="cap">Values are per cent, except subscriptions, which are per 100 people and can pass 100. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 <!-- curve:end -->
 <h2 id="ch7">Chapter 7 · Today: Putting it together</h2>
+<p class="xl">This chapter in the other formats: <a href="slides.html#38">the slides</a> · <a href="index.html#now">the era page</a></p>
 <p>What happens between pressing Enter and seeing a page, and the habits that keep a site fast on every network.</p>
 
 <h3>What happens when you press Enter <span class="t" data-part="net">Network</span> <span class="t" data-part="server">Server</span> <span class="t" data-part="html">HTML</span></h3>
@@ -413,7 +422,7 @@ HTTP/2     one connection: [1][2][3][4][5][6][7][8]… interleaved</pre>
 <p>All the dates in these notes, in order. Remember the opening section: each date marks when something appeared or became a standard, not when everyone used it.</p>
 <table>
 <tr><th>Year</th><th>What happened</th><th>Part</th></tr>
-<tr><td>1969</td><td>ARPANET carries its first message, “LO”</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1974</td><td>Cerf and Kahn design TCP/IP</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1983</td><td>ARPANET switches to TCP/IP on flag day</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1983</td><td>DNS turns names into addresses</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1991</td><td>HTTP/0.9: one line, one page</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1995</td><td>Netscape adds SSL encryption</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1996</td><td>HTTP/1.0 adds status codes and headers</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1997</td><td>HTTP/1.1 keeps connections open and adds Host</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1997</td><td>The first Wi-Fi standard, 802.11</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1998</td><td>The 56k modem standard is agreed</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1998</td><td>Akamai starts the first big CDN</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1999</td><td>802.11b and the Wi-Fi Alliance; TLS 1.0</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2001</td><td>The first 3G network opens, in Japan</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2005</td><td>YouTube launches</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2008</td><td>The iPhone 3G brings mobile data to a mass audience</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2009</td><td>The first 4G LTE networks open</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2009</td><td>Google starts SPDY, the ancestor of HTTP/2</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2011</td><td>WebSocket keeps a line open</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2013</td><td>Google starts testing QUIC</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2015</td><td>HTTP/2 becomes a standard</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2018</td><td>TLS 1.3 halves the handshake</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2019</td><td>The first 5G networks open; Wi-Fi 6 arrives</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2019</td><td>Lazy loading becomes an HTML attribute</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>2021</td><td>QUIC becomes a standard</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2022</td><td>HTTP/3 becomes a standard</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2024</td><td>68 per cent of the world is online; 2.6 billion are not</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr>
+<tr><td>1969</td><td>ARPANET carries its first message, “LO”</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1974</td><td>Cerf and Kahn publish the design of TCP</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1983</td><td>ARPANET switches to TCP/IP on flag day</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1983</td><td>DNS turns names into addresses</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1991</td><td>HTTP/0.9: one line, one page</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1994</td><td>Netscape adds SSL encryption</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1996</td><td>HTTP/1.0 adds status codes and headers</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1997</td><td>HTTP/1.1 keeps connections open and adds Host</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1997</td><td>The first Wi-Fi standard, 802.11</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1998</td><td>The 56k modem standard is agreed</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1998</td><td>Akamai starts the first big CDN</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>1999</td><td>802.11b and the group now called the Wi-Fi Alliance; TLS 1.0</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2001</td><td>The first 3G network opens, in Japan</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2005</td><td>YouTube launches</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2008</td><td>The iPhone 3G brings mobile data to a mass audience</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2009</td><td>The first 4G LTE networks open</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2009</td><td>Google starts SPDY, the ancestor of HTTP/2</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2011</td><td>WebSocket keeps a line open</td><td><span class="t" data-part="scripts" style="background:#E9C46A">Scripts</span></td></tr><tr><td>2013</td><td>Google starts testing QUIC</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2015</td><td>HTTP/2 becomes a standard</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2018</td><td>TLS 1.3 halves the handshake</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2019</td><td>The first 5G networks open; Wi-Fi 6 arrives</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2019</td><td>Lazy loading becomes an HTML attribute</td><td><span class="t" data-part="html" style="background:#E8955C">HTML</span></td></tr><tr><td>2021</td><td>QUIC becomes a standard</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2022</td><td>HTTP/3 becomes a standard</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr><tr><td>2024</td><td>68 per cent of the world is online; 2.6 billion are not</td><td><span class="t" data-part="net" style="background:#7CC6C1">Network</span></td></tr>
 </table>
 <!-- timeline:end -->
 <h2 id="sources">Sources</h2>

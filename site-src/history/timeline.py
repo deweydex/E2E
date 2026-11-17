@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-STORIES = {"web": "How the Web Learned to Respond", "server": "Behind the Page", "network": "Down the Wire"}
+STORIES = {"web": "From the Browser", "server": "Behind the Page", "network": "Down the Wire"}
 PARTS = {"html": ("HTML", "#E8955C"), "css": ("CSS", "#8DB4E2"), "scripts": ("Scripts", "#E9C46A"), "server": ("Server", "#8CC9A6"),
          "db": ("Database", "#B9A6E0"), "net": ("Network", "#7CC6C1"), "plugin": ("Plugins", "#C9D2E3")}
 
@@ -29,7 +29,7 @@ DATES = [
     (2003, "WordPress is released", "server", "web"),
     (2004, "Gmail updates its inbox without reloading", "scripts", "web"),
     (2005, "Ajax is named, and Google Maps launches", "scripts", "web"),
-    (2005, "Tim O'Reilly's essay names Web 2.0", "server", "web"),
+    (2005, "Tim O'Reilly's essay defines Web 2.0", "server", "web"),
     (2006, "jQuery is released", "scripts", "web"),
     (2007, "The first iPhone arrives without Flash", "html", "web"),
     (2009, "Node.js runs JavaScript on the server", "scripts", "web"),
@@ -86,17 +86,17 @@ DATES = [
     (2021, "pgvector adds vector search to PostgreSQL", "db", "server"),
     # the network's story
     (1969, "ARPANET carries its first message, “LO”", "net", "network"),
-    (1974, "Cerf and Kahn design TCP/IP", "net", "network"),
+    (1974, "Cerf and Kahn publish the design of TCP", "net", "network"),
     (1983, "ARPANET switches to TCP/IP on flag day", "net", "network"),
     (1983, "DNS turns names into addresses", "net", "network"),
     (1991, "HTTP/0.9: one line, one page", "net", "network"),
-    (1995, "Netscape adds SSL encryption", "net", "network"),
+    (1994, "Netscape adds SSL encryption", "net", "network"),
     (1996, "HTTP/1.0 adds status codes and headers", "net", "network"),
     (1997, "HTTP/1.1 keeps connections open and adds Host", "net", "network"),
     (1997, "The first Wi-Fi standard, 802.11", "net", "network"),
     (1998, "The 56k modem standard is agreed", "net", "network"),
     (1998, "Akamai starts the first big CDN", "net", "network"),
-    (1999, "802.11b and the Wi-Fi Alliance; TLS 1.0", "net", "network"),
+    (1999, "802.11b and the group now called the Wi-Fi Alliance; TLS 1.0", "net", "network"),
     (2001, "The first 3G network opens, in Japan", "net", "network"),
     (2005, "YouTube launches", "net", "network"),
     (2008, "The iPhone 3G brings mobile data to a mass audience", "net", "network"),
@@ -199,7 +199,7 @@ def combined_page():
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Every date in three histories</title>
+<title>Every date, Pages Through the Ages</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Public+Sans:wght@400;700&display=swap">
 <style>
@@ -232,8 +232,9 @@ li[hidden] {{ display: none; }}
 <body>
 <main>
 <p><a href="index.html">All history pages</a></p>
-<h1>Every date in three histories</h1>
-<p class="lede">Every date from the three histories, on one line of time. Each date marks when something appeared or became a standard, not when everyone used it, so read it alongside the adoption curves at the start of each history.</p>
+<p style="text-transform:uppercase;letter-spacing:.12em;font-size:13px;font-weight:700;margin:0">Pages Through the Ages</p>
+<h1>Every date on one line</h1>
+<p class="lede">Every date from the three views of Pages Through the Ages, on one line of time. Each date marks when something appeared or became a standard, not when everyone used it, so read it alongside the adoption curves at the start of each history.</p>
 <fieldset><legend>Show these histories</legend><div class="filters" id="f-story"></div></fieldset>
 <fieldset><legend>Show these parts</legend><div class="filters" id="f-part"></div></fieldset>
 <p class="count" id="count" aria-live="polite"></p>

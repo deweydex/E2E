@@ -242,6 +242,7 @@ pre, code { white-space: pre-wrap; overflow-wrap: anywhere; }
 .enow .cq-art { height: 70px; border-radius: 8px; background: linear-gradient(135deg, var(--html), var(--css) 40%, var(--scripts) 70%, var(--server)); }
 @container (min-width: 380px) { .enow .cq-card { grid-template-columns: 110px 1fr; align-items: center; } .enow .cq-art { height: 90px; } }
 .enow table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 15px; }
+.enow details table { min-width: 0; display: block; overflow-x: auto; }
 .enow th, .enow td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .enow th { font: 700 13px var(--text); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 .enow code { font: 14px var(--mono); background: color-mix(in oklch, var(--fg) 8%, transparent); padding: 1px 5px; border-radius: 5px; }
@@ -358,18 +359,22 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 .adopt-fig { margin: 18px 0; color: var(--fg); }
 .adopt-fig svg { display: block; width: 100%; height: auto; }
 
+/* curve-css */
 .curve-card { background: #fffdf9; color: #1b2a4a; border: 2px solid #1b2a4a; border-radius: 14px; padding: 16px 20px; margin: 28px auto 0; max-width: 960px; font: 16px/1.55 "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif; text-shadow: none; text-transform: none; letter-spacing: normal; }
 .curve-card h3 { font: 700 20px/1.25 "Atkinson Hyperlegible Next", system-ui, sans-serif; margin: 0 0 6px; color: #1b2a4a; }
 .curve-card .from { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #5a6478; margin: 0 0 4px; }
 .curve-card figure { margin: 10px 0; color: #1b2a4a; }
 .curve-card svg { display: block; width: 100%; height: auto; }
-.curve-card table { border-collapse: collapse; width: 100%; font-size: 14px; background: none; }
+aside.curve-card table.curve-key { border-collapse: collapse; width: 100%; font-size: 14px; background: none; min-width: 0 !important; table-layout: fixed; overflow-wrap: anywhere; }
 .curve-card th, .curve-card td { text-align: left; padding: 5px 8px; border: 0; border-bottom: 1px solid #d9d3c7; color: #1b2a4a; background: none; }
 .curve-card .sw, .curve-key .sw { display: inline-block; width: 18px; height: 6px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
 .curve-card .cap { font-size: 13px; color: #5a6478; }
+/* end curve-css */
+.fmt { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; font: 15px/1.5 system-ui, sans-serif; padding: 8px 16px; background: #1b2a4a; color: #f4f1ea; text-shadow: none; text-transform: none; letter-spacing: normal; position: relative; z-index: 50; } .fmt a { color: #c9d2e3; text-underline-offset: 3px; } .fmt a[aria-current] { color: #f4f1ea; font-weight: 700; text-decoration: none; } .fmt b { margin-right: 6px; } .xlinks { max-width: 960px; margin: 14px auto 0; padding: 8px 16px; font: 14px/1.5 system-ui, sans-serif; text-shadow: none; text-transform: none; letter-spacing: normal; } .xlinks a { color: inherit; text-underline-offset: 3px; }
 </style>
 </head>
 <body>
+<nav class="fmt" aria-label="Formats of this history"><b>From the Browser</b> <a href="index.html" aria-current="page">Era page</a> <a href="slides.html" data-fmt="slides.html">Slides</a> <a href="notes.html" data-fmt="notes.html">Notes</a> <a href="how-the-web-learned-to-respond.pptx" download>PowerPoint</a> <a href="../timeline.html">Timeline</a> <a href="../index.html">All three views</a></nav>
 
 
 <header class="chrome" id="chrome" data-era="1991" aria-label="Pretend browser for the era on screen">
@@ -441,9 +446,10 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
    of the project ...
 
 1-24, Back, Up, &lt;RETURN&gt; for more, Quit, or Help:</pre>
-<p>Every website still starts with this pattern. The browser asks, and the server answers with a page. The first page is still online at <a href="https://info.cern.ch/hypertext/WWW/TheProject.html">info.cern.ch</a>.</p>
+<p>Every website still starts with this pattern. The browser asks, and the server answers with a page. A 1992 copy of the first page is still online at <a href="https://info.cern.ch/hypertext/WWW/TheProject.html">info.cern.ch</a>; the 1991 original is lost.</p>
 <p class="built"><b>How this part is built:</b> with no CSS of its own. You are seeing your browser's default styles: a serif font, blue underlined links and a white page. The terminal box imitates the Line Mode Browser, and you can try the real thing at <a href="https://line-mode.cern.ch/">line-mode.cern.ch</a>.</p>
 </div>
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch1">the notes for chapter 1</a> · <a href="slides.html#7">the slides for chapter 1</a></p>
 </section>
 
 <!-- ===================== 1994 ===================== -->
@@ -482,6 +488,7 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch1">the notes for chapter 1</a> · <a href="slides.html#7">the slides for chapter 1</a></p>
 </section>
 
 <!-- ===================== 1996 ===================== -->
@@ -520,6 +527,7 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 </div>
 <p class="built"><font size="2" color="#cccccc"><b>How this part is built:</b> with a &lt;table&gt; for layout, &lt;font&gt; and &lt;center&gt; tags, a tiled starry background, a &lt;marquee&gt; and an inline <code>onmouseover</code> script on the button. All of those tags are deprecated, so a validator would flag every one, but browsers still draw them. &lt;blink&gt; no longer works in any browser, so the blinking NEW! is a CSS animation pretending to be one. The table is wider than a phone on purpose: pages of 1996 were never built for one.</font></p>
 </div>
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch2">the notes for chapter 2</a> · <a href="slides.html#11">the slides for chapter 2</a></p>
 </section>
 
 <!-- ===================== 2001 ===================== -->
@@ -548,6 +556,7 @@ What the browser gets:  &lt;p&gt;Hello, Aoife&lt;/p&gt;</pre>
 </td></tr></table>
 </div>
 </div>
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch2">the notes for chapter 2</a> · <a href="slides.html#11">the slides for chapter 2</a></p>
 </section>
 
 <!-- ===================== 2003 ===================== -->
@@ -574,6 +583,7 @@ What the browser gets:  &lt;p&gt;Hello, Aoife&lt;/p&gt;</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch2">the notes for chapter 2</a> · <a href="slides.html#11">the slides for chapter 2</a></p>
 </section>
 
 <!-- ===================== 2006 ===================== -->
@@ -600,13 +610,14 @@ What the browser gets:  &lt;p&gt;Hello, Aoife&lt;/p&gt;</pre>
 </div>
 <div class="box" style="margin-top:16px">
 <h2>Web 2.0: visitors write into the web <span class="tag" data-part="scripts">Scripts</span> <span class="tag" data-part="server">Server</span></h2>
-<p>Tim O'Reilly's 2005 essay gave the name <b>Web 2.0</b> to a change in who makes the web. Visitors posted comments and reviews, built profiles on social networks, and wrote wikis together. The server stored everything they wrote, and Ajax kept pages fresh without reloading. Wikipedia, from 2001, and Facebook, from 2004, are good examples.</p>
+<p>Tim O'Reilly's 2005 essay made <b>Web 2.0</b> the popular name for a change in who makes the web. Visitors posted comments and reviews, built profiles on social networks, and wrote wikis together. The server stored everything they wrote, and Ajax kept pages fresh without reloading. Wikipedia, from 2001, and Facebook, from 2004, are good examples.</p>
 <p class="cloud" aria-label="A tag cloud of Web 2.0 words">
 <a href="#y2006" style="font-size:26px">Ajax</a> <a href="#y2006" style="font-size:13px">folksonomy</a> <a href="#y2006" style="font-size:20px">blog</a> <a href="#y2006" style="font-size:15px">mashup</a> <a href="#y2006" style="font-size:22px">wiki</a> <a href="#y2006" style="font-size:12px">widget</a> <a href="#y2006" style="font-size:18px">RSS</a> <a href="#y2006" style="font-size:24px">social</a> <a href="#y2006" style="font-size:14px">tagging</a> <a href="#y2006" style="font-size:16px">JSON</a> <a href="#y2006" style="font-size:19px">beta</a>
 </p>
 </div>
 <p class="built"><b>How this part is built:</b> with real jQuery, loaded from a public library server, and <code>XMLHttpRequest</code>, the object that started Ajax. Glossy buttons, soft gradients, a reflected logo, a starburst badge and a tag cloud were the look of the moment.</p>
 </div>
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch3">the notes for chapter 3</a> · <a href="slides.html#17">the slides for chapter 3</a></p>
 </section>
 
 <!-- ===================== 2013 ===================== -->
@@ -642,6 +653,7 @@ What the browser gets:  &lt;p&gt;Hello, Aoife&lt;/p&gt;</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch3">the notes for chapter 3</a> · <a href="slides.html#17">the slides for chapter 3</a></p>
 </section>
 
 <!-- ===================== 2016 ===================== -->
@@ -676,6 +688,7 @@ priceWithVat("ten");  // TypeScript stops here: "ten" is not a number</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch4">the notes for chapter 4</a> · <a href="slides.html#25">the slides for chapter 4</a></p>
 </section>
 
 <!-- ===================== 2019 ===================== -->
@@ -782,6 +795,7 @@ priceWithVat("ten");  // TypeScript stops here: "ten" is not a number</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch5">the notes for chapter 5</a> · <a href="slides.html#30">the slides for chapter 5</a></p>
 </section>
 
 <!-- ===================== 2023 ===================== -->
@@ -872,6 +886,7 @@ text "Send"            ← a &lt;div&gt; styled to look like one</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch6">the notes for chapter 6</a> · <a href="slides.html#39">the slides for chapter 6</a></p>
 </section>
 
 <!-- ===================== now ===================== -->
@@ -921,7 +936,7 @@ text "Send"            ← a &lt;div&gt; styled to look like one</pre>
 <tr><td>Open and close a panel</td><td>a click handler, or jQuery</td><td><code>&lt;details&gt;</code></td><td>2020</td></tr>
 <tr><td>A box over the page</td><td>a pop-up script</td><td><code>&lt;dialog&gt;</code>, <code>popover</code></td><td>2022, 2024</td></tr>
 <tr><td>Open a dialog from a button</td><td><code>showModal()</code></td><td><code>commandfor</code></td><td>2025</td></tr>
-<tr><td>Check a form</td><td>a submit handler</td><td><code>required</code>, <code>pattern</code></td><td>about 2012</td></tr>
+<tr><td>Check a form</td><td>a submit handler</td><td><code>required</code>, <code>pattern</code></td><td>2017</td></tr>
 <tr><td>Style from the page's state</td><td>adding classes</td><td><code>:has()</code></td><td>2023</td></tr>
 <tr><td>Play a video</td><td>Flash</td><td><code>&lt;video&gt;</code></td><td>about 2012</td></tr>
 </table></div>
@@ -965,6 +980,7 @@ text "Send"            ← a &lt;div&gt; styled to look like one</pre>
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch7">the notes for chapter 7</a> · <a href="slides.html#45">the slides for chapter 7</a></p>
 </section>
 
 <!-- ===================== sources ===================== -->
@@ -973,7 +989,7 @@ text "Send"            ← a &lt;div&gt; styled to look like one</pre>
 <h2>Sources and further reading</h2>
 <ul class="sources">
 <li>CERN, <a href="https://home.cern/science/computing/the-birth-of-the-web/">The birth of the Web</a> and <a href="https://home.cern/science/computing/the-birth-of-the-web/short-history-web/">A short history of the Web</a></li>
-<li><a href="https://info.cern.ch/hypertext/WWW/TheProject.html">The first website</a>, still online at CERN</li>
+<li><a href="https://info.cern.ch/hypertext/WWW/TheProject.html">The first website</a>, as restored by CERN from a 1992 copy</li>
 <li>W3C, <a href="https://www.w3.org/Style/CSS20/history.html">A brief history of CSS until 2016</a></li>
 <li>PHP manual, <a href="https://www.php.net/manual/en/history.php.php">History of PHP</a></li>
 <li>The History of the Web, <a href="https://thehistoryoftheweb.com/milestones/ajax/">Ajax</a></li>
@@ -1019,7 +1035,7 @@ text "Send"            ← a &lt;div&gt; styled to look like one</pre>
 </div>
 </section>
 
-<p style="max-width:960px;margin:0 auto;padding:18px 16px 40px;font:15px system-ui, sans-serif"><a href="slides.html">The slides that go with this page</a> · <a href="../index.html">All history pages</a> · <a href="../../index.html">From a click to a database row and back</a></p>
+<nav class="fmt" aria-label="Formats of this history"><b>From the Browser</b> <a href="index.html" aria-current="page">Era page</a> <a href="slides.html" data-fmt="slides.html">Slides</a> <a href="notes.html" data-fmt="notes.html">Notes</a> <a href="how-the-web-learned-to-respond.pptx" download>PowerPoint</a> <a href="../timeline.html">Timeline</a> <a href="../index.html">All three views</a></nav>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
 (function () {

@@ -197,18 +197,22 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 .adopt-fig { margin: 18px 0; color: var(--fg); }
 .adopt-fig svg { display: block; width: 100%; height: auto; }
 
+/* curve-css */
 .curve-card { background: #fffdf9; color: #1b2a4a; border: 2px solid #1b2a4a; border-radius: 14px; padding: 16px 20px; margin: 28px auto 0; max-width: 960px; font: 16px/1.55 "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif; text-shadow: none; text-transform: none; letter-spacing: normal; }
 .curve-card h3 { font: 700 20px/1.25 "Atkinson Hyperlegible Next", system-ui, sans-serif; margin: 0 0 6px; color: #1b2a4a; }
 .curve-card .from { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #5a6478; margin: 0 0 4px; }
 .curve-card figure { margin: 10px 0; color: #1b2a4a; }
 .curve-card svg { display: block; width: 100%; height: auto; }
-.curve-card table { border-collapse: collapse; width: 100%; font-size: 14px; background: none; }
+aside.curve-card table.curve-key { border-collapse: collapse; width: 100%; font-size: 14px; background: none; min-width: 0 !important; table-layout: fixed; overflow-wrap: anywhere; }
 .curve-card th, .curve-card td { text-align: left; padding: 5px 8px; border: 0; border-bottom: 1px solid #d9d3c7; color: #1b2a4a; background: none; }
 .curve-card .sw, .curve-key .sw { display: inline-block; width: 18px; height: 6px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
 .curve-card .cap { font-size: 13px; color: #5a6478; }
+/* end curve-css */
+.fmt { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; font: 15px/1.5 system-ui, sans-serif; padding: 8px 16px; background: #1b2a4a; color: #f4f1ea; text-shadow: none; text-transform: none; letter-spacing: normal; position: relative; z-index: 50; } .fmt a { color: #c9d2e3; text-underline-offset: 3px; } .fmt a[aria-current] { color: #f4f1ea; font-weight: 700; text-decoration: none; } .fmt b { margin-right: 6px; } .xlinks { max-width: 960px; margin: 14px auto 0; padding: 8px 16px; font: 14px/1.5 system-ui, sans-serif; text-shadow: none; text-transform: none; letter-spacing: normal; } .xlinks a { color: inherit; text-underline-offset: 3px; }
 </style>
 </head>
 <body>
+<nav class="fmt" aria-label="Formats of this history"><b>Down the Wire</b> <a href="index.html" aria-current="page">Era page</a> <a href="slides.html" data-fmt="slides.html">Slides</a> <a href="notes.html" data-fmt="notes.html">Notes</a> <a href="down-the-wire.pptx" download>PowerPoint</a> <a href="../timeline.html">Timeline</a> <a href="../index.html">All three views</a></nav>
 
 
 <header class="chrome" id="chrome" data-era="1969" aria-label="The connection for the era on screen">
@@ -285,6 +289,7 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch1">the notes for chapter 1</a> · <a href="slides.html#7">the slides for chapter 1</a></p>
 </section>
 
 <!-- ===================== 1991 to 1999 ===================== -->
@@ -314,7 +319,7 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 
 <div class="win"><div class="bar"><span>Security Information</span><span>_ □ ×</span></div><div class="body">
 <h2>1995 to 1999: a lock for the connection <span class="tag" data-part="net">Network</span></h2>
-<p>Netscape added SSL to its browser in 1995 so that a connection could be encrypted, and a card number could cross the internet without anyone on the way reading it. In 1999 the standards body took it over and renamed it TLS. Encryption was slow on the computers of the time, so for years only payment pages used it.</p>
+<p>Netscape added SSL to its browser in 1994 so that a connection could be encrypted, and a card number could cross the internet without anyone on the way reading it. In 1999 the standards body took it over and renamed it TLS. Encryption was slow on the computers of the time, so for years only payment pages used it.</p>
 </div></div>
 <p class="built" style="color:#fff"><b>How this part is built:</b> windows made of grey boxes with raised and sunken borders (<code>outset</code> and <code>inset</code>), a blue gradient title bar, and a teal desktop. The picture is two CSS gradients, blurred while it "loads" and uncovered from the top down.</p>
 </div>
@@ -326,6 +331,7 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch2">the notes for chapter 2</a> · <a href="slides.html#12">the slides for chapter 2</a></p>
 </section>
 
 <!-- ===================== 1998 to 2007 ===================== -->
@@ -356,6 +362,7 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch3">the notes for chapter 3</a> · <a href="slides.html#17">the slides for chapter 3</a></p>
 </section>
 
 <!-- ===================== 2007 to 2014 ===================== -->
@@ -393,6 +400,7 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 <p class="cap">Values are per cent, except subscriptions, which are per 100 people and can pass 100. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch4">the notes for chapter 4</a> · <a href="slides.html#22">the slides for chapter 4</a></p>
 </section>
 
 <!-- ===================== 2015 to 2022 ===================== -->
@@ -428,6 +436,7 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch5">the notes for chapter 5</a> · <a href="slides.html#27">the slides for chapter 5</a></p>
 </section>
 
 <!-- ===================== 2014 to now ===================== -->
@@ -460,6 +469,7 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 <p class="cap">Values are per cent, except subscriptions, which are per 100 people and can pass 100. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch6">the notes for chapter 6</a> · <a href="slides.html#33">the slides for chapter 6</a></p>
 </section>
 
 <!-- ===================== now ===================== -->
@@ -497,6 +507,7 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 <p class="cap">All values are per cent. Each chapter ends with a chart on the same axis, 1995 to 2026. A line starts and stops where the data does.</p>
 </aside></div>
 <!-- curve:end -->
+<p class="xlinks">This era in the other formats: <a href="notes.html#ch7">the notes for chapter 7</a> · <a href="slides.html#38">the slides for chapter 7</a></p>
 </section>
 
 <!-- ===================== sources ===================== -->
@@ -519,7 +530,7 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 </section>
 </main>
 
-<p style="max-width:960px;margin:0 auto;padding:18px 16px 40px;font:15px system-ui, sans-serif"><a href="slides.html">The slides that go with this page</a> · <a href="../index.html">All history pages</a> · <a href="../../index.html">From a click to a database row and back</a></p>
+<nav class="fmt" aria-label="Formats of this history"><b>Down the Wire</b> <a href="index.html" aria-current="page">Era page</a> <a href="slides.html" data-fmt="slides.html">Slides</a> <a href="notes.html" data-fmt="notes.html">Notes</a> <a href="down-the-wire.pptx" download>PowerPoint</a> <a href="../timeline.html">Timeline</a> <a href="../index.html">All three views</a></nav>
 <script>
 (function () {
   "use strict";

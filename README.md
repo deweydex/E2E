@@ -13,7 +13,7 @@ A tutorial site that shows how a click in a browser reaches a database and comes
 - The workbench shows a front end on the left and a back end on the right, with a timeline below.
 - The timeline stops at every step. Start, Back, Forward and End move through the request, and each card names the tutorial station it belongs to, with the station before and after. Key words have the same hover explanations as the tutorials.
 - Two lab projects (Python and TypeScript) can be downloaded from the tutorial pages.
-- `history/` holds three histories of the web. Each comes as a page that rebuilds itself in the look of every era, a slide deck with a PowerPoint copy, and notes that read on their own. One history watches from the browser, one from the server and the database, and one from the networks and protocols underneath. Each piece stands on its own and does not refer to the rest of the site.
+- `history/` holds Pages Through the Ages, a history of the web in three views: From the Browser, Behind the Page and Down the Wire. Each comes as a page that rebuilds itself in the look of every era, a slide deck with a PowerPoint copy, and notes that read on their own. One history watches from the browser, one from the server and the database, and one from the networks and protocols underneath. Each piece stands on its own and does not refer to the rest of the site.
 
 ## How each tutorial is organised
 

@@ -128,7 +128,7 @@ def dated(slide_id, eyebrow, chips, title, left, items, notes, dark=False):
 
 # ---------------------------------------------------------------- introduction
 add("cover", section_open("cover", True, "display:flex;flex-direction:column;justify-content:center;gap:40px") +
-    '<p style="font-size:32px;font-weight:700;color:#C9D2E3;letter-spacing:4px;text-transform:uppercase">A history of the web, from the other side</p>'
+    '<p style="font-size:32px;font-weight:700;color:#C9D2E3;letter-spacing:4px;text-transform:uppercase">Pages Through the Ages · the web from the other side</p>'
     f'<h1 style="{SERIF};font-size:120px;font-weight:700;line-height:1.05">Behind the Page</h1>'
     '<p style="font-size:44px;line-height:1.4;color:#C9D2E3;max-width:1400px">How servers learned to answer and databases learned to remember, from punched cards to vector search.</p>'
     '<div style="display:flex;gap:16px">' + chip("Server", 28) + chip("Database", 28) + '</div>'
@@ -210,10 +210,10 @@ divider("ch2", 2, "1990 to 1995", "The first servers hand out files",
 
 code("httpd", "1990", ["Server"], "A server is a program that listens",
      ["Tim Berners-Lee wrote the first web server at CERN in 1990. It listened on a network port, read each request, found the matching file on its disk and sent it back.",
-      "If the file was missing, it answered with a status code. 404 still means “not found”."],
-     "a request and its answer",
+      "If the file was missing, it sent back a page saying so. Status codes such as 404 came with HTTP/1.0 in 1996."],
+     "the same request in HTTP/1.0, 1996",
      "GET /hypertext/WWW/TheProject.html HTTP/1.0<br><br>HTTP/1.0 200 OK<br>Content-Type: text/html<br><br>&lt;h1&gt;World Wide Web&lt;/h1&gt;…",
-     "Every request since works this way: a method, a path, then a status and a body.",
+     "Every request since 1996 works this way: a method, a path, then a status and a body.",
      "The CERN server was called CERN httpd; the d stands for daemon, a program that runs in the background. The browser’s developer tools show these messages for any site: open the Network tab and reload.", dark=True)
 
 cards("cgi", "1993", ["Server", "HTML"], "CGI: the server runs a program",
@@ -439,6 +439,8 @@ def main():
     adoption.update_deck("server")
     import timeline  # every date in the story, before the recap
     timeline.update_deck("server")
+    import curves  # an adoption chart at the end of every chapter
+    curves.update_deck("server")
 
 
 if __name__ == "__main__":

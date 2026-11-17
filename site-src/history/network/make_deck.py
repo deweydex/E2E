@@ -14,7 +14,7 @@ OUT = Path(__file__).resolve().parent / "deck"
 
 # ---------------------------------------------------------------- introduction
 add("cover", section_open("cover", True, "display:flex;flex-direction:column;justify-content:center;gap:40px") +
-    '<p style="font-size:32px;font-weight:700;color:#C9D2E3;letter-spacing:4px;text-transform:uppercase">A history of the web, from underneath</p>'
+    '<p style="font-size:32px;font-weight:700;color:#C9D2E3;letter-spacing:4px;text-transform:uppercase">Pages Through the Ages · the web from underneath</p>'
     f'<h1 style="{SERIF};font-size:120px;font-weight:700;line-height:1.05">Down the Wire</h1>'
     '<p style="font-size:44px;line-height:1.4;color:#C9D2E3;max-width:1400px">How networks and protocols carried the web, and how each faster, wider pipe changed what a website could be.</p>'
     '<div style="display:flex;gap:16px">' + chip("Network", 28) + chip("Server", 28) + '</div>'
@@ -70,7 +70,7 @@ cards("packets", "29 October 1969", ["Network"], "The first message, and the ide
       [("Packet switching", "A message is cut into small packets. Each packet carries the address it is going to, and can take any free route there. The receiver puts them back in order.", "Network", "HELLO → [H][E][L][L][O] → HELLO"),
        ("The first message", "On 29 October 1969 a student at UCLA tried to log in to a computer at Stanford Research Institute over ARPANET. The system crashed after two letters, so the first message was “LO”.", "Network", None)],
       "A telephone call holds one line open for the whole conversation. Packets share the lines, so a broken link only means a different route.",
-      "Leonard Kleinrock's lab at UCLA sent the message. The network was funded by ARPA, part of the US Department of Defense, and linked four universities by the end of 1969. Packet switching is why the internet survives broken links: traffic flows round them.")
+      "Leonard Kleinrock's lab at UCLA sent the message. The network was funded by ARPA, part of the US Department of Defense, and linked four sites, three universities and a research institute, by the end of 1969. Packet switching is why the internet survives broken links: traffic flows round them.")
 
 dated("tcpip", "1974 to 1983", ["Network"], "TCP/IP: one language for every network",
       ["By the 1970s there were many separate networks. Vint Cerf and Bob Kahn designed a way to join them: <b>IP</b> gives every computer an address and moves packets between networks, and <b>TCP</b> checks that every packet arrived, in order, and asks again for any that went missing.",
@@ -116,7 +116,7 @@ add("dialup", section_open("dialup", False) + head("1991 to 1999", ["Network", "
     '<aside>To work out a time: kilobytes times 8 gives kilobits, then divide by the speed. 100 times 8 is 800 kilobits, and 800 divided by 14.4 is about 56 seconds. The 56k standard, V.90, was agreed in 1998. A modem also tied up the phone line, so nobody could ring the house while someone was online.</aside></section>')
 
 cards("ssl", "1995 to 1999", ["Network", "Server"], "A lock for the connection",
-      [("SSL, 1995", "Netscape added SSL to its browser so that a connection could be encrypted. A card number could now cross the internet without anyone on the way reading it.", "Network", "https:// and a padlock"),
+      [("SSL, 1994", "Netscape added SSL to its browser so that a connection could be encrypted. A card number could now cross the internet without anyone on the way reading it.", "Network", "https:// and a padlock"),
        ("TLS, 1999", "The standards body took SSL over and renamed it TLS. Every padlock in a browser today is TLS.", "Network", None)],
       "Encryption made online shopping possible. For years it was slow and expensive, so only the payment pages used it.",
       "Encryption costs a little time at the start of each connection, for the two computers to agree on keys. On 1990s hardware that cost was large, which is why sites encrypted only the pages that needed it. Chapter 5 shows how that changed.", dark=True)
@@ -138,7 +138,7 @@ dated("wifi", "1997 to 2003", ["Network"], "Wi-Fi cuts the cable",
       ["Wi-Fi carries network packets over radio. The standard is called 802.11, and the name Wi-Fi came from the industry group that tested devices against it.",
        "A laptop could now be online anywhere in a building, and soon in cafés, stations and airports."],
       [("1997", "The first 802.11 standard, at 2 Mbit/s.", "Network"),
-       ("1999", "802.11b reaches 11 Mbit/s, and the Wi-Fi Alliance forms to certify devices.", "Network"),
+       ("1999", "802.11b reaches 11 Mbit/s, and the group now called the Wi-Fi Alliance forms to certify devices.", "Network"),
        ("2003", "Laptops start to include Wi-Fi as standard.", "Network")],
       "Radio is shared and noisy, so Wi-Fi spends much of its time on taking turns and resending lost packets. That is why it feels slower than its headline speed, and why a busy café network crawls.", dark=True)
 
@@ -296,6 +296,8 @@ def main():
     adoption.update_deck("network")
     import timeline  # every date in the story, before the recap
     timeline.update_deck("network")
+    import curves  # an adoption chart at the end of every chapter
+    curves.update_deck("network")
 
 
 if __name__ == "__main__":
